@@ -12,7 +12,8 @@ main() {
     run();
 }
 
-int run() {
+
+void run() {
     Display *dis;
     Window win;
     XEvent evt;
