@@ -1,72 +1,39 @@
 #include "displayer.h"
 
-void init_x();
-void close_x();
+int main(void) {
+    Display *d;
+    Window w;
+    XEvent e;
+    char *msg = "Hello, World!";
+    int s;
 
-Display *dis;
-int screen;
-Window win;
-GC gc;
+    d = XOpenDisplay(NULL);
+    if (d == NULL) {
+        fprintf(stderr, "Cannot open display\n");
+        exit(1);
+    }
 
-int main ()
-{
-	init_x();
-	sleep (5);
-	close_x();
-}
+    s = DefaultScreen(d);
+    w = XCreateSimpleWindow(
+            d, RootWindow(d, s),
+            100, 100,
+            512, 512,
+            3,
+            BlackPixel(d, s), WhitePixel(d, s));
 
+    XSelectInput(d, w, ExposureMask | KeyPressMask);
+    XMapWindow(d, w);
 
-void init_x() {
-	/* get the colors black and white (see section for details) */
-	unsigned long black,white;
+    while (1) {
+        XNextEvent(d, &e);
+        if (e.type == Expose) {
+            XFillRectangle(d, w, DefaultGC(d, s), 20, 20, 10, 10);
+            XDrawString(d, w, DefaultGC(d, s), 10, 50, msg, strlen(msg));
+        }
+        if (e.type == KeyPress)
+            break;
+    }
 
-	/* use the information from the environment variable DISPLAY 
-	   to create the X connection:
-	*/	
-	dis=XOpenDisplay((char *)0);
-   	screen=DefaultScreen(dis);
-	black=BlackPixel(dis,screen),	/* get color black */
-	white=WhitePixel(dis, screen);  /* get color white */
-
-	/* once the display is initialized, create the window.
-	   This window will be have be 200 pixels across and 300 down.
-	   It will have the foreground white and background black
-	*/
-   	win=XCreateSimpleWindow(dis,DefaultRootWindow(dis),0,0,	
-		200, 300, 5, white, black);
-
-	/* here is where some properties of the window can be set.
-	   The third and fourth items indicate the name which appears
-	   at the top of the window and the name of the minimized window
-	   respectively.
-	*/
-	XSetStandardProperties(dis,win,"My Window","HI!",None,NULL,0,NULL);
-
-	/* this routine determines which types of input are allowed in
-	   the input.  see the appropriate section for details...
-	*/
-	XSelectInput(dis, win, ExposureMask|ButtonPressMask|KeyPressMask);
-
-	/* create the Graphics Context */
-        gc=XCreateGC(dis, win, 0,0);        
-
-	/* here is another routine to set the foreground and background
-	   colors _currently_ in use in the window.
-	*/
-	XSetBackground(dis,gc,white);
-	XSetForeground(dis,gc,black);
-
-	/* clear the window and bring it on top of the other windows */
-	XClearWindow(dis, win);
-	XMapRaised(dis, win);
-};
-
-void close_x() {
-/* it is good programming practice to return system resources to the 
-   system...
-*/
-	XFreeGC(dis, gc);
-	XDestroyWindow(dis,win);
-	XCloseDisplay(dis);	
-	exit(1);				
+    XCloseDisplay(d);
+    return 0;
 }
