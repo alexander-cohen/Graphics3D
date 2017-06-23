@@ -35,14 +35,11 @@ int main(void) {
         printf("Frame %d\n", i);
         while(XPending(d))
             XNextEvent(d, &e);
-        if (e.type == Expose) {
-            XFillRectangle(d, w, gc, 20, 20, 10, 10);
-            XDrawString(d, w, gc, 10, 50, msg, strlen(msg));
-        }
-        else if (e.type == KeyPress)
+        if (e.type == KeyPress)
             break;
+        else if(e.type == Expose) {}
         else {
-            printf("not that\n");
+            printf("this event not handled currently\n");
         }
         XSetForeground(d, gc, col);
         XFillRectangle(d, w, gc, 0, 0, 512, 512);
