@@ -7,6 +7,14 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
+#include "color_util.h"
+
+void paint_arr (int *arr);
+
+const int 
+WIDTH = 512, 
+HEIGHT = 512,
+BORDER_SIZE = 3;
 
 int run();
 int rgbToHex(int, int, int);
