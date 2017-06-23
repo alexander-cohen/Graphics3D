@@ -4,7 +4,6 @@ const int
 BORDER_COL = BLACK,
 BG_COL = WHITE;
 
-int col_arr[WIDTH][HEIGHT];
 
 main() {
     setbuf(stdout, NULL);
@@ -19,6 +18,8 @@ int run() {
     GC gc;
     char msg[] = "Hello, World!";
     int s;
+    int col_arr[WIDTH][HEIGHT];
+
 
     d = XOpenDisplay(NULL);
     if (d == NULL) {
@@ -35,6 +36,8 @@ int run() {
             BORDER_SIZE,
             BORDER_COL, BG_COL);  // happy christmas
 
+    Pixmap bgmap = XCreatePixmap(d, w, WIDTH, HEIGHT, 24);
+
     XSelectInput(d, w, ExposureMask | KeyPressMask);
     XMapWindow(d, w);
     int colorInc = rgbToHex(1, -1, -1);
@@ -44,9 +47,9 @@ int run() {
     struct timespec slptime = {0, 20000000}; // 50 fps
     int frameNum = 0;
     // make a bunch of windows
-    int *screens = malloc(sizeof(int) * 100 * 512 * 512);
+    int *screens = malloc(sizeof(int) * 100 * WIDTH * HEIGHT);
     int i, j, k;
-    for(i = 0; i < 100*512*512; i++) {
+    for(i = 0; i < 100*WIDTH*HEIGHT; i++) {
         screens[i] = rand();
     }
     printf("randomizing done");
@@ -72,8 +75,8 @@ int run() {
         }
         
         XSetForeground(d, gc, col);
-        XFillRectangle(d, w, gc, 0, 0, 512, 512);
-        writeWindow(d, w, s, screens + frameNum * 512 * 512, 512, 512);
+        //XFillRectangle(d, w, gc, 0, 0, WIDTH, HEIGHT);
+        writeWindow(d, w, s, screens + frameNum * WIDTH * HEIGHT, bgmap);
         col += colorInc;
         if(col < minCol || col > maxCol) {
             col -= 2 * colorInc;
@@ -84,25 +87,23 @@ int run() {
     }
 
     XCloseDisplay(d);
-    free(pixels);
+    free(screens);
     return 0;
-}
-
-int rgbToHex(int r, int g, int b) {
-    return (r << 16) + (g << 8) + b;
 }
 
 clearWindow(Display *d, Window w) {
     XClearWindow(d, w);
 }
 
-writeWindow(Display *d, Window w, int screen, int *pixels, int width, int height) {
+writeWindow(Display *d, Window w, int screen, int *pixels, Pixmap buf) {
     GC gc = DefaultGC(d, screen);
     int x, y;
-    for(y = 0; y < height; y++) {
-        for(x = 0; x < width; x++) {
-            XSetForeground(d, gc, pixels[y*width+x]);
-            XDrawPoint(d, w, gc, x, y);
+    for(y = 0; y < HEIGHT; y++) {
+        for(x = 0; x < WIDTH; x++) {
+            XSetForeground(d, gc, *pixels); 
+            XDrawPoint(d, buf, gc, x, y);
+            pixels++;
         }
     }
+    XSetWindowBackgroundPixmap(d, w, buf);  // THIS SHIT DOESNT WORK
 }

@@ -17,6 +17,5 @@ HEIGHT = 512,
 BORDER_SIZE = 3;
 
 int run();
-int rgbToHex(int, int, int);
 clearWindow(Display *d, Window w);
-writeWindow(Display *d, Window w, int screen, int *pixels, int width, int height);
+writeWindow(Display *d, Window w, int screen, int *pixels, Pixmap bgmap);

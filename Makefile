@@ -1,4 +1,4 @@
-CC=gcc -g
+CC=gcc -g -O3
 CFLAGS=-I.
 
 all: displayer.c
