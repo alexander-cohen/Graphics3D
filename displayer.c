@@ -1,5 +1,11 @@
 #include "displayer.h"
 
+const int 
+BORDER_COL = BLACK,
+BG_COL = WHITE;
+
+int col_arr[WIDTH][HEIGHT];
+
 int main(void) {
     Display *d;
     Window w;
@@ -19,9 +25,9 @@ int main(void) {
     w = XCreateSimpleWindow(
             d, RootWindow(d, s),
             100, 100,
-            512, 512,
-            3,
-            rgbToHex(0, 0, 0), rgbToHex(255, 255, 255));  // happy christmas
+            WIDTH, HEIGHT,
+            BORDER_SIZE,
+            BORDER_COL, BG_COL);  // happy christmas
 
     XSelectInput(d, w, ExposureMask | KeyPressMask);
     XMapWindow(d, w);
@@ -54,8 +60,4 @@ int main(void) {
 
     XCloseDisplay(d);
     return 0;
-}
-
-int rgbToHex(int r, int g, int b) {
-    return (r << 16) + (g << 8) + b;
 }
