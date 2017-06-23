@@ -1,5 +1,5 @@
-#include<stdlib.h>
-#include<X11/Xlib.h>
+#include <stdlib.h>
+#include <X11/Xlib.h>
 
 #include "vroot.h"
 
@@ -26,13 +26,17 @@ main ()
   XEvent e;				/* the event */
   int i;
 
+  printf ("initialized variables\n");
+
 
   /* open the display (connect to the X server) */
   dpy = XOpenDisplay (getenv ("DISPLAY"));
+  printf ("opened display\n");
 
 
   /* get the root window */
   root = DefaultRootWindow (dpy);
+  printf ("got root window\n");
 
 
   /* get attributes of the root window */
