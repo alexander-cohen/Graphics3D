@@ -7,7 +7,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
-#include <X11/extensions/Xdbe.h>
 #include "color_util.h"
 
 void paint_arr (int *arr);
@@ -17,6 +16,3 @@ WIDTH = 512,
 HEIGHT = 512,
 BORDER_SIZE = 3;
 
-int run();
-clearWindow(Display *d, Window w);
-writeWindow(Display *d, Window w, int screen, int *pixels);

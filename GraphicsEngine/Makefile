@@ -1,8 +1,8 @@
-CC=gcc -g
+CC=gcc
 CFLAGS=-I.
 
 all: displayer.c
-	$(CC) displayer.c -I. -o display_xwindow -lX11 -lXext
+	$(CC) displayer.c -I. -o display_xwindow -lX11
 
 run: all
 	./display_xwindow
