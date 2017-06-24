@@ -11,7 +11,6 @@
 #include <X11/extensions/Xdbe.h>
 #include "color_util.h"
 
-void paint_arr (int *arr);
 int run();
 
 const int 

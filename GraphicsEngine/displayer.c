@@ -30,7 +30,6 @@ int run() {
         fprintf(stderr, "Cannot open display\n");
         exit(1);
     }
-
     scr = DefaultScreen(dis);
     win = XCreateSimpleWindow(
             dis, RootWindow(dis, scr),
@@ -39,31 +38,10 @@ int run() {
             BORDER_SIZE,
             BORDER_COL, BG_COL);  // happy christmas
     gc = XCreateGC(dis, win, 0, NULL);
-
-    /* Allocate back buffer */
-    /* From XdbeSwapBuffers man page :                        */
-    /*    XdbeUndefined                             */
-    /*      The contents of the new back buffer become undefined.  This  may  */
-    /*      be  the most efficient action since it allows the implementation  */
-    /*      to discard the contents of the buffer if it needs to.       */
-    /* ... so we'll have to do the cleanup by hand. And as we didn't specify any  */
-    /* background that' ok :)                           */
-    backBuffer = XdbeAllocateBackBufferName(dis, win, XdbeUndefined);
-
-    /* Get back buffer attributes (used for swapping) */
-    backAttr = XdbeGetBackBufferAttributes(dis, backBuffer);
-    swapInfo.swap_window = backAttr->window;
-    swapInfo.swap_action = XdbeUndefined;
-         
-    XFree(backAttr);
-    
     XSelectInput(dis, win, ExposureMask | KeyPressMask);
     XMapWindow(dis, win);
     XRaiseWindow(dis, win);
-    int colorInc = rgbToHex(1, -1, -1);
-    int col = rgbToHex(127, 127, 127);
-    int minCol = rgbToHex(1, 1, 1); // boundaries 1 off to prevent overflow errors with dumb gradient
-    int maxCol = rgbToHex(254, 254, 254);
+
     struct timespec slptime = {0, 20000000}; // 50 fps
     int frameNum = 0;
     // make a bunch of windows
@@ -87,7 +65,7 @@ int run() {
     }
     printf("Got Expose event, moving on\n");
     char pixBuf[WIDTH * HEIGHT * 3 + 1];
-    struct timeval begin, end, bW, eW;
+    struct timeval begin, end;
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
     while(frameNum < 10000) {
@@ -102,25 +80,12 @@ int run() {
             }
         }
         
-        XSetForeground(dis, gc, col);
-        //XFillRectangle(dis, backBuffer, gc, 0, 0, WIDTH, HEIGHT);
-        //clock_t t = clock();
         int idx = frameNum % 199 - 99;
         idx = idx < 0 ? -idx : idx;
         int *screen = screens + idx * WIDTH * HEIGHT;
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, screen, WIDTH, HEIGHT, 32, 0);
-        //XImage *img = XCreateImage(dis, TrueColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
-        //XCreateImage(dis, DirectColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 0, 0);
-
-        //writeWindow(dis, backBuffer, scr, screens + frameNum * WIDTH * HEIGHT);
-        //XdbeSwapBuffers(dis, &swapInfo, 1);
-        col += colorInc;
-        if(col < minCol || col > maxCol) {
-            col -= 2 * colorInc;
-            colorInc = -colorInc;
-        }
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
@@ -134,23 +99,4 @@ int run() {
     XCloseDisplay(dis);
     free(screens);
     return 0;
-}
-
-
-int clearWindow(Display *d, Window w) {
-    XClearWindow(d, w);
-}
-
-int writeWindow(Display *d, Window w, int screen, int *pixels) {
-    int *og = pixels;
-    GC gc = DefaultGC(d, screen);
-    int x, y;
-    for(y = 0; y < HEIGHT; y++) {
-        for(x = 0; x < WIDTH; x++, pixels++) {
-            //printf("%d\n", (*pixels)/1000000000*1000000000);
-            XSetForeground(d, gc, (*pixels));
-            XDrawPoint(d, w, gc, x, y);
-
-        }
-    }
 }
