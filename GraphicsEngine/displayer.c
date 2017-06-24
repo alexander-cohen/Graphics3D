@@ -76,7 +76,7 @@ int run() {
             }
         }
     }
-    printf("randomizing done");
+    printf("Frame generation complete\n");
     while(XPending(dis)) {
         XNextEvent(dis, &evt);
         if(evt.type == Expose)
@@ -85,12 +85,12 @@ int run() {
 
         }
     }
-    printf("Got Expose event, moving on");
+    printf("Got Expose event, moving on\n");
     char pixBuf[WIDTH * HEIGHT * 3 + 1];
     struct timeval begin, end, bW, eW;
     XImage *img = NULL;
-    while(1) {
-        gettimeofday(&begin, NULL);
+    gettimeofday(&begin, NULL);
+    while(frameNum < 10000) {
         printf("Frame %d\n", frameNum);
         while(XPending(dis)) {
             XNextEvent(dis, &evt);
@@ -109,16 +109,8 @@ int run() {
         idx = idx < 0 ? -idx : idx;
         int *screen = screens + idx * WIDTH * HEIGHT;
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, screen, WIDTH, HEIGHT, 32, 0);
-        printf("XCreateImage finished\n");
         //XImage *img = XCreateImage(dis, TrueColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 32, 0);
-
-        if(img == NULL) {
-            printf("img is null\n");
-        }
-        else {
-            printf("img is not null\n");
-            XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
-        }
+        XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
         //XCreateImage(dis, DirectColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 0, 0);
 
@@ -129,11 +121,12 @@ int run() {
             col -= 2 * colorInc;
             colorInc = -colorInc;
         }
-        gettimeofday(&end, NULL);
-        printf("Display loop (excl. nanosleep): %f ms\n", (end.tv_sec - begin.tv_sec) * 1000 + ((end.tv_usec - begin.tv_usec)/1000.0));
-        nanosleep(&slptime, NULL);
         frameNum++;
     }
+    gettimeofday(&end, NULL);
+    float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+    printf("10000 loops: %f ms\n", nsecs * 1000);
+    printf("Average of %d FPS", (int)(10000 / nsecs));
 
     XCloseDisplay(dis);
     free(screens);
