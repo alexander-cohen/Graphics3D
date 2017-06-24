@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-I.
 
-all: clean displayer.o image.o drawer.o# recompiles
-	$(CC) displayer.o image.o drawer.o -I. -o display_xwindow -lX11 -lXext
+all: clean displayer.o image.o drawer.o vector.o matrix.o # recompiles
+	$(CC) displayer.o image.o drawer.o vector.o matrix.o -I. -o display_xwindow -lX11 -lXext
 
 run: all
 	./display_xwindow
@@ -15,6 +15,12 @@ image.o: image.c
 
 drawer.o: drawer.c
 	$(CC) -c drawer.c -I.
+
+vector.o: vector.c
+	$(CC) -c vector.c -I. -lm
+
+matrix.o: matrix.c
+	$(CC) -c matrix.c -I.
 
 clean:
 	-rm *.o
