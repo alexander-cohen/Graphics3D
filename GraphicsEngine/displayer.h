@@ -12,6 +12,7 @@
 #include "color_util.h"
 
 void paint_arr (int *arr);
+int run();
 
 const int 
 WIDTH = 512, 

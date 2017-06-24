@@ -6,7 +6,7 @@ BORDER_COL = BLACK,
 BG_COL = WHITE;
 
 
-main() {
+int main() {
     setbuf(stdout, NULL);
     srand(time(NULL));
     run();
@@ -137,11 +137,11 @@ int run() {
 }
 
 
-clearWindow(Display *d, Window w) {
+int clearWindow(Display *d, Window w) {
     XClearWindow(d, w);
 }
 
-writeWindow(Display *d, Window w, int screen, int *pixels) {
+int writeWindow(Display *d, Window w, int screen, int *pixels) {
     int *og = pixels;
     GC gc = DefaultGC(d, screen);
     int x, y;

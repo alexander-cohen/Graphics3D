@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-writePpm(char *outfile, char *outbuf, int *pixels, int width, int height) {
+int writePpm(char *outfile, char *outbuf, int *pixels, int width, int height) {
 	if(width > 99999 || height > 99999) {
 		printf("Width or height too great in writePpm\n");
 		1/0; // x d
