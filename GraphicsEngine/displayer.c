@@ -82,7 +82,7 @@ int run() {
         }
     }
     printf("Got Expose event, moving on");
-    char ppmHelperBuf[WIDTH * HEIGHT * 3 + 1];
+    char pixBuf[WIDTH * HEIGHT * 3 + 1];
     struct timeval begin, end, bW, eW;
     while(1) {
         gettimeofday(&begin, NULL);
@@ -100,12 +100,26 @@ int run() {
         XSetForeground(dis, gc, col);
         //XFillRectangle(dis, backBuffer, gc, 0, 0, WIDTH, HEIGHT);
         //clock_t t = clock();
+        int *screen = screens + frameNum * WIDTH * HEIGHT;
         gettimeofday(&bW, NULL);
-        writePpm("curscr.ppm", ppmHelperBuf, screens + frameNum * WIDTH * HEIGHT, WIDTH, HEIGHT);
+        formattedRGB(pixBuf, screen, WIDTH, HEIGHT);
         gettimeofday(&eW, NULL);
         printf("writePpm: %f ms\n", (eW.tv_sec - bW.tv_sec) * 1000 + ((eW.tv_usec - bW.tv_usec)/1000.0));
-        writeWindow(dis, backBuffer, scr, screens + frameNum * WIDTH * HEIGHT);
-        XdbeSwapBuffers(dis, &swapInfo, 1);
+        XImage *img = XCreateImage(dis, TrueColor, 24, ZPixmap, 0, screen, WIDTH, HEIGHT, 32, 0);
+        //XImage *img = XCreateImage(dis, TrueColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 32, 0);
+
+        if(img == NULL) {
+            printf("img is null\n");
+        }
+        else {
+            XPutImage(dis, win, gc, img, 1, 1, 1, 1, 100, 100);
+            XDestroyImage(img);
+        }
+
+        //XCreateImage(dis, DirectColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 0, 0);
+
+        //writeWindow(dis, backBuffer, scr, screens + frameNum * WIDTH * HEIGHT);
+        //XdbeSwapBuffers(dis, &swapInfo, 1);
         col += colorInc;
         if(col < minCol || col > maxCol) {
             col -= 2 * colorInc;
