@@ -11,7 +11,7 @@
 #include <X11/Xos.h>
 #include <X11/extensions/Xdbe.h>
 #include "helper.h"
-#include "drawer.h"
+#include "graphics2d.h"
 #include "vector.h"
 
 int open_window();

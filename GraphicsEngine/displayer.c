@@ -12,7 +12,7 @@ GC gc;
 
 int scr;
 
-buffer_info info;
+
 int col_arr[HEIGHT * WIDTH];
 
 int main() {
@@ -41,23 +41,22 @@ int open_window() {
     XMapWindow(dis, win);
     XRaiseWindow(dis, win);
 
-    info.pixels = col_arr;
-    info.width = WIDTH;
-    info.height = HEIGHT;
+    g2d_buffer_info *drawing_info = (g2d_buffer_info *) malloc (sizeof (g2d_buffer_info));
+    drawing_info -> pixels = col_arr;
+    drawing_info -> width = WIDTH;
+    drawing_info -> height = HEIGHT;
+
+    g2d_set_buff (drawing_info);
 
     return 0;
 }
+
 
 int run_line ()
 {
     struct timespec slptime = {0, 20000000}; // 50 fps
     int frameNum = 0;
     // make a bunch of windows
-
-    for (int i = 0; i < HEIGHT * WIDTH; i++)
-    {
-        col_arr[i] = WHITE;    
-    }
 
     printf("Frame generation complete\n");
     while(XPending(dis)) {
@@ -72,7 +71,11 @@ int run_line ()
     struct timeval begin, end;
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
+    int x = 5;
+    int xadd = 1;
     while(frameNum < 10000) {
+        g2d_fill_bg (CYAN);
+
         printf("Frame %d\n", frameNum);
         while(XPending(dis)) {
             XNextEvent(dis, &evt);
@@ -83,12 +86,20 @@ int run_line ()
                 printf("this event not handled currently\n");
             }
         }
-        
-        point p1 = {.x = 2, .y = 5};
-        point p2 = {.x = 102, .y = 407};
-        //draw_line (&info, p1, p2, BLACK, false);
-        draw_line (&info, p2, p1, BLACK);
 
+        //draw_line (&drawing_info, p1, p2, BLACK, false);
+        g2d_set_stroke (BLACK);
+        g2d_draw_line (x, 5, 100, 100);
+        x += xadd;
+
+        if (x > 300)
+        {
+            xadd = -1;
+        }
+        if (x < 100)
+        {
+            xadd = 1;
+        }
 
         // for (int r = 0; r < HEIGHT; r++)
         // {
