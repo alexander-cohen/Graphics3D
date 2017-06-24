@@ -88,6 +88,7 @@ int run() {
     printf("Got Expose event, moving on");
     char pixBuf[WIDTH * HEIGHT * 3 + 1];
     struct timeval begin, end, bW, eW;
+    XImage *img = NULL;
     while(1) {
         gettimeofday(&begin, NULL);
         printf("Frame %d\n", frameNum);
@@ -104,12 +105,10 @@ int run() {
         XSetForeground(dis, gc, col);
         //XFillRectangle(dis, backBuffer, gc, 0, 0, WIDTH, HEIGHT);
         //clock_t t = clock();
-        int *screen = screens + frameNum * WIDTH * HEIGHT;
-        gettimeofday(&bW, NULL);
-        formattedRGB(pixBuf, screen, WIDTH, HEIGHT);
-        gettimeofday(&eW, NULL);
-        printf("writePpm: %f ms\n", (eW.tv_sec - bW.tv_sec) * 1000 + ((eW.tv_usec - bW.tv_usec)/1000.0));
-        XImage *img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, screen, WIDTH, HEIGHT, 32, 0);
+        int idx = frameNum % 199 - 99;
+        idx = idx < 0 ? -idx : idx;
+        int *screen = screens + idx * WIDTH * HEIGHT;
+        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, screen, WIDTH, HEIGHT, 32, 0);
         printf("XCreateImage finished\n");
         //XImage *img = XCreateImage(dis, TrueColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 32, 0);
 
@@ -119,7 +118,6 @@ int run() {
         else {
             printf("img is not null\n");
             XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
-            //XDestroyImage(img);
         }
 
         //XCreateImage(dis, DirectColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 0, 0);
