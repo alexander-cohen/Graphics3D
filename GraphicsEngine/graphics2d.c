@@ -1,22 +1,29 @@
 #include "graphics2d.h"
 
 
-int cur_fill = BLACK;
-int cur_stroke = WHITE;
+int cur_color = BLACK;
 g2d_buffer_info *g2d_buff;
 
 static int *g2d_buffer_get (int r, int c) {
+	assert (r >= 0 && c >= 0 && r < (g2d_buff -> height) && c < (g2d_buff -> width));
 	return g2d_buff -> pixels + r * (g2d_buff -> width) + c;
 }
 
-int g2d_set_fill (int col)
-{
-	cur_fill = col;
+static int *g2d_set_pixel (int r, int c, int col) {
+	if (r < 0 || c < 0 || r > (g2d_buff -> height) || r > (g2d_buff -> width))
+	{
+		return 1;
+	}
+	else
+	{
+		*g2d_buffer_get (r, c) = col;
+		return 0;
+	}
 }
 
-int g2d_set_stroke (int col)
+int g2d_set_col (int col)
 {
-	cur_stroke = col;
+	cur_color = col;
 }
 
 int g2d_set_buff (g2d_buffer_info *buff)
@@ -24,41 +31,73 @@ int g2d_set_buff (g2d_buffer_info *buff)
 	g2d_buff = buff;
 }
 
-
 int g2d_fill_bg (int col)
 {
-	g2d_set_fill (col);
+	g2d_set_col (col);
 	g2d_fill_rect (0, 0, g2d_buff -> width, g2d_buff -> height);
+}
+
+void checkrect (int x, int y, int width, int height)
+{
+	assert (x >= 0 && y >= 0);
+	assert (width > 0 && height > 0);
+	assert (x + width <= (g2d_buff -> width) && y + height <= (g2d_buff -> height));
 }
 
 int g2d_draw_rect (int x, int y, int width, int height)
 {
+	g2d_draw_thick_rect (x, y, width, height, 1);
+}
 
+int g2d_draw_thick_rect (int x, int y, int width, int height, int thickness)
+{
+	checkrect (x, y, width, height);
+
+	//top and bottom
+	for (int c = x; c < x + width; c++)
+	{
+		for (int i = 0; i < thickness; i++)
+		{
+			g2d_set_pixel (y + i, c, cur_color);
+			g2d_set_pixel (y + height - i, c, cur_color);
+		}
+	}
+
+	for (int r = y; r < y + height; r++)
+	{
+		for (int i = 0; i < thickness; i++)
+		{
+			g2d_set_pixel (r, x + i, cur_color);
+			g2d_set_pixel (r, x + width - i, cur_color);
+		}
+	}
 }
 
 int g2d_fill_rect (int x, int y, int width, int height)
 {	
-	assert (x >= 0 && y >= 0);
-	assert (width > 0 && height > 0);
-	assert (x + width <= (g2d_buff -> width) && y + height <= (g2d_buff -> height));
+	checkrect (x, y, width, height);
 
 	for (int r = y; r < y + height; r++)
 	{
 		for (int c = x; c < x + width; c++)
 		{
-			*g2d_buffer_get (r, c) = cur_fill;
+			g2d_set_pixel(r, c, cur_color);
 		}
 	}
 }
 
 int g2d_draw_point (int x, int y)
 {
-	*g2d_buffer_get (x, y) = cur_stroke;
+	g2d_set_pixel (y, x, cur_color);
 	return 0;
 }
 
-
 int g2d_draw_line (int x1, int y1, int x2, int y2)
+{
+	g2d_draw_thick_line (x1, y2, x2, y2, 1);
+}
+
+int g2d_draw_thick_line (int x1, int y1, int x2, int y2, int thickness)
 {
 
 	if (x1 == x2 && y1 == y2)
@@ -80,7 +119,16 @@ int g2d_draw_line (int x1, int y1, int x2, int y2)
 
 	do
 	{
-		*g2d_buffer_get (cur_y, cur_x) = cur_stroke;		
+		int rbeg = cur_y - thickness / 2;
+		int cbeg = cur_x - thickness / 2;
+		for (int r = rbeg; r < rbeg + thickness; r++)
+		{
+			for (int c = cbeg; c < cbeg + thickness; c++)
+			{
+				g2d_set_pixel (r, c, cur_color);	
+			}
+		}
+
 
 		//minimize distance from line
 		//minimize |-overall_dy_abs * cur_dx + overall_dx_abs * cur_dy|

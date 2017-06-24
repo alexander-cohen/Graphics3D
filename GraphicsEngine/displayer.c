@@ -72,9 +72,9 @@ int run_line ()
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
     
-    int x1 = WIDTH/2, y1 = HEIGHT/2, x2 = WIDTH/2 + 10, y2 = HEIGHT/2;
+    int x1 = 30, y1 = 30, x2 = 300, y2 = 300;
 
-    int randspeed = 20;
+    int randspeed = 2;
 
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
@@ -91,8 +91,14 @@ int run_line ()
         }
 
         //draw_line (&drawing_info, p1, p2, BLACK, false);
-        g2d_set_stroke (BLACK);
-        g2d_draw_line (x1, y1, x2, y2);
+        g2d_set_col (BLACK);
+        g2d_fill_rect (x1, y1, abs(x2 - x1) + 1, abs(y2 - y1) + 1);
+
+        g2d_set_col (GREEN);
+        g2d_draw_thick_rect (x1, y1, abs(x2 - x1) + 1, abs(y2 - y1) + 1, 5);
+        
+        g2d_set_col (RED);
+        g2d_draw_thick_line (x1, y1, x2, y2, 3);
 
         x1 += (rand() % randspeed * 2) - randspeed;
         y1 += (rand() % randspeed * 2) - randspeed;
