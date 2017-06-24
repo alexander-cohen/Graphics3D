@@ -18,6 +18,3 @@ WIDTH = 512,
 HEIGHT = 512,
 BORDER_SIZE = 3;
 
-int run();
-clearWindow(Display *d, Window w);
-writeWindow(Display *d, Window w, int screen, int *pixels);

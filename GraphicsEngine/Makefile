@@ -1,4 +1,4 @@
-CC=gcc -g
+CC=gcc
 CFLAGS=-I.
 
 all: clean displayer.o image.o # recompiles
