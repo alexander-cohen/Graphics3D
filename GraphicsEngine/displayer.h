@@ -17,7 +17,7 @@ int run_line ();
 int run_test();
 
 const int 
-WIDTH = 50, 
-HEIGHT = 50,
+WIDTH = 512, 
+HEIGHT = 512,
 BORDER_SIZE = 3;
 

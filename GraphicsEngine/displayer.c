@@ -84,19 +84,9 @@ int run_line ()
             }
         }
         
-        point p1 = {.x = 5, .y = 5};
-        point p2 = {.x = 10, .y = 40};
-        draw_line (&info, p1, p2, BLACK);
-
-        for (int r = 0; r < HEIGHT; r++)
-        {
-            for (int c = 0; c < WIDTH; c++)
-            {
-                printf ("%d", *get_buf (&info, r, c) > 0);
-            }
-            printf ("\n");
-        }
-        return 0;
+        point p1 = {.x = 2, .y = 5};
+        point p2 = {.x = 353, .y = 107};
+        draw_line (&info, p1, p2, BLACK, false);
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, &col_arr[0], WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
@@ -111,7 +101,7 @@ int run_line ()
     printf("10000 loops: %f ms\n", nsecs * 1000);
     printf("Average of %d FPS", (int)(10000 / nsecs));
 
-    XCloseDisplay(dis);
+    //XCloseDisplay(dis);
     
     return 0;
 }

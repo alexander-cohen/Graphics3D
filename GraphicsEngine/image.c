@@ -8,7 +8,7 @@
 int writePpm(char *outfile, char *outbuf, int *pixels, int width, int height) {
 	if(width > 99999 || height > 99999) {
 		printf("Width or height too great in writePpm\n");
-		1/0; // x d
+		return 1;
 	}
 	char header[20];
 	snprintf(header, 20, "P6 %d %d 255\n", width, height);
@@ -21,6 +21,7 @@ int writePpm(char *outfile, char *outbuf, int *pixels, int width, int height) {
 		perror("In writePpm looped write");
 	}
 	close(fd);
+	return 0;
 }
 
 char *formattedRGB(char *dest, int *pixels, int width, int height) {
