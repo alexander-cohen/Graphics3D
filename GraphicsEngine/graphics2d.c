@@ -53,12 +53,19 @@ int g2d_fill_rect (int x, int y, int width, int height)
 
 int g2d_draw_point (int x, int y)
 {
-
+	*g2d_buffer_get (x, y) = cur_stroke;
+	return 0;
 }
 
 
 int g2d_draw_line (int x1, int y1, int x2, int y2)
 {
+
+	if (x1 == x2 && y1 == y2)
+	{
+		return g2d_draw_point (x1, y2);
+	}
+
 	int overall_dx_abs = abs(x2 - x1);
 	int overall_dy_abs = abs(y2 - y1);
 

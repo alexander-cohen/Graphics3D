@@ -71,8 +71,11 @@ int run_line ()
     struct timeval begin, end;
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
-    int x = 5;
-    int xadd = 1;
+    
+    int x1 = WIDTH/2, y1 = HEIGHT/2, x2 = WIDTH/2 + 10, y2 = HEIGHT/2;
+
+    int randspeed = 20;
+
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
 
@@ -89,17 +92,23 @@ int run_line ()
 
         //draw_line (&drawing_info, p1, p2, BLACK, false);
         g2d_set_stroke (BLACK);
-        g2d_draw_line (x, 5, 100, 100);
-        x += xadd;
+        g2d_draw_line (x1, y1, x2, y2);
 
-        if (x > 300)
-        {
-            xadd = -1;
-        }
-        if (x < 100)
-        {
-            xadd = 1;
-        }
+        x1 += (rand() % randspeed * 2) - randspeed;
+        y1 += (rand() % randspeed * 2) - randspeed;
+        x2 += (rand() % randspeed * 2) - randspeed;
+        y2 += (rand() % randspeed * 2) - randspeed;
+
+        if (x1 < 0) x1 = 0;
+        if (y1 < 0) y1 = 0;
+        if (x2 < 0) x2 = 0;
+        if (y2 < 0) y2 = 0;
+
+        if (x1 >= WIDTH) x1 = WIDTH-1;
+        if (y1 >= HEIGHT) y1 = HEIGHT-1;
+        if (x2 >= WIDTH) x2 = WIDTH-1;
+        if (y2 >= HEIGHT) y2 = HEIGHT-1;
+        
 
         // for (int r = 0; r < HEIGHT; r++)
         // {
