@@ -69,8 +69,12 @@ int run() {
     // make a bunch of windows
     int *screens = malloc(sizeof(int) * 100 * WIDTH * HEIGHT);
     int i, j, k;
-    for(i = 0; i < 100*WIDTH*HEIGHT; i++) {
-        screens[i] = rand();
+    for(i = 0; i < 100; i++) {
+        for(j = 0; j < HEIGHT; j++) {
+            for(k = 0; k < WIDTH; k++) {
+                screens[i*HEIGHT*WIDTH+j*WIDTH+k] = j / 2 + ((i * 256 / 100) << 8);
+            }
+        }
     }
     printf("randomizing done");
     while(XPending(dis)) {
@@ -129,7 +133,7 @@ int run() {
         }
         gettimeofday(&end, NULL);
         printf("Display loop (excl. nanosleep): %f ms\n", (end.tv_sec - begin.tv_sec) * 1000 + ((end.tv_usec - begin.tv_usec)/1000.0));
-        //nanosleep(&slptime, NULL);
+        nanosleep(&slptime, NULL);
         frameNum++;
     }
 
