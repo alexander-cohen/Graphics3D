@@ -85,8 +85,19 @@ int run_line ()
         }
         
         point p1 = {.x = 2, .y = 5};
-        point p2 = {.x = 353, .y = 107};
-        draw_line (&info, p1, p2, BLACK, false);
+        point p2 = {.x = 102, .y = 407};
+        //draw_line (&info, p1, p2, BLACK, false);
+        draw_line (&info, p2, p1, BLACK);
+
+
+        // for (int r = 0; r < HEIGHT; r++)
+        // {
+        //     for (int c = 0; c < WIDTH; c++)
+        //     {
+        //         printf ("%d", col_arr[r * WIDTH + c] < WHITE);
+        //     }
+        //     printf ("\n");
+        // }
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);

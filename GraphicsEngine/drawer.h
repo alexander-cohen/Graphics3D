@@ -18,7 +18,7 @@ typedef struct {
 
 int *get_buf (buffer_info *inf, int r, int c);
 
-int draw_line (buffer_info *inf, const point p1, const point p2, int col, bool verbose);
-int draw_circle (buffer_info *inf, const point p, int rad, int col, bool verbose);
+int draw_line (buffer_info *inf, const point p1, const point p2, int col);
+int draw_circle (buffer_info *inf, const point p, int rad, int col);
 
 #endif
