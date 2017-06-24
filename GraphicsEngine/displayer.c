@@ -105,7 +105,7 @@ int run() {
         formattedRGB(pixBuf, screen, WIDTH, HEIGHT);
         gettimeofday(&eW, NULL);
         printf("writePpm: %f ms\n", (eW.tv_sec - bW.tv_sec) * 1000 + ((eW.tv_usec - bW.tv_usec)/1000.0));
-        XImage *img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 32, 0);
+        XImage *img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, screen, WIDTH, HEIGHT, 32, 0);
         printf("XCreateImage finished\n");
         //XImage *img = XCreateImage(dis, TrueColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 32, 0);
 
@@ -113,8 +113,9 @@ int run() {
             printf("img is null\n");
         }
         else {
-            XPutImage(dis, win, gc, img, 1, 1, 1, 1, 100, 100);
-            XDestroyImage(img);
+            printf("img is not null\n");
+            XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
+            //XDestroyImage(img);
         }
 
         //XCreateImage(dis, DirectColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 0, 0);
@@ -128,7 +129,7 @@ int run() {
         }
         gettimeofday(&end, NULL);
         printf("Display loop (excl. nanosleep): %f ms\n", (end.tv_sec - begin.tv_sec) * 1000 + ((end.tv_usec - begin.tv_usec)/1000.0));
-        nanosleep(&slptime, NULL);
+        //nanosleep(&slptime, NULL);
         frameNum++;
     }
 
