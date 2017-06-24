@@ -105,7 +105,7 @@ int run() {
         formattedRGB(pixBuf, screen, WIDTH, HEIGHT);
         gettimeofday(&eW, NULL);
         printf("writePpm: %f ms\n", (eW.tv_sec - bW.tv_sec) * 1000 + ((eW.tv_usec - bW.tv_usec)/1000.0));
-        XImage *img = XCreateImage(dis, TrueColor, 24, ZPixmap, 0, screen, WIDTH, HEIGHT, 32, 0);
+        XImage *img = XCreateImage(dis, DirectColor, 24, ZPixmap, 1, screen, WIDTH, HEIGHT, 8, 4);
         //XImage *img = XCreateImage(dis, TrueColor, 24, ZPixmap, 0, pixBuf, WIDTH, HEIGHT, 32, 0);
 
         if(img == NULL) {
