@@ -1,9 +1,9 @@
 #include "displayer.h"
+#include "image.h"
 
 const int 
 BORDER_COL = BLACK,
 BG_COL = WHITE;
-
 
 
 main() {
@@ -82,7 +82,10 @@ int run() {
         }
     }
     printf("Got Expose event, moving on");
+    char ppmHelperBuf[WIDTH * HEIGHT * 3 + 1];
+    struct timeval begin, end, bW, eW;
     while(1) {
+        gettimeofday(&begin, NULL);
         printf("Frame %d\n", frameNum);
         while(XPending(dis)) {
             XNextEvent(dis, &evt);
@@ -96,6 +99,11 @@ int run() {
         
         XSetForeground(dis, gc, col);
         //XFillRectangle(dis, backBuffer, gc, 0, 0, WIDTH, HEIGHT);
+        //clock_t t = clock();
+        gettimeofday(&bW, NULL);
+        writePpm("curscr.ppm", ppmHelperBuf, screens + frameNum * WIDTH * HEIGHT, WIDTH, HEIGHT);
+        gettimeofday(&eW, NULL);
+        printf("writePpm: %f ms\n", (eW.tv_sec - bW.tv_sec) * 1000 + ((eW.tv_usec - bW.tv_usec)/1000.0));
         writeWindow(dis, backBuffer, scr, screens + frameNum * WIDTH * HEIGHT);
         XdbeSwapBuffers(dis, &swapInfo, 1);
         col += colorInc;
@@ -103,6 +111,8 @@ int run() {
             col -= 2 * colorInc;
             colorInc = -colorInc;
         }
+        gettimeofday(&end, NULL);
+        printf("Display loop (excl. nanosleep): %f ms\n", (end.tv_sec - begin.tv_sec) * 1000 + ((end.tv_usec - begin.tv_usec)/1000.0));
         nanosleep(&slptime, NULL);
         frameNum++;
     }
@@ -118,12 +128,15 @@ clearWindow(Display *d, Window w) {
 }
 
 writeWindow(Display *d, Window w, int screen, int *pixels) {
+    int *og = pixels;
     GC gc = DefaultGC(d, screen);
     int x, y;
     for(y = 0; y < HEIGHT; y++) {
-        for(x = 0; x < WIDTH; x++) {
-            XSetForeground(d, gc, pixels[y*WIDTH+x]);
+        for(x = 0; x < WIDTH; x++, pixels++) {
+            //printf("%d\n", (*pixels)/1000000000*1000000000);
+            XSetForeground(d, gc, (*pixels));
             XDrawPoint(d, w, gc, x, y);
+
         }
     }
 }
