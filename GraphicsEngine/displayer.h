@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _DISPLAYER_H
+#define _DISPLAYER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +12,7 @@
 #include <X11/extensions/Xdbe.h>
 #include "helper.h"
 #include "drawer.h"
+#include "vector.h"
 
 int open_window();
 int run_line ();
@@ -21,3 +23,4 @@ WIDTH = 512,
 HEIGHT = 512,
 BORDER_SIZE = 3;
 
+#endif
