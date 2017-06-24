@@ -72,7 +72,7 @@ int run() {
     for(i = 0; i < 100; i++) {
         for(j = 0; j < HEIGHT; j++) {
             for(k = 0; k < WIDTH; k++) {
-                screens[i*HEIGHT*WIDTH+j*WIDTH+k] = j / 2 + ((i * 256 / 100) << 8);
+                screens[i*HEIGHT*WIDTH+j*WIDTH+k] = rand() % (1 << 24);
             }
         }
     }
@@ -122,6 +122,9 @@ int run() {
             colorInc = -colorInc;
         }
         frameNum++;
+        gettimeofday(&end, NULL);
+        float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+        printf("Average of %d FPS\n", (int)(frameNum / nsecs));
     }
     gettimeofday(&end, NULL);
     float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
