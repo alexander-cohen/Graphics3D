@@ -9,12 +9,15 @@
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
 #include <X11/extensions/Xdbe.h>
-#include "color_util.h"
+#include "helper.h"
+#include "drawer.h"
 
-int run();
+int open_window();
+int run_line ();
+int run_test();
 
 const int 
-WIDTH = 512, 
-HEIGHT = 512,
+WIDTH = 50, 
+HEIGHT = 50,
 BORDER_SIZE = 3;
 

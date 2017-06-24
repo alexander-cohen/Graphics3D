@@ -1,11 +1,16 @@
 #include "drawer.h"
 
-int draw_line (buffer_info &inf, const point &p1, const point &p2, int col)
+
+int *get_buf (buffer_info *inf, int r, int c) {
+	return inf -> pixels + r * (inf -> width) + c;
+}
+
+int draw_line (buffer_info *inf, const point p1, const point p2, int col)
 {
-	if (p1.x < 0 || p1.x >= inf.WIDTH ||
-		p1.y < 0 || p1.y >= inf.HEIGHT ||
-		p2.x < 0 || p2.x >= inf.HEIGHT || 
-		p2.y < 0 || p2.y >= inf.HEIGHT)
+	if (p1.x < 0 || p1.x >= inf -> width ||
+		p1.y < 0 || p1.y >= inf -> height ||
+		p2.x < 0 || p2.x >= inf -> width || 
+		p2.y < 0 || p2.y >= inf -> height)
 	{
 		return -1;
 	}
@@ -27,7 +32,7 @@ int draw_line (buffer_info &inf, const point &p1, const point &p2, int col)
 			int r = y;
 			int c = p1.x;
 
-			inf.pixels[r][c] = col;
+			*get_buf (inf, r, c) = col;
 		}
 		return 0;
 	}
@@ -38,23 +43,24 @@ int draw_line (buffer_info &inf, const point &p1, const point &p2, int col)
 		int xdif = (p2.x - p1.x);
 
 		//iterate through x values between the points, then draw all the y values
-		for (int x = p1.x, x <= p2.x; x++)
+		for (int x = p1.x; x <= p2.x; x++)
 		{
 			int y1 = (ydif * (p1.x - x)) / xdif + p1.y;
 			int y2 = (ydif * (p1.x - x + 1)) / xdif + p1.y;
 			int miny = min (y1, y2);
 			int maxy = max (y1, y2);
+			//int maxy = max (max (y1, y2), miny + 1);
 
-			for (int y = miny; y <= maxy; y++)
+			for (int y = miny; y < maxy; y++)
 			{
 				int r = y;
 				int c = x;
 
-				inf.pixels[r][c] = col;
+				*get_buf (inf, r, c) = col;
 			}
 		}
 
 		return 0;
 	}
-	
+
 }

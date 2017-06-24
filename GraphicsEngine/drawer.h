@@ -1,11 +1,13 @@
-#pragma once
+#ifndef _DRAWER_H
+#define _DRAWER_H
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "helper.h"
 
 typedef struct {
 	int *pixels;
-	const int WIDTH, HEIGHT;
+	int width, height;
 
 } buffer_info;
 
@@ -13,4 +15,8 @@ typedef struct {
 	int x, y;
 } point;
 
-int draw_line (buffer_info &inf, const point &p1, const point &p2, int col);
+int *get_buf (buffer_info *inf, int r, int c);
+
+int draw_line (buffer_info *inf, const point p1, const point p2, int col);
+
+#endif
