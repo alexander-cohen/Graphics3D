@@ -48,7 +48,6 @@ int draw_line_octant1 (buffer_info *inf, const Vec2 p1, const Vec2 p2, int col, 
 		
 
 	} while (cur_x != p2.x && cur_y != p2.y)
-
 }
 
 int draw_line (buffer_info *inf, const Vec2 p1, const Vec2 p2, int col, bool verbose)
