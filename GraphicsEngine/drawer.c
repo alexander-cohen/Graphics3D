@@ -27,7 +27,7 @@ int compare_slope (int dx, int dy, int desired_dx, int desired_dy)
 }
 
 
-int draw_line_octant1 (buffer_info *inf, const Vec2 p1, const Vec2 p2, int col, bool verbose)
+int draw_line_octant1 (buffer_info *inf, const point p1, const point p2, int col, bool verbose)
 {
 	int dx = p2.x - p1.x;
 	int dy = p2.y - p1.y;
@@ -43,14 +43,14 @@ int draw_line_octant1 (buffer_info *inf, const Vec2 p1, const Vec2 p2, int col, 
 
 	do
 	{
-		*get_buf (inf, cur_y, cur_x) = col;
+		*get_buf (inf, cury, curx) = col;		
 
-		
+	} while (curx != p2.x && cury != p2.y);
 
-	} while (cur_x != p2.x && cur_y != p2.y)
+	return 0;
 }
 
-int draw_line (buffer_info *inf, const Vec2 p1, const Vec2 p2, int col, bool verbose)
+int draw_line (buffer_info *inf, const point p1, const point p2, int col, bool verbose)
 {
 	if (p1.x < 0 || p1.x >= (inf -> width) ||
 		p1.y < 0 || p1.y >= (inf -> height) ||
@@ -62,7 +62,7 @@ int draw_line (buffer_info *inf, const Vec2 p1, const Vec2 p2, int col, bool ver
 	
 	if (verbose)
 	{
-		printf ("line Vec2s: %d, %d, %d, %d\n", p1.x, p1.y, p2.x, p2.y);
+		printf ("line points: %d, %d, %d, %d\n", p1.x, p1.y, p2.x, p2.y);
 	}
 
 	int cur_x = p1.x;
@@ -127,10 +127,12 @@ int draw_line (buffer_info *inf, const Vec2 p1, const Vec2 p2, int col, bool ver
 		cur_y += dec_dy ? ydir : 0;
 
 	} while (cur_x != p2.x && cur_y != p2.y);
+
+	return 0;
 }
 
 
-int draw_circle (buffer_info *inf, const Vec2 p, int rad, int col, bool verbose)
+int draw_circle (buffer_info *inf, const point p, int rad, int col, bool verbose)
 {
-
+	return 0;
 }

@@ -1,8 +1,10 @@
 #ifndef _HELPER_H
 #define _HELPER_H
 
-#include "stdlib.h"
-#include "stdio.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
 
 #define rgbToHex(r, g, b) ((r << 16) + (g << 8) + b)
 

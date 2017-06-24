@@ -41,7 +41,7 @@ int open_window() {
     XMapWindow(dis, win);
     XRaiseWindow(dis, win);
 
-    info.pixels = &col_arr[0];
+    info.pixels = col_arr;
     info.width = WIDTH;
     info.height = HEIGHT;
 
@@ -84,11 +84,11 @@ int run_line ()
             }
         }
         
-        Vec2 p1 = {.x = 2, .y = 5};
-        Vec2 p2 = {.x = 353, .y = 107};
+        point p1 = {.x = 2, .y = 5};
+        point p2 = {.x = 353, .y = 107};
         draw_line (&info, p1, p2, BLACK, false);
 
-        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, &col_arr[0], WIDTH, HEIGHT, 32, 0);
+        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
         frameNum++;
@@ -148,7 +148,7 @@ int run_test() {
         int idx = frameNum % 199 - 99;
         idx = idx < 0 ? -idx : idx;
         int *screen = screens + idx * WIDTH * HEIGHT;
-        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, screen, WIDTH, HEIGHT, 32, 0);
+        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)screen, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
         frameNum++;
