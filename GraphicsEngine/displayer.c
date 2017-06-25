@@ -23,7 +23,15 @@ int main() {
     open_window();
     //run_line();
     //run_pong();
-    run_triangle();
+    //run_triangle();
+    run_avx_test ();
+}
+
+int run_avx_test() 
+{
+    g2d_set_col (BLACK);
+    g2d_fill_triangle_boundingbox_avx (1, 1, 100, 100, 400, 1);
+    put_frame();
 }
 
 int run_pong ()

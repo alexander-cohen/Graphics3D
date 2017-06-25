@@ -20,6 +20,7 @@ int run_test();
 int run_pong();
 int put_frame();
 int run_triangle();
+int run_avx_test();
 
 #define WIDTH (512) 
 #define HEIGHT (512)

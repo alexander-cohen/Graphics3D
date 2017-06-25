@@ -8,6 +8,7 @@
 #include "colors.h"
 #include <unistd.h>
 #include <x86intrin.h>
+//#include <immintrin.h>
 
 #define rgbToHex(r, g, b) ((r << 16) + (g << 8) + b)
 
@@ -25,11 +26,7 @@
 typedef unsigned long long ui64;
 typedef long long i64;
 
-inline void swap (int *a, int *b) {
-	int temp = *a;
-	*a = *b;
-	*b = temp;
-}
+extern inline int swap_int (int *a, int *b);
 
 
 #endif

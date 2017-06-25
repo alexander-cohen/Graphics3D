@@ -16,9 +16,6 @@ g2d_context *g2d_create_graphics_context (int *pixels, int width, int height)
     return graphics_context;
 }
 
-
-
-
 static inline int *g2d_buffer_get (int r, int c) {
 	assert (r >= 0 && c >= 0 && r < (graphics_context -> height) && c < (graphics_context -> width));
 	return graphics_context -> pixels + r * (graphics_context -> width) + c;
@@ -416,13 +413,13 @@ int g2d_fill_triangle_boundingbox (
 
 
 int g2d_fill_triangle_boundingbox_avx (
-	const short x1, const short y1, 
-	const short x2, const short y2,
-	const short x3, const short y3)
+	const int x1, const int y1, 
+	const int x2, const int y2,
+	const int x3, const int y3)
 {
 
 	//y's are negated bc the axis is inverted
-	short
+	int
 	dx12 = (x2 - x1), dy12 = (y2 - y1),
 	dx23 = (x3 - x2), dy23 = (y3 - y2),
 	dx31 = (x1 - x3), dy31 = (y1 - y3);
@@ -436,50 +433,109 @@ int g2d_fill_triangle_boundingbox_avx (
 	//printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
 	//printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
 
+	int vecsize = 4;
 
-	short min_x = min3 (x1, x2, x3);
-	short min_y = min3 (y1, y2, y3);
+	int min_x = max (min3 (x1, x2, x3), 0);
+	int min_y = max (min3 (y1, y2, y3), 0);
 
-	short max_x = max3 (x1, x2, x3);
-	short max_y = max3 (y1, y2, y3);
+	int max_x = min (max3 (x1, x2, x3), (graphics_context -> width) - 1);
+	int max_y = min (max3 (y1, y2, y3), (graphics_context -> height) - 1);
 
-	//printsf ("min: %d, %d\n", min_x, min_y);
+	int *w1_row = malloc (sizeof(int) * vecsize); 
+	int *w2_row = malloc (sizeof(int) * vecsize); 
+	int *w3_row = malloc (sizeof(int) * vecsize); 
 
-	short w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
-	short w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
-	short w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
+	int *w1_add_row_dat = malloc (sizeof(int) * vecsize); 
+	int *w2_add_row_dat = malloc (sizeof(int) * vecsize); 
+	int *w3_add_row_dat = malloc (sizeof(int) * vecsize); 
 
+	int *w1_add_col_dat = malloc (sizeof(int) * vecsize); 
+	int *w2_add_col_dat = malloc (sizeof(int) * vecsize); 
+	int *w3_add_col_dat = malloc (sizeof(int) * vecsize); 
+
+	w1_row[0] = orient2d (x2, y2, x3, y3, min_x, min_y);
+	w2_row[0] = orient2d (x3, y3, x1, y1, min_x, min_y);
+	w3_row[0] = orient2d (x1, y1, x2, y2, min_x, min_y);
+
+	int w1addcol = -dy23 * vecsize;
+	int w2addcol = -dy31 * vecsize;
+	int w3addcol = -dy12 * vecsize;
+
+	for (int i = 1; i < vecsize; i++)
+	{
+		w1_row[i] = w1_row[i-1] - dy23;
+		w2_row[i] = w2_row[i-1] - dy31;
+		w3_row[i] = w3_row[i-1] - dy12;
+	}
+
+	for (int i = 0; i < vecsize; i++)
+	{
+		w1_add_row_dat[i] = dx23;
+		w1_add_col_dat[i] = w1addcol;
+
+		w2_add_row_dat[i] = dx31;
+		w2_add_col_dat[i] = w2addcol;
+
+		w3_add_row_dat[i] = dx12;
+		w3_add_col_dat[i] = w3addcol;
+	}
+	/*
+	__m256i w1_rvec = _mm256_loadu_si256 (w1_row);
+	__m256i w2_rvec = _mm256_loadu_si256 (w2_row);
+	__m256i w3_rvec = _mm256_loadu_si256 (w3_row);
+
+	__m256i w1_add_per_row = _mm256_loadu_si256 (w1_add_row_dat);
+	__m256i w2_add_per_row = _mm256_loadu_si256 (w2_add_row_dat);
+	__m256i w3_add_per_row = _mm256_loadu_si256 (w3_add_row_dat);
+
+	__m256i w1_add_per_col = _mm256_loadu_si256 (w1_add_col_dat);
+	__m256i w2_add_per_col = _mm256_loadu_si256 (w2_add_col_dat);
+	__m256i w3_add_per_col = _mm256_loadu_si256 (w3_add_col_dat);
+	*/
+	__m128i w1_rvec = _mm_loadu_si128 (w1_row);
+	__m128i w2_rvec = _mm_loadu_si128 (w2_row);
+	__m128i w3_rvec = _mm_loadu_si128 (w3_row);
+
+	__m128i w1_add_per_col = _mm_loadu_si128 (w1_add_col_dat);
+	__m128i w2_add_per_col = _mm_loadu_si128 (w2_add_col_dat);
+	__m128i w3_add_per_col = _mm_loadu_si128 (w3_add_col_dat);
+
+	__m128i w1_add_per_row = _mm_loadu_si128 (w1_add_row_dat);
+	__m128i w2_add_per_row = _mm_loadu_si128 (w2_add_row_dat);
+	__m128i w3_add_per_row = _mm_loadu_si128 (w3_add_row_dat);
+
+
+	int *ptr = (int*)&w1_rvec;
+	printf("%d %d %d %d\n", ptr[0], ptr[1], ptr[2], ptr[3]);
 
 	for (short y = min_y; y <= max_y; y++)
 	{
-		short w1 = w1_row;
-		short w2 = w2_row;
-		short w3 = w3_row;
-		bool found = false;
+		__m128i w1 = w1_rvec;
+		__m128i w2 = w2_rvec;
+		__m128i w3 = w3_rvec;
+		// bool found = false;
 
 		for (short x = min_x; x <= max_x; x++)
 		{
-			if ((w1 | w2 | w3) >= 0)
-			{
-				g2d_set_pixel (x, y, (graphics_context -> color));
-				found = true;
-			}
-
-			//once there are no more pixels, skip to the next scanline
-			else if (found == true)
-			{
-				break;
-			}
-
-			w1 -= dy23;
-			w2 -= dy31;
-			w3 -= dy12;
+			w1 = _mm_add_epi32 (w1, w1_add_per_col);
+			w2 = _mm_add_epi32 (w2, w2_add_per_col);
+			w3 = _mm_add_epi32 (w3, w3_add_per_col);
 		}
 
-		w1_row += dx23;
-		w2_row += dx31;
-		w3_row += dx12;
+		w1_rvec = _mm_add_epi32 (w1_rvec, w1_add_per_row);
+		w2_rvec = _mm_add_epi32 (w2_rvec, w2_add_per_row);
+		w3_rvec = _mm_add_epi32 (w3_rvec, w3_add_per_row);
 	}
+
+	free (w1_row);
+	free (w2_row);
+	free (w3_row);
+	free (w1_add_row_dat);
+	free (w2_add_row_dat);
+	free (w3_add_row_dat);
+	free (w1_add_col_dat);
+	free (w2_add_col_dat);
+	free (w3_add_col_dat);
 }
 
 
@@ -591,8 +647,8 @@ int g2d_fill_triangle (
 
 		if (rightx < leftx)
 		{
-			swap (&leftx, &rightx);
-			swap (&lefty, &righty);
+			swap_int (&leftx, &rightx);
+			swap_int (&lefty, &righty);
 		}
 
 		int min_y = min3 (y1, y2, y3);
