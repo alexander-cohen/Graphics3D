@@ -1,5 +1,5 @@
-#ifndef _G2D_WRAPPER_H
-#define _G2D_WRAPPER_H
+#ifndef G2DWRAPPER_H
+#define G2DWRAPPER_H
 
 #include "helper.h"
 #include "graphics2d.h"

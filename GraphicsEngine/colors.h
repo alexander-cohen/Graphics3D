@@ -1,5 +1,5 @@
-#ifndef _COLORS_H
-#define _COLORS_H
+#ifndef COLORS_H
+#define COLORS_H
 
 #define BLACK   0x000000
 #define WHITE   0xFFFFFF
