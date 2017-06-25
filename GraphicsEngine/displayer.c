@@ -92,11 +92,12 @@ int run_line ()
         //g2d_fill_triangle(0,0,100,0,0,100);
         // other way flat top+flat left
         
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 1000; i++)
         {
             g2d_fill_triangle_boundingbox(100,200,0,200,0,300);
             // //flat bot+flat right
             g2d_fill_triangle_boundingbox(200,0,200,100,100,100);
+
             //orhter way flat bot + flat right
             g2d_fill_triangle_boundingbox(200,200,100,300,200,300);
             //downright-slanting top, downright-slanting left
@@ -146,12 +147,12 @@ int run_line ()
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
-        printf("Average of %d FPS\n", (int)(frameNum / nsecs));
+        printf("Average of %0.2f FPS\n", ((double)frameNum/ (double)nsecs));
     }
     gettimeofday(&end, NULL);
     float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
     printf("10000 loops: %f ms\n", nsecs * 1000);
-    printf("Average of %d FPS", (int)(10000 / nsecs));
+    printf("Average of %0.2f FPS\n", (10000.0 / (double)nsecs));
 
     //XCloseDisplay(dis);
     

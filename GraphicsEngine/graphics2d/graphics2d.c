@@ -340,7 +340,7 @@ int cross2d (int dx1, int dy1, int dx2, int dy2)
 
 int orient2d (int x1, int y1, int x2, int y2, int x3, int y3)
 {
-	return cross2d (x2 - x1, y2 - y1, x3 - x1, y3 - y1);
+	return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
 }
 
 int g2d_fill_triangle_boundingbox (
@@ -351,9 +351,9 @@ int g2d_fill_triangle_boundingbox (
 
 	//y's are negated bc the axis is inverted
 	int 
-	dx12 = x2 - x1, dy12 = -(y2 - y1),
-	dx23 = x3 - x2, dy23 = -(y3 - y2),
-	dx31 = x1 - x3, dy31 = -(y1 - y3);
+	dx12 = (x2 - x1), dy12 = (y2 - y1),
+	dx23 = (x3 - x2), dy23 = (y3 - y2),
+	dx31 = (x1 - x3), dy31 = (y1 - y3);
 
 	//change the order so its counter clockwise
 	if (cross2d (dx12, dy12, dx23, dy23) < 0)
@@ -364,15 +364,18 @@ int g2d_fill_triangle_boundingbox (
 	//printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
 	//printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
 
+
 	int min_x = min3 (x1, x2, x3);
 	int min_y = min3 (y1, y2, y3);
 
 	int max_x = max3 (x1, x2, x3);
 	int max_y = max3 (y1, y2, y3);
 
-	int w1_row = orient2d (x1, -y1, x2, -y2, min_x, -min_y);
-	int w2_row = orient2d (x2, -y2, x3, -y3, min_x, -min_y);
-	int w3_row = orient2d (x3, -y3, x1, -y1, min_x, -min_y);
+	//printf ("min: %d, %d\n", min_x, min_y);
+
+	int w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
+	int w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
+	int w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
 
 
 	for (int y = min_y; y <= max_y; y++)
@@ -390,14 +393,14 @@ int g2d_fill_triangle_boundingbox (
 				g2d_set_pixel (x, y, (graphics_context -> color));
 			}
 
-			w1 += dx23;
-			w2 += dx31;
-			w3 += dx12;
+			w1 -= dy23;
+			w2 -= dy31;
+			w3 -= dy12;
 		}
 
-		w1_row -= dy23;
-		w2_row -= dy31;
-		w3_row -= dy12;
+		w1_row += dx23;
+		w2_row += dx31;
+		w3_row += dx12;
 	}
 }
 
