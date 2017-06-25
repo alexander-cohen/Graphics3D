@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "helper.h"
-#include "../stack.h"
+#include "stack.h"
 
 typedef struct {
 	int *pixels;

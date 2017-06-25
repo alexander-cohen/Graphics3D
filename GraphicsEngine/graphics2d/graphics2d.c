@@ -177,7 +177,7 @@ int g2d_fill_ellipse (int cx, int cy, int semimajor, int semiminor)
 
 	//iterate through the first quadrant simultaneously drawing all the other quadrants
 
-	bool verbose = true;
+	bool verbose = false;
 
 	do {
 		int dx = cur_x - cx;
@@ -302,5 +302,19 @@ int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 
 int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 {
-	return 0;
+	//make sure its not degenerate
+	assert (
+		!(x1 == x2 && y1 == y2) && 
+		!(x1 == x3 && y1 == y3) &&
+		!(x2 == x3 && y2 == y3) );
+
+	//we split the points up into top, left, and right
+
+	//set it randomly initially and then fix it up
+	int 
+	topx = x1, topy = y1, 
+	leftx = x2, lefty = y2, 
+	rightx = x3, righty = y3;
+
+
 }
