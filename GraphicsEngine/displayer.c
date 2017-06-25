@@ -91,6 +91,8 @@ int run_line ()
         // flat top+flat left
         g2d_fill_triangle(0,0,100,0,0,100);
         // other way flat top+flat left
+        
+        
         g2d_fill_triangle(100,200,0,200,0,300);
         //flat bot+flat right
         g2d_fill_triangle(200,0,200,100,100,100);

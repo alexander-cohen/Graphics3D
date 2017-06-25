@@ -442,6 +442,7 @@ int g2d_fill_triangle (
 			swap (&lefty, &righty);
 		}
 
+		int min_y = min3 (y1, y2, y3);
 		int max_y = max3 (y1, y2, y3);
 
 		int myleft_x = topx;
@@ -511,7 +512,9 @@ int g2d_fill_triangle (
 					}
 				}
 			}
-		} while ( myleft_x < myright_x );
+		} while ( 
+			myleft_y > min_y && myright_y > min_y && 
+			myleft_y < max_y && myright_y < max_y);
 	}
 
 	return 0;
