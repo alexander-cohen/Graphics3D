@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "helper.h"
-#include "vector.h"
 
 typedef struct {
 	int *pixels;

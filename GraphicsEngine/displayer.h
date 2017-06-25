@@ -12,7 +12,6 @@
 #include <X11/extensions/Xdbe.h>
 #include "helper.h"
 #include "graphics2d/graphics2d.h"
-#include "vector.h"
 
 int open_window();
 int run_line ();
