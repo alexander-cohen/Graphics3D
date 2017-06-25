@@ -90,7 +90,7 @@ int run_line ()
         }
 
         g2d_set_col (RED);
-        //g2d_draw_thick_line (x1, y1, x2, y2, 3);
+        g2d_draw_thick_line (x1, y1, x2, y2, 1);
 
         g2d_set_col (YELLOW);
         g2d_fill_circle (256, 256, 50);
