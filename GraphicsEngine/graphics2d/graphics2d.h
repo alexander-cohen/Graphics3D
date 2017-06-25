@@ -40,5 +40,8 @@ int g2d_fill_triangle (
 	const int x2, const int y2,
 	const int x3, const int y3);
 
-
+int g2d_fill_triangle_boundingbox (
+	const int x1, const int y1, 
+	const int x2, const int y2,
+	const int x3, const int y3);
 #endif

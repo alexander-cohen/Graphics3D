@@ -333,6 +333,75 @@ int draw_horizontal_line (int left, int right, int y)
 	}
 }
 
+int cross2d (int dx1, int dy1, int dx2, int dy2)
+{
+	return dx1 * dy2 - dx2 * dy1;
+}
+
+int orient2d (int x1, int y1, int x2, int y2, int x3, int y3)
+{
+	return cross2d (x2 - x1, y2 - y1, x3 - x1, y3 - y1);
+}
+
+int g2d_fill_triangle_boundingbox (
+	const int x1, const int y1, 
+	const int x2, const int y2,
+	const int x3, const int y3)
+{
+
+	//y's are negated bc the axis is inverted
+	int 
+	dx12 = x2 - x1, dy12 = -(y2 - y1),
+	dx23 = x3 - x2, dy23 = -(y3 - y2),
+	dx31 = x1 - x3, dy31 = -(y1 - y3);
+
+	//change the order so its counter clockwise
+	if (cross2d (dx12, dy12, dx23, dy23) < 0)
+	{
+		return g2d_fill_triangle_boundingbox (x1, y1, x3, y3, x2, y2);
+	}
+
+	//printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
+	//printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
+
+	int min_x = min3 (x1, x2, x3);
+	int min_y = min3 (y1, y2, y3);
+
+	int max_x = max3 (x1, x2, x3);
+	int max_y = max3 (y1, y2, y3);
+
+	int w1_row = orient2d (x1, -y1, x2, -y2, min_x, -min_y);
+	int w2_row = orient2d (x2, -y2, x3, -y3, min_x, -min_y);
+	int w3_row = orient2d (x3, -y3, x1, -y1, min_x, -min_y);
+
+
+	for (int y = min_y; y <= max_y; y++)
+	{
+		int w1 = w1_row;
+		int w2 = w2_row;
+		int w3 = w3_row;
+
+		for (int x = min_x; x <= max_x; x++)
+		{
+			//printf ("point: %d, %d; w: %d, %d, %d\n", x, y, w1, w2, w3);
+
+			if (w1 >= 0 && w2 >= 0 && w3 >= 0)
+			{
+				g2d_set_pixel (x, y, (graphics_context -> color));
+			}
+
+			w1 += dx23;
+			w2 += dx31;
+			w3 += dx12;
+		}
+
+		w1_row -= dy23;
+		w2_row -= dy31;
+		w3_row -= dy12;
+	}
+}
+
+
 int g2d_fill_triangle (
 	const int x1, const int y1, 
 	const int x2, const int y2,
@@ -366,7 +435,7 @@ int g2d_fill_triangle (
 		int leftx = 0, lefty = 0;
 		int rightx = 0, righty = 0;
 
-
+		//order points top, left, and right
 		if (y1 < y2 && y1 < y2)
 		{
 			topx = x1;
@@ -397,7 +466,8 @@ int g2d_fill_triangle (
 			rightx = x2;
 			righty = y2;
 		}
-
+		
+		//in these 3 cases we have a flat top, so we go from the bottom instead
 		else if (y1 == y2 && y1 < y3)
 		{
 			topx = x3;
@@ -430,6 +500,8 @@ int g2d_fill_triangle (
 			rightx = x3;
 			righty = y3;
 		}
+
+		//should never be the case
 		else
 		{
 			printf ("something has gone wrong, could not find correct case for triangle fill\n");
@@ -456,16 +528,19 @@ int g2d_fill_triangle (
 		bool hit_left = false, hit_right = false;
 
 		do {
-			printf ("%d, %d; %d\n", myleft_x, myright_x, myleft_y);
+			//printf ("%d, %d; %d\n", myleft_x, myright_x, myleft_y);
 			draw_horizontal_line (myleft_x, myright_x, myleft_y);
 
+			//increment the left point until it is on the next scanline
 			while (myleft_y == myright_y)
 			{
+				//two cases for if we are targeting the right point or the left point
 				if (!hit_left)
 				{
 					next_line_point (topx, topy, leftx, lefty, &myleft_x, &myleft_y, &left_err);
 					g2d_set_pixel (myleft_x, myleft_y, (graphics_context -> color));
 
+					//once we get to the left point, start going towards the right point
 					if (myleft_x == leftx && myleft_y == lefty)
 					{
 						hit_left = true;
@@ -480,19 +555,23 @@ int g2d_fill_triangle (
 					}
 					else
 					{
+						//increment to the next point on the line & draw the pixel
 						next_line_point (leftx, lefty, rightx, righty, &myleft_x, &myleft_y, &left_err);
 						g2d_set_pixel (myleft_x, myleft_y, (graphics_context -> color));
 					}
 				}
 			}
 
+			//increment the right point until it is on the next scanline
 			while (myright_y != myleft_y)
 			{
+				//two cases for if we are targeting the left point or the right point
 				if (!hit_right)
 				{
 					next_line_point (topx, topy, rightx, righty, &myright_x, &myright_y, &right_err);
 					g2d_set_pixel (myright_x, myright_y, (graphics_context -> color));
 
+					//once we get to the right point, start going towards the left point
 					if (myright_x == rightx && myright_y == righty)
 					{
 						hit_right = true;
@@ -507,14 +586,16 @@ int g2d_fill_triangle (
 					}
 					else
 					{
+						//increment to the next point on the line & draw the pixel
 						next_line_point (rightx, righty, leftx, lefty, &myright_x, &myright_y, &right_err);
 						g2d_set_pixel (myright_x, myright_y, (graphics_context -> color));
 					}
 				}
 			}
-		} while ( 
-			myleft_y > min_y && myright_y > min_y && 
-			myleft_y < max_y && myright_y < max_y);
+		} 
+		while ( //break when we are outside the vertical scope of the triangle
+		    myleft_y > min_y && myright_y > min_y && 
+			myleft_y < max_y && myright_y < max_y); 
 	}
 
 	return 0;
