@@ -30,5 +30,7 @@ int g2d_fill_circle (int x, int y, int rad);
 int g2d_draw_circle (int x, int y, int rad);
 int g2d_draw_thick_circle (int x, int y, int rad, int thickness);
 
+int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3);
+
 
 #endif

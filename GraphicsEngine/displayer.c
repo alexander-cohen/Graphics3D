@@ -72,6 +72,7 @@ int run_line ()
     
     int x1 = 30, y1 = 30, x2 = 300, y2 = 300;
 
+
     int randspeed = 5;
 
     while(frameNum < 10000) {
@@ -90,6 +91,9 @@ int run_line ()
 
         g2d_set_col (RED);
         //g2d_draw_thick_line (x1, y1, x2, y2, 3);
+
+        g2d_set_col (YELLOW);
+        g2d_fill_circle (256, 256, 50);
 
         x1 += ((rand() % randspeed) * 2) - randspeed + 1;
         y1 += ((rand() % randspeed) * 2) - randspeed + 1;
