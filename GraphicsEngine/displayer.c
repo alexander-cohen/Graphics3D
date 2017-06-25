@@ -65,11 +65,7 @@ int run_line ()
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
     
-    int x1 = 30, y1 = 30, x2 = 300, y2 = 300;
 
-
-    int randspeed = 5;
-    int i;
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
 
@@ -88,7 +84,7 @@ int run_line ()
         
         g2d_set_thickness (2);
         g2d_set_col (RED);
-        g2d_draw_line (40, 40, 100, 100);
+        //g2d_draw_line (40, 40, 100, 100);
 
         g2d_set_col (YELLOW);
         //g2d_fill_ellipse (256, 256, 100, 25);
@@ -105,28 +101,26 @@ int run_line ()
         //all near horizontal, diff sides
         g2d_fill_triangle(0,150,100,140,40,160);
         //all near vertical, same side
-        g2d_fill_triangle(150,0,140,100,135,40);
+        g2d_fill_triangle(150,100,140,200,135,140);
         //all near horizontal, same side
         g2d_fill_triangle(200,150,300,140,240,135);
         //all near horizontal, same side, flipped
         g2d_fill_triangle(300,150,400,160,340,165);
 
+        int 
+        x1 = 30, y1 = 30,
+        x2 = 200, y2 = 40,
+        x3 = 100, y3 = 200;
 
-        x1 += ((rand() % randspeed) * 2) - randspeed + 1;
-        y1 += ((rand() % randspeed) * 2) - randspeed + 1;
-        x2 += ((rand() % randspeed) * 2) - randspeed + 1;
-        y2 += ((rand() % randspeed) * 2) - randspeed + 1;
+        //g2d_fill_triangle (x1, y1, x2, y2, x3, y3);
 
-        if (x1 < 0) x1 = 0;
-        if (y1 < 0) y1 = 0;
-        if (x2 < 0) x2 = 0;
-        if (y2 < 0) y2 = 0;
+        g2d_set_col (RED);
 
-        if (x1 >= WIDTH) x1 = WIDTH-1;
-        if (y1 >= HEIGHT) y1 = HEIGHT-1;
-        if (x2 >= WIDTH) x2 = WIDTH-1;
-        if (y2 >= HEIGHT) y2 = HEIGHT-1;
-        
+        g2d_set_thickness (1);
+        //g2d_draw_line (x1, y1, x2, y2);
+        //g2d_draw_line (x1, y1, x3, y3);
+        //g2d_draw_line (x2, y2, x3, y3);
+
 
         // for (int r = 0; r < HEIGHT; r++)
         // {

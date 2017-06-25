@@ -35,7 +35,10 @@ int g2d_fill_ellipse_inrect (int x, int y, int width, int height);
 int g2d_draw_ellipse_inrect (int x, int y, int width, int height);
 
 
-int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3);
+int g2d_fill_triangle (
+	const int x1, const int y1, 
+	const int x2, const int y2,
+	const int x3, const int y3);
 
 
 #endif
