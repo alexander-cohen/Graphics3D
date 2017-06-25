@@ -167,15 +167,139 @@ int g2d_draw_thick_line (int x1, int y1, int x2, int y2, int thickness)
 
 int g2d_fill_circle (int x, int y, int rad)
 {
+	int rad2 = rad * rad;
+	int cur_dist = rad2;
+
+	//start at right most point
+	int cur_x = x + rad;
+	int cur_y = y;
+
+	//iterate through the first quadrant simultaneously drawing all the other quadrants
+
+	do {
+
+		int dx = cur_x - x;
+		int dy = cur_y - y;
+
+
+		g2d_draw_line (x + dx, y + dy, x - dx, y + dy);
+		g2d_draw_line (x + dx, y - dy, x - dx, y - dy);
+		
+		int up = cur_dist + 2 * dy + 1;
+		int left = cur_dist - 2 * dx + 1;
+		int diag = cur_dist + 2 * dy - 2 * dx + 2;
+
+		int up_err = abs (up - rad2);
+		int left_err = abs (left - rad2);
+		int diag_err = abs (diag - rad2);
+
+		//printf ("current point: %d, %d; %d, %d; %d, %d, %d; %d\n", cur_x, cur_y, dx, dy, up, left, diag, cur_dist);
+
+		//diagonal is optimal
+		if (diag_err <= up_err && diag_err <= left_err)
+		{
+			cur_dist = diag;
+			cur_x--;
+			cur_y++;
+		}
+
+		else if (up_err <= left_err)
+		{
+			cur_dist = up;
+			cur_y++;
+		}
+
+		else
+		{
+			cur_dist = left;
+			cur_x--;
+		}
+
+	} while (cur_x > x);
+
 	return 0;
 }
 
 int g2d_draw_circle (int x, int y, int rad)
 {
+	g2d_draw_thick_circle (x, y, rad, 1);
 	return 0;
 }
 
 int g2d_draw_thick_circle (int x, int y, int rad, int thickness)
+{
+	int rad2 = rad * rad;
+	int cur_dist = rad2;
+
+	//start at right most point
+	int cur_x = x + rad;
+	int cur_y = y;
+
+	//iterate through the first quadrant simultaneously drawing all the other quadrants
+
+	do {
+
+		int dx = cur_x - x;
+		int dy = cur_y - y;
+
+		//current point, in quad 1
+		int rbeg = x + dx - thickness / 2;
+		int cbeg = y + dy - thickness / 2;
+		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
+
+		//current point in quad2, reflected over y-axis
+		rbeg = x - dx - thickness / 2;
+		cbeg = y + dy - thickness / 2;
+		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
+
+		//current point in quad3, reflected over origin
+		rbeg = x - dx - thickness / 2;
+		cbeg = y - dy - thickness / 2;
+		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
+
+		//current point in quad4, reflected over x-axis
+		rbeg = x + dx - thickness / 2;
+		cbeg = y - dy - thickness / 2;
+		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
+
+		
+
+		int up = cur_dist + 2 * dy + 1;
+		int left = cur_dist - 2 * dx + 1;
+		int diag = cur_dist + 2 * dy - 2 * dx + 2;
+
+		int up_err = abs (up - rad2);
+		int left_err = abs (left - rad2);
+		int diag_err = abs (diag - rad2);
+
+		//printf ("current point: %d, %d; %d, %d; %d, %d, %d; %d\n", cur_x, cur_y, dx, dy, up, left, diag, cur_dist);
+
+		//diagonal is optimal
+		if (diag_err <= up_err && diag_err <= left_err)
+		{
+			cur_dist = diag;
+			cur_x--;
+			cur_y++;
+		}
+
+		else if (up_err <= left_err)
+		{
+			cur_dist = up;
+			cur_y++;
+		}
+
+		else
+		{
+			cur_dist = left;
+			cur_x--;
+		}
+
+	} while (cur_x > x);
+
+	return 0;
+}
+
+int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 {
 	return 0;
 }
