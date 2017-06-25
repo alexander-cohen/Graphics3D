@@ -1,20 +1,34 @@
-#ifndef _G2D_WRAPPER_H
-#define _G2D_WRAPPER_H
+#include "g2dwrapper.h"
 
-#include "helper.h"
-#include "graphics2d.h"
 
-typedef struct
+g2d_primitive *create_line (int x1, int y1, int x2, int y2, int thickness, int col)
 {
-	int type;
-	int data[15];
-} g2d_primitive;
+	g2d_primitive *line = (g2d_primitive *)malloc (sizeof (g2d_primitive));
+	encode_line (line, x1, y1, x2, y2, thickness, col);
+	return line;
+}
+int encode_line (g2d_primitive *dst, int x1, int y1, int x2, int y2, int thickness, int col)
+{
+	dst -> type = LINE;
+	memset (dst -> data, 0, sizeof (dst -> data));
 
-enum primtive_types {LINE, RECT_FILL, RECT_OUTLINE, CIRCLE_FILL, CIRCLE_STROKE};
+	(dst -> data)[0] = x1;
+	(dst -> data)[1] = y1;
+	(dst -> data)[2] = x2;
+	(dst -> data)[3] = y2;
+	(dst -> data)[4] = thickness;
+	(dst -> data)[5] = col;
 
-g2d_primitive *create_line (int x1, int y1, int x2, int y2, int thickness, int col);
-int encode_line (g2d_primitive *dst, int x1, int y1, int x2, int y2, int thickness, int col);
-int draw_encoded_line (g2d_context *graphics_context, int *data);
+	return 0;
+}
+int draw_encoded_line (g2d_context *graphics_context, int *data)
+{
+	g2d_set_context (graphics_context);
+	g2d_set_col (data[5]);
+	g2d_draw_thick_line (data[0], data[1], data[2], data[3], data[4]);
+
+	return 0;
+}
 
 g2d_primitive *create_rect_outline (int x, int y, int width, int height, int thickness, int col);
 int encode_rect_outline (g2d_primitive *dst, int x, int y, int width, int height, int thickness, int col);
@@ -31,7 +45,3 @@ int draw_encoded_circle_outline (g2d_context *graphics_context, int *data);
 g2d_primitive *create_circle_fill (g2d_primitive *dst, int x, int y, int rad, int col);
 int encode_circle_fill (g2d_primitive *dst, int x, int y, int rad, int col);
 int draw_encoded_circle_fill (g2d_context *graphics_context, int *data);
-
-int draw_primitive (g2d_primitive *primitive);
-
-#endif

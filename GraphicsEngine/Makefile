@@ -1,29 +1,29 @@
 CC=gcc
-CFLAGS=-I.
+INC=-I.
 
 all: clean displayer.o image.o graphics2d.o vector.o matrix.o g2dwrapper.o # recompiles
-	$(CC) displayer.o image.o graphics2d.o g2dwrapper.o vector.o matrix.o -I. -o display_xwindow -lX11 -lXext
+	$(CC) displayer.o image.o graphics2d.o g2dwrapper.o vector.o matrix.o ${INC} -o display_xwindow -lX11 -lXext
 
 run: all
 	./display_xwindow
 
 displayer.o: displayer.c
-	$(CC) -c displayer.c -I.
+	$(CC) -c displayer.c ${INC} 
 
 image.o: image.c
-	$(CC) -c image.c -I.
+	$(CC) -c image.c ${INC} 
 
-graphics2d.o: graphics2d.c
-	$(CC) -c graphics2d.c -I.
+graphics2d.o: graphics2d/graphics2d.c
+	$(CC) -c graphics2d/graphics2d.c ${INC} 
 
 vector.o: vector.c
-	$(CC) -c vector.c -I. -lm
+	$(CC) -c vector.c ${INC} 
 
 matrix.o: matrix.c
-	$(CC) -c matrix.c -I.
+	$(CC) -c matrix.c ${INC} 
 
-g2dwrapper.o: g2dwrapper.c
-	$(CC) -c g2dwrapper.c -I.
+g2dwrapper.o: graphics2d/g2dwrapper.c
+	$(CC) -c graphics2d/g2dwrapper.c ${INC} 
 
 clean:
 	-rm *.o
