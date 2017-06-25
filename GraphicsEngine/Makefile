@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -O3
 INC=-I.
 
 all: clean displayer.o graphics2d.o vector.o matrix.o g2dwrapper.o # recompiles

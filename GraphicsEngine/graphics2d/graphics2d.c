@@ -4,12 +4,12 @@
 int cur_color = BLACK;
 g2d_context *graphics_context;
 
-static int *g2d_buffer_get (int r, int c) {
+static inline int *g2d_buffer_get (int r, int c) {
 	assert (r >= 0 && c >= 0 && r < (graphics_context -> height) && c < (graphics_context -> width));
 	return graphics_context -> pixels + r * (graphics_context -> width) + c;
 }
 
-static int g2d_set_pixel (int r, int c, int col) {
+static inline int g2d_set_pixel (int r, int c, int col) {
 	if (r < 0 || c < 0 || r > (graphics_context -> height) || r > (graphics_context -> width))
 	{
 		return 1;

@@ -1,8 +1,7 @@
 #include "displayer.h"
 
-const int 
-BORDER_COL = BLACK,
-BG_COL = WHITE;
+#define BORDER_COL (BLACK)
+#define BG_COL (WHITE)
 
 Display *dis;
 Window win;
@@ -73,7 +72,7 @@ int run_line ()
     
     int x1 = 30, y1 = 30, x2 = 300, y2 = 300;
 
-    int randspeed = 2;
+    int randspeed = 5;
 
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
@@ -90,12 +89,12 @@ int run_line ()
         }
 
         g2d_set_col (RED);
-        g2d_draw_thick_line (x1, y1, x2, y2, 3);
+        //g2d_draw_thick_line (x1, y1, x2, y2, 3);
 
-        x1 += (rand() % randspeed * 2) - randspeed;
-        y1 += (rand() % randspeed * 2) - randspeed;
-        x2 += (rand() % randspeed * 2) - randspeed;
-        y2 += (rand() % randspeed * 2) - randspeed;
+        x1 += ((rand() % randspeed) * 2) - randspeed + 1;
+        y1 += ((rand() % randspeed) * 2) - randspeed + 1;
+        x2 += ((rand() % randspeed) * 2) - randspeed + 1;
+        y2 += ((rand() % randspeed) * 2) - randspeed + 1;
 
         if (x1 < 0) x1 = 0;
         if (y1 < 0) y1 = 0;
@@ -117,7 +116,7 @@ int run_line ()
         //     printf ("\n");
         // }
 
-        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
+        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
         frameNum++;

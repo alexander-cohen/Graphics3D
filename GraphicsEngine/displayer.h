@@ -17,9 +17,8 @@ int open_window();
 int run_line ();
 int run_test();
 
-const int 
-WIDTH = 512, 
-HEIGHT = 512,
-BORDER_SIZE = 3;
+#define WIDTH (512) 
+#define HEIGHT (512)
+#define BORDER_SIZE (3)
 
 #endif
