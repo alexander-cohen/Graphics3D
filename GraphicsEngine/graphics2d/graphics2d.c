@@ -25,7 +25,7 @@ static inline int *g2d_buffer_get (int r, int c) {
 }
 
 static inline int g2d_set_pixel (int x, int y, int col) {
-	if (x < 0 || y < 0 || x > (graphics_context -> width) || y > (graphics_context -> height))
+	if (x < 0 || y < 0 || x >= (graphics_context -> width) || y >= (graphics_context -> height))
 	{
 		return 1;
 	}
@@ -338,7 +338,7 @@ int cross2d (int dx1, int dy1, int dx2, int dy2)
 	return dx1 * dy2 - dx2 * dy1;
 }
 
-int orient2d (int x1, int y1, int x2, int y2, int x3, int y3)
+int orient2d (short x1, short y1, short x2, short y2, short x3, short y3)
 {
 	return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
 }
@@ -350,7 +350,7 @@ int g2d_fill_triangle_boundingbox (
 {
 
 	//y's are negated bc the axis is inverted
-	int 
+	short 
 	dx12 = (x2 - x1), dy12 = (y2 - y1),
 	dx23 = (x3 - x2), dy23 = (y3 - y2),
 	dx31 = (x1 - x3), dy31 = (y1 - y3);
@@ -365,30 +365,30 @@ int g2d_fill_triangle_boundingbox (
 	//printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
 
 
-	int min_x = min3 (x1, x2, x3);
-	int min_y = min3 (y1, y2, y3);
+	short min_x = min3 (x1, x2, x3);
+	short min_y = min3 (y1, y2, y3);
 
-	int max_x = max3 (x1, x2, x3);
-	int max_y = max3 (y1, y2, y3);
+	short max_x = max3 (x1, x2, x3);
+	short max_y = max3 (y1, y2, y3);
 
-	//printf ("min: %d, %d\n", min_x, min_y);
+	//printsf ("min: %d, %d\n", min_x, min_y);
 
-	int w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
-	int w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
-	int w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
+	short w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
+	short w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
+	short w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
 
 
-	for (int y = min_y; y <= max_y; y++)
+	for (short y = min_y; y <= max_y; y++)
 	{
-		int w1 = w1_row;
-		int w2 = w2_row;
-		int w3 = w3_row;
+		short w1 = w1_row;
+		short w2 = w2_row;
+		short w3 = w3_row;
 
-		for (int x = min_x; x <= max_x; x++)
+		for (short x = min_x; x <= max_x; x++)
 		{
 			//printf ("point: %d, %d; w: %d, %d, %d\n", x, y, w1, w2, w3);
 
-			if (w1 >= 0 && w2 >= 0 && w3 >= 0)
+			if ((w1 | w2 | w3) >= 0)
 			{
 				g2d_set_pixel (x, y, (graphics_context -> color));
 			}

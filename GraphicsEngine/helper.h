@@ -18,10 +18,16 @@
 #define true 1
 #define false 0
 
+#define NANO_PER_SECOND 1000000000L
+
+typedef unsigned long long ui64;
+typedef long long i64;
+
 inline void swap (int *a, int *b) {
 	int temp = *a;
 	*a = *b;
 	*b = temp;
 }
+
 
 #endif

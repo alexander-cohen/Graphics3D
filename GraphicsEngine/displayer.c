@@ -9,6 +9,9 @@ XEvent evt;
 GC gc;
 
 int scr;
+XImage *img = NULL;
+
+g2d_context *my_g2d_context;
 
 
 int col_arr[HEIGHT * WIDTH];
@@ -16,8 +19,46 @@ int col_arr[HEIGHT * WIDTH];
 int main() {
     setbuf(stdout, NULL);
     srand(time(NULL));
+
     open_window();
-    run_line();
+    //run_line();
+    run_pong();
+}
+
+int run_pong ()
+{
+    struct timeval begin, end;
+    
+    int frameNum = 0;
+
+    pong_init(dis);
+    int target_fps = 20;
+    int nanos_per_frame = NANO_PER_SECOND / target_fps;
+
+    while (true)
+    {
+        gettimeofday(&begin, NULL);
+        pong_run_frame();
+        frameNum++;
+
+        gettimeofday(&end, NULL);
+        float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+
+        //printf("FPS: %d, %0.2f\n", (int)(nsecs * 1000), 1.0 / nsecs);
+        ui64 nanos_to_sleep = nanos_per_frame - (nsecs * NANO_PER_SECOND);
+        nanosleep ((const struct timespec[]){{0, nanos_to_sleep}}, NULL);
+
+        gettimeofday(&end, NULL);
+        nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+        printf("FPS: %lld, %d, %0.2f\n", nanos_to_sleep, (int)(nsecs * 1000), 1.0 / nsecs);
+        
+    }
+}
+
+int put_frame ()
+{
+    img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
+    XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 }
 
 int open_window() {
@@ -39,19 +80,9 @@ int open_window() {
     XMapWindow(dis, win);
     XRaiseWindow(dis, win);
 
-    g2d_set_context (g2d_create_graphics_context (col_arr, WIDTH, HEIGHT));
+    my_g2d_context = g2d_create_graphics_context (col_arr, WIDTH, HEIGHT);
+    g2d_set_context (my_g2d_context);
 
-    return 0;
-}
-
-
-int run_line ()
-{
-    struct timespec slptime = {0, 20000000}; // 50 fps
-    int frameNum = 0;
-    // make a bunch of windows
-
-    printf("Frame generation complete\n");
     while(XPending(dis)) {
         XNextEvent(dis, &evt);
         if(evt.type == Expose)
@@ -61,37 +92,40 @@ int run_line ()
         }
     }
     printf("Got Expose event, moving on\n");
-    struct timeval begin, end;
-    XImage *img = NULL;
-    gettimeofday(&begin, NULL);
-    
 
+
+    XSelectInput(dis, win, StructureNotifyMask | SubstructureRedirectMask | ResizeRedirectMask | KeyPressMask | KeyReleaseMask);
+    XGrabKeyboard(dis, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+
+
+    return 0;
+}
+
+
+int run_line ()
+{
+    struct timeval begin, end;
+    gettimeofday(&begin, NULL);
+    int frameNum = 0;
+    
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
 
         printf("Frame %d\n", frameNum);
+
         while(XPending(dis)) {
             XNextEvent(dis, &evt);
             if (evt.type == KeyPress)
-                break;
+                printf ("Key pressed: %d, %d\n", evt.xkey.state, evt.xkey.keycode);
+            else if (evt.type == KeyRelease)
+                printf ("Key released: %d, %d\n", evt.xkey.state, evt.xkey.keycode);
             else if(evt.type == Expose) {}
             else {
                 printf("this event not handled currently\n");
             }
         }
 
-
-        
-        g2d_set_thickness (2);
-        g2d_set_col (RED);
-        //g2d_draw_line (40, 40, 100, 100);
-
         g2d_set_col (YELLOW);
-        //g2d_fill_ellipse (256, 256, 100, 25);
-        // flat top+flat left
-        //g2d_fill_triangle(0,0,100,0,0,100);
-        // other way flat top+flat left
-        
         for (int i = 0; i < 1000; i++)
         {
             g2d_fill_triangle_boundingbox(100,200,0,200,0,300);
@@ -117,37 +151,12 @@ int run_line ()
         }
         
 
-        int 
-        x1 = 30, y1 = 30,
-        x2 = 200, y2 = 30,
-        x3 = 3, y3 = 200;
-
-        //g2d_fill_triangle (x1, y1, x2, y2, x3, y3);
-
-        g2d_set_col (RED);
-
-        g2d_set_thickness (1);
-        //g2d_draw_line (x1, y1, x2, y2);
-        //g2d_draw_line (x1, y1, x3, y3);
-        //g2d_draw_line (x2, y2, x3, y3);
-
-
-        // for (int r = 0; r < HEIGHT; r++)
-        // {
-        //     for (int c = 0; c < WIDTH; c++)
-        //     {
-        //         printf ("%d", col_arr[r * WIDTH + c] < WHITE);
-        //     }
-        //     printf ("\n");
-        // }
-
-        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
-        XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
+        put_frame();
 
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
-        printf("Average of %0.2f FPS\n", ((double)frameNum/ (double)nsecs));
+        //printf("Average of %0.2f FPS\n", ((double)frameNum/ (double)nsecs));
     }
     gettimeofday(&end, NULL);
     float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
