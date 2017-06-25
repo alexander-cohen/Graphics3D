@@ -1,3 +1,6 @@
+#ifndef STACK_H
+#define STACK_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,3 +13,5 @@ struct __csstack {
 };
 
 typedef struct __csstack* stack;
+
+#endif

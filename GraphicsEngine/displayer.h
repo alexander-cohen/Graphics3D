@@ -1,5 +1,5 @@
-#ifndef _DISPLAYER_H
-#define _DISPLAYER_H
+#ifndef DISPLAYER_H
+#define DISPLAYER_H
 
 #include <stdio.h>
 #include <stdlib.h>

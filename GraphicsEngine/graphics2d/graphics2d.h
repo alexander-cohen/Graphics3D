@@ -1,6 +1,9 @@
 #ifndef _GRAPHICS2D_H
 #define _GRAPHICS2D_H
 
+#ifndef GRAPHICS2D_H
+#define GRAPHICS2D_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "helper.h"

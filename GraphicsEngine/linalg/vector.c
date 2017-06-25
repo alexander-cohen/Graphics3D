@@ -107,7 +107,7 @@ inline Vec4 vec4isub(Vec4 v, Vec4 o) {
     return v;
 }
 
-inline Vec4 vec4su(Vec4 v, Vec4 o) {
+inline Vec4 vec4sub(Vec4 v, Vec4 o) {
     return (Vec4){v.x-o.x, v.y-o.y, v.z-o.z, v.w-o.w};
 }
 
