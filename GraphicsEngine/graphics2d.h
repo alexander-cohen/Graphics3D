@@ -10,11 +10,11 @@ typedef struct {
 	int *pixels;
 	int width, height;
 
-} g2d_buffer_info;
+} g2d_context;
 
 
 int g2d_set_col (int col);
-int g2d_set_buff (g2d_buffer_info *buff);
+int g2d_set_context (g2d_context *buff);
 
 int g2d_fill_bg (int col);
 
@@ -27,6 +27,8 @@ int g2d_draw_point (int x, int y);
 
 int g2d_draw_line (int x1, int y1, int x2, int y2);
 int g2d_draw_thick_line (int x1, int y1, int x2, int y2, int thickness);
+
+int g2d_draw_circle (int x, int y, int rad);
 
 
 #endif

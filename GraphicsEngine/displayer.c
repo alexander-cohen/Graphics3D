@@ -1,5 +1,4 @@
 #include "displayer.h"
-#include "image.h"
 
 const int 
 BORDER_COL = BLACK,
@@ -41,12 +40,12 @@ int open_window() {
     XMapWindow(dis, win);
     XRaiseWindow(dis, win);
 
-    g2d_buffer_info *drawing_info = (g2d_buffer_info *) malloc (sizeof (g2d_buffer_info));
-    drawing_info -> pixels = col_arr;
-    drawing_info -> width = WIDTH;
-    drawing_info -> height = HEIGHT;
+    g2d_context *graphics_context = (g2d_context *) malloc (sizeof (g2d_context));
+    graphics_context -> pixels = col_arr;
+    graphics_context -> width = WIDTH;
+    graphics_context -> height = HEIGHT;
 
-    g2d_set_buff (drawing_info);
+    g2d_set_context (graphics_context);
 
     return 0;
 }
@@ -90,13 +89,6 @@ int run_line ()
             }
         }
 
-        //draw_line (&drawing_info, p1, p2, BLACK, false);
-        g2d_set_col (BLACK);
-        g2d_fill_rect (x1, y1, abs(x2 - x1) + 1, abs(y2 - y1) + 1);
-
-        g2d_set_col (GREEN);
-        g2d_draw_thick_rect (x1, y1, abs(x2 - x1) + 1, abs(y2 - y1) + 1, 5);
-        
         g2d_set_col (RED);
         g2d_draw_thick_line (x1, y1, x2, y2, 3);
 

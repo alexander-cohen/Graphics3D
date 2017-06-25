@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-I.
 
-all: clean displayer.o image.o graphics2d.o vector.o matrix.o # recompiles
-	$(CC) displayer.o image.o graphics2d.o vector.o matrix.o -I. -o display_xwindow -lX11 -lXext
+all: clean displayer.o image.o graphics2d.o vector.o matrix.o g2dwrapper.o # recompiles
+	$(CC) displayer.o image.o graphics2d.o g2dwrapper.o vector.o matrix.o -I. -o display_xwindow -lX11 -lXext
 
 run: all
 	./display_xwindow
@@ -21,6 +21,9 @@ vector.o: vector.c
 
 matrix.o: matrix.c
 	$(CC) -c matrix.c -I.
+
+g2dwrapper.o: g2dwrapper.c
+	$(CC) -c g2dwrapper.c -I.
 
 clean:
 	-rm *.o
