@@ -92,9 +92,25 @@ int run_line ()
 
         g2d_set_col (YELLOW);
         //g2d_fill_ellipse (256, 256, 100, 25);
-        for(i = 0; i < 1000; i++) {
-            g2d_fill_triangle (100, 0, 0, 50, 20, 150);
-        }
+        // flat top+flat left
+        g2d_fill_triangle(0,0,100,0,0,100);
+        //flat bot+flat right
+        g2d_fill_triangle(200,0,200,100,100,100);
+        //downright-slanting top, downright-slanting left
+        g2d_fill_triangle(200,0,300,10,210,100);
+        //downleft-slanting top, downleft-slanting right
+        g2d_fill_triangle(300,10,400,0,390,100);
+        //all near vertical, diff sides
+        g2d_fill_triangle(450,0,460,90,440,40);
+        //all near horizontal, diff sides
+        g2d_fill_triangle(0,150,100,140,40,160);
+        //all near vertical, same side
+        g2d_fill_triangle(150,0,140,100,135,40);
+        //all near horizontal, same side
+        g2d_fill_triangle(200,150,300,140,240,135);
+        //all near horizontal, same side, flipped
+        g2d_fill_triangle(300,150,400,160,340,165);
+
 
         x1 += ((rand() % randspeed) * 2) - randspeed + 1;
         y1 += ((rand() % randspeed) * 2) - randspeed + 1;

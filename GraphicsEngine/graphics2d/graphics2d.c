@@ -400,11 +400,11 @@ int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 	int left_err = 0, right_err = 0;
 
 
-	printf ("triangle points (top, left, right): %d, %d; %d, %d; %d, %d\n", topx, topy, leftx, lefty, rightx, righty);
+	//printf ("triangle points (top, left, right): %d, %d; %d, %d; %d, %d\n", topx, topy, leftx, lefty, rightx, righty);
 	do
 	{
 
-		printf ("cur y, leftx, rightx: %d, %d, %d\n", cur_y, cur_left, cur_right);
+		//printf ("cur y, leftx, rightx: %d, %d, %d\n", cur_y, cur_left, cur_right);
 		while (cur_y_left == cur_y)
 		{
 			//printf ("%d, %d, %d\n", cur_left, cur_y_left, left_err);
