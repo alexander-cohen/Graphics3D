@@ -1,0 +1,59 @@
+time to create 10000000 triangles within box of 5:
+time edge scan: 1.52
+time bounding box: 1.41
+
+time to create 10000000 triangles within box of 10:
+time edge scan: 2.33
+time bounding box: 2.13
+
+time to create 10000000 triangles within box of 15:
+time edge scan: 3.29
+time bounding box: 3.09
+
+time to create 10000000 triangles within box of 20:
+time edge scan: 4.23
+time bounding box: 4.17
+
+time to create 10000000 triangles within box of 25:
+time edge scan: 5.28
+time bounding box: 5.46
+
+time to create 10000000 triangles within box of 30:
+time edge scan: 6.40
+time bounding box: 6.95
+
+time to create 10000000 triangles within box of 35:
+time edge scan: 7.56
+time bounding box: 8.61
+
+time to create 10000000 triangles within box of 40:
+time edge scan: 8.72
+time bounding box: 10.47
+
+time to create 10000000 triangles within box of 45:
+time edge scan: 9.94
+time bounding box: 12.53
+
+time to create 10000000 triangles within box of 50:
+time edge scan: 12.47
+time bounding box: 15.48
+
+time to create 10000000 triangles within box of 55:
+time edge scan: 13.12
+time bounding box: 17.90
+
+time to create 10000000 triangles within box of 60:
+time edge scan: 14.39
+time bounding box: 20.27
+
+time to create 10000000 triangles within box of 65:
+time edge scan: 16.03
+time bounding box: 23.90
+
+time to create 10000000 triangles within box of 70:
+time edge scan: 17.08
+time bounding box: 25.58
+
+time to create 10000000 triangles within box of 75:
+time edge scan: 20.62
+time bounding box: 30.61
