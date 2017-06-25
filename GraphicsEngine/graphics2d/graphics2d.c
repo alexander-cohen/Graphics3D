@@ -415,6 +415,74 @@ int g2d_fill_triangle_boundingbox (
 }
 
 
+int g2d_fill_triangle_boundingbox_avx (
+	const short x1, const short y1, 
+	const short x2, const short y2,
+	const short x3, const short y3)
+{
+
+	//y's are negated bc the axis is inverted
+	short
+	dx12 = (x2 - x1), dy12 = (y2 - y1),
+	dx23 = (x3 - x2), dy23 = (y3 - y2),
+	dx31 = (x1 - x3), dy31 = (y1 - y3);
+
+	//change the order so its counter clockwise
+	if (cross2d (dx12, dy12, dx23, dy23) < 0)
+	{
+		return g2d_fill_triangle_boundingbox_avx (x1, y1, x3, y3, x2, y2);
+	}
+
+	//printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
+	//printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
+
+
+	short min_x = min3 (x1, x2, x3);
+	short min_y = min3 (y1, y2, y3);
+
+	short max_x = max3 (x1, x2, x3);
+	short max_y = max3 (y1, y2, y3);
+
+	//printsf ("min: %d, %d\n", min_x, min_y);
+
+	short w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
+	short w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
+	short w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
+
+
+	for (short y = min_y; y <= max_y; y++)
+	{
+		short w1 = w1_row;
+		short w2 = w2_row;
+		short w3 = w3_row;
+		bool found = false;
+
+		for (short x = min_x; x <= max_x; x++)
+		{
+			if ((w1 | w2 | w3) >= 0)
+			{
+				g2d_set_pixel (x, y, (graphics_context -> color));
+				found = true;
+			}
+
+			//once there are no more pixels, skip to the next scanline
+			else if (found == true)
+			{
+				break;
+			}
+
+			w1 -= dy23;
+			w2 -= dy31;
+			w3 -= dy12;
+		}
+
+		w1_row += dx23;
+		w2_row += dx31;
+		w3_row += dx12;
+	}
+}
+
+
 int g2d_fill_triangle (
 	const int x1, const int y1, 
 	const int x2, const int y2,

@@ -1,16 +1,3 @@
-rm *.o
-rm display_xwindow
-gcc -O3 -c displayer.c -I. 
-gcc -O3 -c graphics2d/graphics2d.c -I. 
-gcc -O3 -c linalg/vector.c -I.
-gcc -O3 -c linalg/matrix.c -I. 
-gcc -O3 -c graphics2d/g2dwrapper.c -I. 
-gcc -O3 -c stack.c -I.
-gcc -O3 -c pong.c -I.
-gcc -O3 displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o pong.o -I. -o display_xwindow -lX11 -lXext
-./display_xwindow
-Got Expose event, moving on
-
 time to create 1000000 triangles within box of 5:
 total time for edge scan: 181.54 ms
 avg triangle for time edge scan: 181.54 ns

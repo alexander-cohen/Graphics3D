@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <string.h>
 #include "colors.h"
+#include <unistd.h>
+#include <x86intrin.h>
 
 #define rgbToHex(r, g, b) ((r << 16) + (g << 8) + b)
 
