@@ -69,7 +69,7 @@ int run_line ()
 
 
     int randspeed = 5;
-
+    int i;
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
 
@@ -92,7 +92,9 @@ int run_line ()
 
         g2d_set_col (YELLOW);
         //g2d_fill_ellipse (256, 256, 100, 25);
-        g2d_fill_triangle (30, 10, 10, 80, 50, 50);
+        for(i = 0; i < 1000; i++) {
+            g2d_fill_triangle (100, 0, 0, 50, 20, 150);
+        }
 
         x1 += ((rand() % randspeed) * 2) - randspeed + 1;
         y1 += ((rand() % randspeed) * 2) - randspeed + 1;

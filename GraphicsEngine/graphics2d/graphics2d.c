@@ -404,10 +404,10 @@ int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 	do
 	{
 
-		//printf ("cur y, leftx, rightx: %d, %d, %d\n", cur_y, cur_left, cur_right);
+		printf ("cur y, leftx, rightx: %d, %d, %d\n", cur_y, cur_left, cur_right);
 		while (cur_y_left == cur_y)
 		{
-			printf ("%d, %d, %d\n", cur_left, cur_y_left, left_err);
+			//printf ("%d, %d, %d\n", cur_left, cur_y_left, left_err);
 			if (cur_y < lefty)
 				next_line_point (topx, topy, leftx, lefty, &cur_left, &cur_y_left, &left_err);
 			else
@@ -426,7 +426,7 @@ int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 		cur_y++;
 		g2d_draw_line (cur_left, cur_y, cur_right, cur_y);
 
-	} while (cur_left < cur_right && cur_y < max (lefty, righty));
+	} while (cur_left <= cur_right && cur_y < max (lefty, righty));
 
 	return 0;
 }
