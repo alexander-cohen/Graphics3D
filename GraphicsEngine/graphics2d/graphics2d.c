@@ -327,6 +327,10 @@ int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 
 int draw_horizontal_line (int left, int right, int y)
 {
+	if (left > right) 
+	{
+		return draw_horizontal_line (right, left, y);
+	}
 	for (int x = left; x <= right; x++)
 	{
 		g2d_set_pixel (x, y, (graphics_context -> color));
@@ -383,14 +387,20 @@ int g2d_fill_triangle_boundingbox (
 		short w1 = w1_row;
 		short w2 = w2_row;
 		short w3 = w3_row;
+		bool found = false;
 
 		for (short x = min_x; x <= max_x; x++)
 		{
-			//printf ("point: %d, %d; w: %d, %d, %d\n", x, y, w1, w2, w3);
-
 			if ((w1 | w2 | w3) >= 0)
 			{
 				g2d_set_pixel (x, y, (graphics_context -> color));
+				found = true;
+			}
+
+			//once there are no more pixels, skip to the next scanline
+			else if (found == true)
+			{
+				break;
 			}
 
 			w1 -= dy23;
@@ -439,7 +449,7 @@ int g2d_fill_triangle (
 		int rightx = 0, righty = 0;
 
 		//order points top, left, and right
-		if (y1 < y2 && y1 < y2)
+		if (y1 < y2 && y1 < y3)
 		{
 			topx = x1;
 			topy = y1;
@@ -528,6 +538,9 @@ int g2d_fill_triangle (
 		int myright_y = topy;
 		int right_err = 0;
 
+
+		// printf ("top, left, right: (%d, %d); (%d, %d); (%d, %d)\n",
+		// 	topx, topy, leftx, lefty, rightx, righty);
 		bool hit_left = false, hit_right = false;
 
 		do {

@@ -19,6 +19,7 @@ int run_line();
 int run_test();
 int run_pong();
 int put_frame();
+int run_triangle();
 
 #define WIDTH (512) 
 #define HEIGHT (512)

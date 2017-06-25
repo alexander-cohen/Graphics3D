@@ -22,7 +22,8 @@ int main() {
 
     open_window();
     //run_line();
-    run_pong();
+    //run_pong();
+    run_triangle();
 }
 
 int run_pong ()
@@ -51,7 +52,6 @@ int run_pong ()
         gettimeofday(&end, NULL);
         nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
         printf("FPS: %lld, %d, %0.2f\n", nanos_to_sleep, (int)(nsecs * 1000), 1.0 / nsecs);
-        
     }
 }
 
@@ -102,60 +102,126 @@ int open_window() {
 }
 
 
-int run_line ()
+int run_triangle ()
 {
     struct timeval begin, end;
-    gettimeofday(&begin, NULL);
+    
     int frameNum = 0;
     
+    bool wait_for_key = false;
+    int tri_box_size = 5;
+    int ntrials = 10000000;
+
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
 
-        printf("Frame %d\n", frameNum);
-
-        while(XPending(dis)) {
-            XNextEvent(dis, &evt);
-            if (evt.type == KeyPress)
-                printf ("Key pressed: %d, %d\n", evt.xkey.state, evt.xkey.keycode);
-            else if (evt.type == KeyRelease)
-                printf ("Key released: %d, %d\n", evt.xkey.state, evt.xkey.keycode);
-            else if(evt.type == Expose) {}
-            else {
-                printf("this event not handled currently\n");
+        //printf("Frame %d\n", frameNum);
+        bool keyfound = false;
+        while (!keyfound && wait_for_key)
+        {
+            while(XPending(dis)) {
+                XNextEvent(dis, &evt);
+                if (evt.type == KeyPress)
+                {
+                    //printf ("Key pressed: %d, %d\n", evt.xkey.state, evt.xkey.keycode);
+                    keyfound = true;
+                }
+                else if (evt.type == KeyRelease)
+                {
+                    //printf ("Key released: %d, %d\n", evt.xkey.state, evt.xkey.keycode);
+                }
             }
         }
-
-        g2d_set_col (YELLOW);
-        for (int i = 0; i < 1000; i++)
-        {
-            g2d_fill_triangle_boundingbox(100,200,0,200,0,300);
-            // //flat bot+flat right
-            g2d_fill_triangle_boundingbox(200,0,200,100,100,100);
-
-            //orhter way flat bot + flat right
-            g2d_fill_triangle_boundingbox(200,200,100,300,200,300);
-            //downright-slanting top, downright-slanting left
-            g2d_fill_triangle_boundingbox(200,0,300,10,210,100);
-            //downleft-slanting top, downleft-slanting right
-            g2d_fill_triangle_boundingbox(300,10,400,0,390,100);
-            //all near vertical, diff sides
-            g2d_fill_triangle_boundingbox(450,0,460,90,440,40);
-            //all near horizontal, diff sides
-            g2d_fill_triangle_boundingbox(0,150,100,140,40,160);
-            //all near vertical, same side
-            g2d_fill_triangle_boundingbox(150,100,140,200,135,140);
-            //all near horizontal, same side
-            g2d_fill_triangle_boundingbox(200,150,300,140,240,135);
-            //all near horizontal, same side, flipped
-            g2d_fill_triangle_boundingbox(300,150,400,160,340,165);
-        }
         
+        gettimeofday(&begin, NULL);
+        g2d_set_col (YELLOW);
+
+        for (int i = 0; i < ntrials; i++)
+        {   
+            int midx = rand() % 512;
+            int midy = rand() % 512;
+
+            int color = rand() % (0xFFFFFF);
+
+
+            int x1 = midx + (rand() % tri_box_size) - tri_box_size / 2;
+            int y1 = midy + (rand() % tri_box_size) - tri_box_size / 2;
+
+            int x2 = midx + (rand() % tri_box_size) - tri_box_size / 2;
+            int y2 = midy + (rand() % tri_box_size) - tri_box_size / 2;
+
+            int x3 = midx + (rand() % tri_box_size) - tri_box_size / 2;
+            int y3 = midy + (rand() % tri_box_size) - tri_box_size / 2;
+
+            
+            // x1 = 266;
+            // y1 = 292; 
+            // x2 = 328;
+            // y2 = 219; 
+            // x3 = 286; 
+            // y3 = 232;
+
+
+            g2d_set_col (color);
+            g2d_fill_triangle (x1, y1, x2, y2, x3, y3);
+
+            // g2d_set_col (0xFF0000);
+            // g2d_fill_ellipse (x1, y1, 5, 5);
+
+            // g2d_set_col (0x00FF00);
+            // g2d_fill_ellipse (x2, y2, 5, 5);
+
+            // g2d_set_col (0x0000FF);
+            // g2d_fill_ellipse (x3, y3, 5, 5);
+
+
+            // printf ("created triangle #%d: (%d, %d); (%d, %d); (%d, %d)\n", 
+            //     i, x1, y1, x2, y2, x3, y3);
+        }
+
+        printf ("\ntime to create %d triangles within box of %d:\n", ntrials, tri_box_size);
+        gettimeofday(&end, NULL);
+        float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+        printf ("time edge scan: %0.2f\n", nsecs);
+        
+        gettimeofday(&begin, NULL);
+        g2d_set_col (YELLOW);
+        for (int i = 0; i < ntrials; i++)
+        {
+            int midx = rand() % 512;
+            int midy = rand() % 512;
+
+            int color = rand() % (0x00FFFF);
+
+
+            int x1 = midx + (rand() % tri_box_size) - tri_box_size / 2;
+            int y1 = midy + (rand() % tri_box_size) - tri_box_size / 2;
+
+            int x2 = midx + (rand() % tri_box_size) - tri_box_size / 2;
+            int y2 = midy + (rand() % tri_box_size) - tri_box_size / 2;
+
+            int x3 = midx + (rand() % tri_box_size) - tri_box_size / 2;
+            int y3 = midy + (rand() % tri_box_size) - tri_box_size / 2;
+
+            g2d_set_col (color);
+            g2d_fill_triangle_boundingbox (x1, y1, x2, y2, x3, y3);
+        }
+
+        gettimeofday(&end, NULL);
+        nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+        printf ("time bounding box: %0.2f\n", nsecs);
 
         put_frame();
 
+        tri_box_size += 5;
+        if (tri_box_size > 400)
+        {
+            break;
+        }
+
         frameNum++;
-        gettimeofday(&end, NULL);
-        float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+        
+        
         //printf("Average of %0.2f FPS\n", ((double)frameNum/ (double)nsecs));
     }
     gettimeofday(&end, NULL);
