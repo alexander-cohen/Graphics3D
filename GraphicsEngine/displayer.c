@@ -90,8 +90,8 @@ int run_line ()
         //g2d_fill_ellipse (256, 256, 100, 25);
         int 
         x1 = 30, y1 = 30,
-        x2 = 200, y2 = 40,
-        x3 = 100, y3 = 200;
+        x2 = 200, y2 = 30,
+        x3 = 3, y3 = 200;
 
         g2d_fill_triangle (x1, y1, x2, y2, x3, y3);
 

@@ -1,3 +1,4 @@
+
 #include "graphics2d.h"
 
 g2d_context *graphics_context;
@@ -324,6 +325,19 @@ int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 	return 0;
 }
 
+int fill_flat_top (int y_top, int left_top, int right_top, int botx, int boty)
+{
+
+}
+
+int draw_horizontal_line (int left, int right, int y)
+{
+	for (int x = left; x <= right; x++)
+	{
+		g2d_set_pixel (x, y, (graphics_context -> color));
+	}
+}
+
 int g2d_fill_triangle (
 	const int x1, const int y1, 
 	const int x2, const int y2,
@@ -331,131 +345,179 @@ int g2d_fill_triangle (
 {
 	g2d_set_thickness (1);
 
-	//make sure its not degenerate
-	assert (
-		!(x1 == x2 && y1 == y2) && 
-		!(x1 == x3 && y1 == y3) &&
-		!(x2 == x3 && y2 == y3) );
-
-	//we split the points up into top, left, and right
-
-	//set it randomly initially and then fix it up
-	int 
-	topx = x1, topy = y1, 
-	leftx = x2, lefty = y2, 
-	rightx = x3, righty = y3;
-
-	//set topx and topy correctly
-	if (y1 <= y2 && y1 <= y3)
+	//one point
+	if (x1 == x2 && x2 == x3 && y1 == y2 && y2 == y3)
 	{
-		topx = x1;
-		topy = y1;
-
-		leftx = x2;
-		lefty = y2;
-
-		rightx = x3;
-		righty = y3;
+		return g2d_draw_point (x1, y1);
 	}
-	else if (y2 <= y1 && y2 <= y3)
+
+	//horizontal line
+	else if (y1 == y2 && y2 == y3)
 	{
-		topx = x2;
-		topy = y2;
-
-		leftx = x1;
-		lefty = y1;
-
-		rightx = x3;
-		righty = y3;
+		return g2d_draw_line (min3 (x1, x2, x3), y1, max3 (x1, x2, x3), y1);
 	}
+
+	//vertical line
+	else if (x1 == x2 && x2 == x3)
+	{
+		return g2d_draw_line (x1, min3 (y1, y2, y3), x1, max3 (y1, y2, y3));
+	}
+
+
+	//generic triangle
 	else
 	{
-		topx = x3;
-		topy = y3;
-
-		leftx = x1;
-		lefty = y1;
-
-		rightx = x2;
-		righty = y2;
-	}
-
-	//set left and right correctly
-	if (leftx > rightx)
-	{
-		int 
-		leftx_temp = leftx,
-		lefty_temp = lefty,
-		rightx_temp = rightx,
-		righty_temp = righty;
-
-		leftx = rightx_temp;
-		lefty = righty_temp;
-
-		rightx = leftx_temp;
-		righty = lefty_temp;
-	}
+		int topx = 0, topy = 0;
+		int leftx = 0, lefty = 0;
+		int rightx = 0, righty = 0;
 
 
-	int cur_left = topx, cur_right = topx, cur_y = topy;
-	int cur_y_left = cur_y, cur_y_right = cur_y;
-	int left_err = 0, right_err = 0;
-
-	if (lefty == topy || righty == topy)
-	{
-		int eqx = lefty == topy ? leftx : rightx;
-		cur_y = topy;
-		topy = -1000;
-		cur_left = min (topx, eqx);
-		cur_right = max (topx, eqx);
-
-	}
-
-	printf ("triangle points (top, left, right): %d, %d; %d, %d; %d, %d\n", topx, topy, leftx, lefty, rightx, righty);
-	do
-	{
-		int prev_left = cur_left, prev_right = cur_right;
-
-		//printf ("cur y, leftx, rightx: %d, %d, %d\n", cur_y, cur_left, cur_right);
-		while (cur_y_left == cur_y)
+		if (y1 < y2 && y1 < y2)
 		{
-			prev_left = cur_left;
+			topx = x1;
+			topy = y1;
 
-			if (cur_y == lefty && cur_left == leftx)
-			{
-				cur_y_left++;
-				break;
-			}
+			leftx = x2;
+			lefty = y2;
+			rightx = x3;
+			righty = y3;
+		}
+		else if (y2 < y1 && y2 < y3)
+		{
+			topx = x2;
+			topy = y2;
 
+			leftx = x1;
+			lefty = y1;
+			rightx = x3;
+			righty = y3;
+		}
+		else if (y3 < y1 && y3 < y2)
+		{
+			topx = x3;
+			topy = y3;
 
-			//printf ("%d, %d, %d\n", cur_left, cur_y_left, left_err);
-			if (cur_y_left <= lefty)
-				next_line_point (topx, topy, leftx, lefty, &cur_left, &cur_y_left, &left_err);
-			else
-				next_line_point (leftx, lefty, rightx, righty, &cur_left, &cur_y_left, &left_err);
-
+			leftx = x1;
+			lefty = y1;
+			rightx = x2;
+			righty = y2;
 		}
 
-		while (cur_y_right == cur_y)
+		else if (y1 == y2 && y1 < y3)
 		{
-			prev_right = cur_right;
+			topx = x3;
+			topy = y3;
 
-			if (cur_y == righty && cur_right == rightx)
-			{
-				cur_y_right++;
-				break;
-			}
-
-			if (cur_y_right <= righty) 
-				next_line_point (topx, topy, rightx, righty, &cur_right, &cur_y_right, &right_err);
-			else
-				next_line_point (rightx, righty, leftx, lefty, &cur_right, &cur_y_right, &right_err);
+			leftx = x1;
+			lefty = y1;
+			rightx = x2;
+			righty = y2;
 		}
 
-		cur_y++;
-		g2d_draw_line (prev_left, cur_y, prev_right, cur_y);
+		else if (y1 == y3 && y1 < y2)
+		{
+			topx = x2;
+			topy = y2;
 
-	} while (cur_left <= cur_right && cur_y < max (lefty, righty));
+			leftx = x1;
+			lefty = y1;
+			rightx = x3;
+			righty = y3;
+		}
+
+		else if (y2 == y3 && y2 < y1)
+		{
+			topx = x1;
+			topy = y1;
+
+			leftx = x2;
+			lefty = y2;
+			rightx = x3;
+			righty = y3;
+		}
+		else
+		{
+			printf ("something has gone wrong, could not find correct case for triangle fill\n");
+			return 1; //something has gone wrong
+		}
+
+		if (rightx < leftx)
+		{
+			swap (&leftx, &rightx);
+			swap (&lefty, &righty);
+		}
+
+		int max_y = max3 (y1, y2, y3);
+
+		int myleft_x = topx;
+		int myleft_y = topy;
+		int left_err = 0;
+
+		int myright_x = topx;
+		int myright_y = topy;
+		int right_err = 0;
+
+		bool hit_left = false, hit_right = false;
+
+		do {
+			printf ("%d, %d; %d\n", myleft_x, myright_x, myleft_y);
+			draw_horizontal_line (myleft_x, myright_x, myleft_y);
+
+			while (myleft_y == myright_y)
+			{
+				if (!hit_left)
+				{
+					next_line_point (topx, topy, leftx, lefty, &myleft_x, &myleft_y, &left_err);
+					g2d_set_pixel (myleft_x, myleft_y, (graphics_context -> color));
+
+					if (myleft_x == leftx && myleft_y == lefty)
+					{
+						hit_left = true;
+						left_err = 0;
+					}
+				}
+				else
+				{
+					if (myleft_x == rightx && myleft_y == righty)
+					{
+						break;
+					}
+					else
+					{
+						next_line_point (leftx, lefty, rightx, righty, &myleft_x, &myleft_y, &left_err);
+						g2d_set_pixel (myleft_x, myleft_y, (graphics_context -> color));
+					}
+				}
+			}
+
+			while (myright_y != myleft_y)
+			{
+				if (!hit_right)
+				{
+					next_line_point (topx, topy, rightx, righty, &myright_x, &myright_y, &right_err);
+					g2d_set_pixel (myright_x, myright_y, (graphics_context -> color));
+
+					if (myright_x == rightx && myright_y == righty)
+					{
+						hit_right = true;
+						right_err = 0;
+					}
+				}
+				else
+				{
+					if (myright_x == leftx && myright_y == lefty)
+					{
+						break;
+					}
+					else
+					{
+						next_line_point (rightx, righty, leftx, lefty, &myright_x, &myright_y, &right_err);
+						g2d_set_pixel (myright_x, myright_y, (graphics_context -> color));
+					}
+				}
+			}
+		} while ( myleft_x < myright_x );
+	}
 
 	return 0;
 }
