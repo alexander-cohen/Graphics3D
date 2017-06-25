@@ -103,7 +103,6 @@ int g2d_fill_rect (int x, int y, int width, int height)
 {	
 	assert (width > 0 && height > 0);
 
-	g2d_set_thickness (1);
 	//iterate by y first bc 2d arrays are faster that way
 	for (int py = y; py < y + height; py++)
 	{
@@ -325,7 +324,10 @@ int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 	return 0;
 }
 
-int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
+int g2d_fill_triangle (
+	const int x1, const int y1, 
+	const int x2, const int y2,
+	const int x3, const int y3)
 {
 	g2d_set_thickness (1);
 
@@ -399,16 +401,24 @@ int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 	int cur_y_left = cur_y, cur_y_right = cur_y;
 	int left_err = 0, right_err = 0;
 
+	if (lefty == topy || righty == topy)
+	{
+		int eqx = lefty == topy ? leftx : rightx;
+		cur_y = topy;
+		topy = -1000;
+		cur_left = min (topx, eqx);
+		cur_right = max (topx, eqx);
+
+	}
 
 	printf ("triangle points (top, left, right): %d, %d; %d, %d; %d, %d\n", topx, topy, leftx, lefty, rightx, righty);
 	do
 	{
-
 		//printf ("cur y, leftx, rightx: %d, %d, %d\n", cur_y, cur_left, cur_right);
 		while (cur_y_left == cur_y)
 		{
-			printf ("%d, %d, %d\n", cur_left, cur_y_left, left_err);
-			if (cur_y < lefty)
+			//printf ("%d, %d, %d\n", cur_left, cur_y_left, left_err);
+			if (cur_y <= lefty)
 				next_line_point (topx, topy, leftx, lefty, &cur_left, &cur_y_left, &left_err);
 			else
 				next_line_point (leftx, lefty, rightx, righty, &cur_left, &cur_y_left, &left_err);
@@ -417,7 +427,7 @@ int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 
 		while (cur_y_right == cur_y)
 		{
-			if (cur_y < righty) 
+			if (cur_y <= righty) 
 				next_line_point (topx, topy, rightx, righty, &cur_right, &cur_y_right, &right_err);
 			else
 				next_line_point (rightx, righty, leftx, lefty, &cur_right, &cur_y_right, &right_err);
@@ -426,7 +436,7 @@ int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 		cur_y++;
 		g2d_draw_line (cur_left, cur_y, cur_right, cur_y);
 
-	} while (cur_left < cur_right && cur_y < max (lefty, righty));
+	} while (cur_left <= cur_right && cur_y < max (lefty, righty));
 
 	return 0;
 }
