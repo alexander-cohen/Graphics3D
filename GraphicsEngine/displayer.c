@@ -110,7 +110,7 @@ int run_triangle ()
     
     bool wait_for_key = false;
     int tri_box_size = 5;
-    int ntrials = 10000000;
+    int ntrials = 1000000;
 
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
@@ -181,8 +181,9 @@ int run_triangle ()
 
         printf ("\ntime to create %d triangles within box of %d:\n", ntrials, tri_box_size);
         gettimeofday(&end, NULL);
-        float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
-        printf ("time edge scan: %0.2f\n", nsecs);
+        double nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+        printf("total time for edge scan: %0.2f ms\n", nsecs * 1000);
+        printf ("avg triangle for time edge scan: %0.2f ns\n", nsecs / ntrials * 1000000000);
         
         gettimeofday(&begin, NULL);
         g2d_set_col (YELLOW);
@@ -209,12 +210,15 @@ int run_triangle ()
 
         gettimeofday(&end, NULL);
         nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
-        printf ("time bounding box: %0.2f\n", nsecs);
+        printf("total time for bounding box: %0.2f ms\n", nsecs * 1000);
+        printf ("avg triangle for time bounding box: %0.2f ns\n", nsecs / ntrials * 1000000000);
 
         put_frame();
 
+        
+        ntrials = ntrials * tri_box_size / (tri_box_size + 5);
         tri_box_size += 5;
-        if (tri_box_size > 400)
+        if (tri_box_size > 500)
         {
             break;
         }

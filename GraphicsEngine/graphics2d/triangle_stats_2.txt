@@ -1,0 +1,614 @@
+rm *.o
+rm display_xwindow
+gcc -O3 -c displayer.c -I. 
+gcc -O3 -c graphics2d/graphics2d.c -I. 
+gcc -O3 -c linalg/vector.c -I.
+gcc -O3 -c linalg/matrix.c -I. 
+gcc -O3 -c graphics2d/g2dwrapper.c -I. 
+gcc -O3 -c stack.c -I.
+gcc -O3 -c pong.c -I.
+gcc -O3 displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o pong.o -I. -o display_xwindow -lX11 -lXext
+./display_xwindow
+Got Expose event, moving on
+
+time to create 1000000 triangles within box of 5:
+total time for edge scan: 181.54 ms
+avg triangle for time edge scan: 181.54 ns
+total time for bounding box: 146.94 ms
+avg triangle for time bounding box: 146.94 ns
+
+time to create 500000 triangles within box of 10:
+total time for edge scan: 139.62 ms
+avg triangle for time edge scan: 279.24 ns
+total time for bounding box: 102.84 ms
+avg triangle for time bounding box: 205.67 ns
+
+time to create 333333 triangles within box of 15:
+total time for edge scan: 129.66 ms
+avg triangle for time edge scan: 388.97 ns
+total time for bounding box: 93.73 ms
+avg triangle for time bounding box: 281.18 ns
+
+time to create 249999 triangles within box of 20:
+total time for edge scan: 124.92 ms
+avg triangle for time edge scan: 499.68 ns
+total time for bounding box: 89.38 ms
+avg triangle for time bounding box: 357.53 ns
+
+time to create 199999 triangles within box of 25:
+total time for edge scan: 120.94 ms
+avg triangle for time edge scan: 604.71 ns
+total time for bounding box: 90.95 ms
+avg triangle for time bounding box: 454.75 ns
+
+time to create 166665 triangles within box of 30:
+total time for edge scan: 126.15 ms
+avg triangle for time edge scan: 756.90 ns
+total time for bounding box: 94.34 ms
+avg triangle for time bounding box: 566.07 ns
+
+time to create 142855 triangles within box of 35:
+total time for edge scan: 124.19 ms
+avg triangle for time edge scan: 869.37 ns
+total time for bounding box: 99.68 ms
+avg triangle for time bounding box: 697.78 ns
+
+time to create 124998 triangles within box of 40:
+total time for edge scan: 121.59 ms
+avg triangle for time edge scan: 972.71 ns
+total time for bounding box: 97.94 ms
+avg triangle for time bounding box: 783.52 ns
+
+time to create 111109 triangles within box of 45:
+total time for edge scan: 121.62 ms
+avg triangle for time edge scan: 1094.60 ns
+total time for bounding box: 103.48 ms
+avg triangle for time bounding box: 931.31 ns
+
+time to create 99998 triangles within box of 50:
+total time for edge scan: 123.36 ms
+avg triangle for time edge scan: 1233.65 ns
+total time for bounding box: 111.15 ms
+avg triangle for time bounding box: 1111.53 ns
+
+time to create 90907 triangles within box of 55:
+total time for edge scan: 131.85 ms
+avg triangle for time edge scan: 1450.43 ns
+total time for bounding box: 117.90 ms
+avg triangle for time bounding box: 1296.93 ns
+
+time to create 83331 triangles within box of 60:
+total time for edge scan: 128.33 ms
+avg triangle for time edge scan: 1539.99 ns
+total time for bounding box: 121.46 ms
+avg triangle for time bounding box: 1457.51 ns
+
+time to create 76920 triangles within box of 65:
+total time for edge scan: 129.25 ms
+avg triangle for time edge scan: 1680.33 ns
+total time for bounding box: 123.74 ms
+avg triangle for time bounding box: 1608.68 ns
+
+time to create 71425 triangles within box of 70:
+total time for edge scan: 132.82 ms
+avg triangle for time edge scan: 1859.53 ns
+total time for bounding box: 134.60 ms
+avg triangle for time bounding box: 1884.52 ns
+
+time to create 66663 triangles within box of 75:
+total time for edge scan: 133.99 ms
+avg triangle for time edge scan: 2009.98 ns
+total time for bounding box: 133.95 ms
+avg triangle for time bounding box: 2009.38 ns
+
+time to create 62496 triangles within box of 80:
+total time for edge scan: 136.07 ms
+avg triangle for time edge scan: 2177.20 ns
+total time for bounding box: 135.51 ms
+avg triangle for time bounding box: 2168.33 ns
+
+time to create 58819 triangles within box of 85:
+total time for edge scan: 133.35 ms
+avg triangle for time edge scan: 2267.14 ns
+total time for bounding box: 143.92 ms
+avg triangle for time bounding box: 2446.78 ns
+
+time to create 55551 triangles within box of 90:
+total time for edge scan: 140.97 ms
+avg triangle for time edge scan: 2537.70 ns
+total time for bounding box: 148.83 ms
+avg triangle for time bounding box: 2679.23 ns
+
+time to create 52627 triangles within box of 95:
+total time for edge scan: 136.64 ms
+avg triangle for time edge scan: 2596.46 ns
+total time for bounding box: 152.78 ms
+avg triangle for time bounding box: 2902.98 ns
+
+time to create 49995 triangles within box of 100:
+total time for edge scan: 141.75 ms
+avg triangle for time edge scan: 2835.32 ns
+total time for bounding box: 157.88 ms
+avg triangle for time bounding box: 3157.88 ns
+
+time to create 47614 triangles within box of 105:
+total time for edge scan: 142.23 ms
+avg triangle for time edge scan: 2987.17 ns
+total time for bounding box: 166.26 ms
+avg triangle for time bounding box: 3491.75 ns
+
+time to create 45449 triangles within box of 110:
+total time for edge scan: 144.05 ms
+avg triangle for time edge scan: 3169.51 ns
+total time for bounding box: 168.52 ms
+avg triangle for time bounding box: 3707.89 ns
+
+time to create 43472 triangles within box of 115:
+total time for edge scan: 146.80 ms
+avg triangle for time edge scan: 3376.77 ns
+total time for bounding box: 178.94 ms
+avg triangle for time bounding box: 4116.28 ns
+
+time to create 41660 triangles within box of 120:
+total time for edge scan: 147.35 ms
+avg triangle for time edge scan: 3536.89 ns
+total time for bounding box: 179.63 ms
+avg triangle for time bounding box: 4311.93 ns
+
+time to create 39993 triangles within box of 125:
+total time for edge scan: 150.01 ms
+avg triangle for time edge scan: 3751.01 ns
+total time for bounding box: 186.96 ms
+avg triangle for time bounding box: 4674.87 ns
+
+time to create 38454 triangles within box of 130:
+total time for edge scan: 150.21 ms
+avg triangle for time edge scan: 3906.28 ns
+total time for bounding box: 189.58 ms
+avg triangle for time bounding box: 4930.05 ns
+
+time to create 37029 triangles within box of 135:
+total time for edge scan: 153.12 ms
+avg triangle for time edge scan: 4135.19 ns
+total time for bounding box: 194.69 ms
+avg triangle for time bounding box: 5257.66 ns
+
+time to create 35706 triangles within box of 140:
+total time for edge scan: 154.57 ms
+avg triangle for time edge scan: 4328.91 ns
+total time for bounding box: 198.95 ms
+avg triangle for time bounding box: 5571.75 ns
+
+time to create 34474 triangles within box of 145:
+total time for edge scan: 156.38 ms
+avg triangle for time edge scan: 4536.20 ns
+total time for bounding box: 208.87 ms
+avg triangle for time bounding box: 6058.77 ns
+
+time to create 33324 triangles within box of 150:
+total time for edge scan: 159.85 ms
+avg triangle for time edge scan: 4796.84 ns
+total time for bounding box: 211.20 ms
+avg triangle for time bounding box: 6337.77 ns
+
+time to create 32249 triangles within box of 155:
+total time for edge scan: 164.26 ms
+avg triangle for time edge scan: 5093.52 ns
+total time for bounding box: 221.10 ms
+avg triangle for time bounding box: 6855.90 ns
+
+time to create 31241 triangles within box of 160:
+total time for edge scan: 163.81 ms
+avg triangle for time edge scan: 5243.46 ns
+total time for bounding box: 221.03 ms
+avg triangle for time bounding box: 7075.06 ns
+
+time to create 30294 triangles within box of 165:
+total time for edge scan: 163.69 ms
+avg triangle for time edge scan: 5403.55 ns
+total time for bounding box: 227.38 ms
+avg triangle for time bounding box: 7505.64 ns
+
+time to create 29403 triangles within box of 170:
+total time for edge scan: 168.17 ms
+avg triangle for time edge scan: 5719.62 ns
+total time for bounding box: 236.30 ms
+avg triangle for time bounding box: 8036.42 ns
+
+time to create 28562 triangles within box of 175:
+total time for edge scan: 170.77 ms
+avg triangle for time edge scan: 5978.89 ns
+total time for bounding box: 239.09 ms
+avg triangle for time bounding box: 8370.98 ns
+
+time to create 27768 triangles within box of 180:
+total time for edge scan: 172.03 ms
+avg triangle for time edge scan: 6195.12 ns
+total time for bounding box: 244.39 ms
+avg triangle for time bounding box: 8801.14 ns
+
+time to create 27017 triangles within box of 185:
+total time for edge scan: 173.49 ms
+avg triangle for time edge scan: 6421.44 ns
+total time for bounding box: 248.23 ms
+avg triangle for time bounding box: 9188.07 ns
+
+time to create 26306 triangles within box of 190:
+total time for edge scan: 176.01 ms
+avg triangle for time edge scan: 6690.95 ns
+total time for bounding box: 252.70 ms
+avg triangle for time bounding box: 9606.14 ns
+
+time to create 25631 triangles within box of 195:
+total time for edge scan: 178.19 ms
+avg triangle for time edge scan: 6952.17 ns
+total time for bounding box: 260.97 ms
+avg triangle for time bounding box: 10181.66 ns
+
+time to create 24990 triangles within box of 200:
+total time for edge scan: 178.99 ms
+avg triangle for time edge scan: 7162.34 ns
+total time for bounding box: 260.17 ms
+avg triangle for time bounding box: 10411.12 ns
+
+time to create 24380 triangles within box of 205:
+total time for edge scan: 182.87 ms
+avg triangle for time edge scan: 7500.86 ns
+total time for bounding box: 264.26 ms
+avg triangle for time bounding box: 10839.38 ns
+
+time to create 23799 triangles within box of 210:
+total time for edge scan: 182.97 ms
+avg triangle for time edge scan: 7688.35 ns
+total time for bounding box: 272.06 ms
+avg triangle for time bounding box: 11431.53 ns
+
+time to create 23245 triangles within box of 215:
+total time for edge scan: 183.38 ms
+avg triangle for time edge scan: 7889.14 ns
+total time for bounding box: 279.09 ms
+avg triangle for time bounding box: 12006.67 ns
+
+time to create 22716 triangles within box of 220:
+total time for edge scan: 188.71 ms
+avg triangle for time edge scan: 8307.18 ns
+total time for bounding box: 279.99 ms
+avg triangle for time bounding box: 12325.63 ns
+
+time to create 22211 triangles within box of 225:
+total time for edge scan: 187.98 ms
+avg triangle for time edge scan: 8463.28 ns
+total time for bounding box: 288.34 ms
+avg triangle for time bounding box: 12981.63 ns
+
+time to create 21728 triangles within box of 230:
+total time for edge scan: 186.97 ms
+avg triangle for time edge scan: 8604.80 ns
+total time for bounding box: 293.54 ms
+avg triangle for time bounding box: 13509.66 ns
+
+time to create 21265 triangles within box of 235:
+total time for edge scan: 193.30 ms
+avg triangle for time edge scan: 9090.10 ns
+total time for bounding box: 292.11 ms
+avg triangle for time bounding box: 13736.70 ns
+
+time to create 20821 triangles within box of 240:
+total time for edge scan: 195.74 ms
+avg triangle for time edge scan: 9401.04 ns
+total time for bounding box: 305.58 ms
+avg triangle for time bounding box: 14676.38 ns
+
+time to create 20396 triangles within box of 245:
+total time for edge scan: 200.94 ms
+avg triangle for time edge scan: 9851.78 ns
+total time for bounding box: 313.70 ms
+avg triangle for time bounding box: 15380.56 ns
+
+time to create 19988 triangles within box of 250:
+total time for edge scan: 203.28 ms
+avg triangle for time edge scan: 10170.25 ns
+total time for bounding box: 312.68 ms
+avg triangle for time bounding box: 15643.44 ns
+
+time to create 19596 triangles within box of 255:
+total time for edge scan: 201.51 ms
+avg triangle for time edge scan: 10283.48 ns
+total time for bounding box: 314.63 ms
+avg triangle for time bounding box: 16055.78 ns
+
+time to create 19219 triangles within box of 260:
+total time for edge scan: 204.66 ms
+avg triangle for time edge scan: 10648.79 ns
+total time for bounding box: 320.03 ms
+avg triangle for time bounding box: 16651.65 ns
+
+time to create 18856 triangles within box of 265:
+total time for edge scan: 205.65 ms
+avg triangle for time edge scan: 10906.50 ns
+total time for bounding box: 326.36 ms
+avg triangle for time bounding box: 17308.23 ns
+
+time to create 18506 triangles within box of 270:
+total time for edge scan: 210.85 ms
+avg triangle for time edge scan: 11393.76 ns
+total time for bounding box: 333.54 ms
+avg triangle for time bounding box: 18023.61 ns
+
+time to create 18169 triangles within box of 275:
+total time for edge scan: 211.07 ms
+avg triangle for time edge scan: 11616.82 ns
+total time for bounding box: 334.31 ms
+avg triangle for time bounding box: 18399.80 ns
+
+time to create 17844 triangles within box of 280:
+total time for edge scan: 216.56 ms
+avg triangle for time edge scan: 12136.57 ns
+total time for bounding box: 345.35 ms
+avg triangle for time bounding box: 19353.68 ns
+
+time to create 17530 triangles within box of 285:
+total time for edge scan: 220.81 ms
+avg triangle for time edge scan: 12596.06 ns
+total time for bounding box: 348.25 ms
+avg triangle for time bounding box: 19865.83 ns
+
+time to create 17227 triangles within box of 290:
+total time for edge scan: 221.46 ms
+avg triangle for time edge scan: 12855.17 ns
+total time for bounding box: 349.20 ms
+avg triangle for time bounding box: 20270.68 ns
+
+time to create 16935 triangles within box of 295:
+total time for edge scan: 222.90 ms
+avg triangle for time edge scan: 13162.09 ns
+total time for bounding box: 354.79 ms
+avg triangle for time bounding box: 20950.40 ns
+
+time to create 16652 triangles within box of 300:
+total time for edge scan: 223.63 ms
+avg triangle for time edge scan: 13429.80 ns
+total time for bounding box: 364.31 ms
+avg triangle for time bounding box: 21877.91 ns
+
+time to create 16379 triangles within box of 305:
+total time for edge scan: 225.55 ms
+avg triangle for time edge scan: 13770.44 ns
+total time for bounding box: 373.82 ms
+avg triangle for time bounding box: 22823.01 ns
+
+time to create 16114 triangles within box of 310:
+total time for edge scan: 224.36 ms
+avg triangle for time edge scan: 13923.05 ns
+total time for bounding box: 364.41 ms
+avg triangle for time bounding box: 22614.31 ns
+
+time to create 15858 triangles within box of 315:
+total time for edge scan: 229.25 ms
+avg triangle for time edge scan: 14456.55 ns
+total time for bounding box: 373.31 ms
+avg triangle for time bounding box: 23541.11 ns
+
+time to create 15610 triangles within box of 320:
+total time for edge scan: 230.26 ms
+avg triangle for time edge scan: 14750.67 ns
+total time for bounding box: 375.83 ms
+avg triangle for time bounding box: 24076.30 ns
+
+time to create 15369 triangles within box of 325:
+total time for edge scan: 231.38 ms
+avg triangle for time edge scan: 15054.92 ns
+total time for bounding box: 374.36 ms
+avg triangle for time bounding box: 24358.38 ns
+
+time to create 15136 triangles within box of 330:
+total time for edge scan: 230.31 ms
+avg triangle for time edge scan: 15215.84 ns
+total time for bounding box: 393.85 ms
+avg triangle for time bounding box: 26020.41 ns
+
+time to create 14910 triangles within box of 335:
+total time for edge scan: 232.23 ms
+avg triangle for time edge scan: 15575.79 ns
+total time for bounding box: 385.64 ms
+avg triangle for time bounding box: 25864.25 ns
+
+time to create 14690 triangles within box of 340:
+total time for edge scan: 235.67 ms
+avg triangle for time edge scan: 16042.89 ns
+total time for bounding box: 391.98 ms
+avg triangle for time bounding box: 26683.39 ns
+
+time to create 14477 triangles within box of 345:
+total time for edge scan: 237.49 ms
+avg triangle for time edge scan: 16404.50 ns
+total time for bounding box: 392.09 ms
+avg triangle for time bounding box: 27083.86 ns
+
+time to create 14270 triangles within box of 350:
+total time for edge scan: 239.11 ms
+avg triangle for time edge scan: 16756.13 ns
+total time for bounding box: 396.64 ms
+avg triangle for time bounding box: 27795.09 ns
+
+time to create 14069 triangles within box of 355:
+total time for edge scan: 239.74 ms
+avg triangle for time edge scan: 17040.51 ns
+total time for bounding box: 397.92 ms
+avg triangle for time bounding box: 28283.67 ns
+
+time to create 13873 triangles within box of 360:
+total time for edge scan: 242.54 ms
+avg triangle for time edge scan: 17482.66 ns
+total time for bounding box: 396.55 ms
+avg triangle for time bounding box: 28583.94 ns
+
+time to create 13682 triangles within box of 365:
+total time for edge scan: 241.54 ms
+avg triangle for time edge scan: 17653.56 ns
+total time for bounding box: 403.71 ms
+avg triangle for time bounding box: 29506.87 ns
+
+time to create 13497 triangles within box of 370:
+total time for edge scan: 241.94 ms
+avg triangle for time edge scan: 17925.09 ns
+total time for bounding box: 402.75 ms
+avg triangle for time bounding box: 29839.89 ns
+
+time to create 13317 triangles within box of 375:
+total time for edge scan: 250.15 ms
+avg triangle for time edge scan: 18784.04 ns
+total time for bounding box: 414.19 ms
+avg triangle for time bounding box: 31102.58 ns
+
+time to create 13141 triangles within box of 380:
+total time for edge scan: 255.60 ms
+avg triangle for time edge scan: 19450.73 ns
+total time for bounding box: 418.26 ms
+avg triangle for time bounding box: 31828.48 ns
+
+time to create 12970 triangles within box of 385:
+total time for edge scan: 248.67 ms
+avg triangle for time edge scan: 19172.63 ns
+total time for bounding box: 409.15 ms
+avg triangle for time bounding box: 31545.64 ns
+
+time to create 12803 triangles within box of 390:
+total time for edge scan: 251.48 ms
+avg triangle for time edge scan: 19642.04 ns
+total time for bounding box: 411.53 ms
+avg triangle for time bounding box: 32143.48 ns
+
+time to create 12640 triangles within box of 395:
+total time for edge scan: 250.85 ms
+avg triangle for time edge scan: 19845.65 ns
+total time for bounding box: 414.52 ms
+avg triangle for time bounding box: 32793.91 ns
+
+time to create 12482 triangles within box of 400:
+total time for edge scan: 253.06 ms
+avg triangle for time edge scan: 20273.59 ns
+total time for bounding box: 420.77 ms
+avg triangle for time bounding box: 33709.98 ns
+
+time to create 12327 triangles within box of 405:
+total time for edge scan: 264.98 ms
+avg triangle for time edge scan: 21495.66 ns
+total time for bounding box: 419.11 ms
+avg triangle for time bounding box: 33999.03 ns
+
+time to create 12176 triangles within box of 410:
+total time for edge scan: 261.96 ms
+avg triangle for time edge scan: 21514.78 ns
+total time for bounding box: 421.83 ms
+avg triangle for time bounding box: 34644.46 ns
+
+time to create 12029 triangles within box of 415:
+total time for edge scan: 261.77 ms
+avg triangle for time edge scan: 21761.66 ns
+total time for bounding box: 419.97 ms
+avg triangle for time bounding box: 34913.04 ns
+
+time to create 11885 triangles within box of 420:
+total time for edge scan: 268.00 ms
+avg triangle for time edge scan: 22549.18 ns
+total time for bounding box: 435.89 ms
+avg triangle for time bounding box: 36675.31 ns
+
+time to create 11745 triangles within box of 425:
+total time for edge scan: 265.88 ms
+avg triangle for time edge scan: 22638.14 ns
+total time for bounding box: 431.29 ms
+avg triangle for time bounding box: 36721.24 ns
+
+time to create 11608 triangles within box of 430:
+total time for edge scan: 271.89 ms
+avg triangle for time edge scan: 23422.90 ns
+total time for bounding box: 436.65 ms
+avg triangle for time bounding box: 37616.13 ns
+
+time to create 11474 triangles within box of 435:
+total time for edge scan: 272.21 ms
+avg triangle for time edge scan: 23724.33 ns
+total time for bounding box: 437.58 ms
+avg triangle for time bounding box: 38136.66 ns
+
+time to create 11343 triangles within box of 440:
+total time for edge scan: 272.07 ms
+avg triangle for time edge scan: 23986.16 ns
+total time for bounding box: 432.59 ms
+avg triangle for time bounding box: 38137.44 ns
+
+time to create 11215 triangles within box of 445:
+total time for edge scan: 276.54 ms
+avg triangle for time edge scan: 24658.40 ns
+total time for bounding box: 433.34 ms
+avg triangle for time bounding box: 38638.97 ns
+
+time to create 11090 triangles within box of 450:
+total time for edge scan: 277.14 ms
+avg triangle for time edge scan: 24990.35 ns
+total time for bounding box: 435.01 ms
+avg triangle for time bounding box: 39225.88 ns
+
+time to create 10968 triangles within box of 455:
+total time for edge scan: 278.53 ms
+avg triangle for time edge scan: 25394.69 ns
+total time for bounding box: 436.16 ms
+avg triangle for time bounding box: 39766.41 ns
+
+time to create 10848 triangles within box of 460:
+total time for edge scan: 281.48 ms
+avg triangle for time edge scan: 25947.27 ns
+total time for bounding box: 433.73 ms
+avg triangle for time bounding box: 39982.85 ns
+
+time to create 10731 triangles within box of 465:
+total time for edge scan: 279.31 ms
+avg triangle for time edge scan: 26028.33 ns
+total time for bounding box: 441.44 ms
+avg triangle for time bounding box: 41137.36 ns
+
+time to create 10616 triangles within box of 470:
+total time for edge scan: 282.92 ms
+avg triangle for time edge scan: 26650.34 ns
+total time for bounding box: 433.22 ms
+avg triangle for time bounding box: 40808.69 ns
+
+time to create 10504 triangles within box of 475:
+total time for edge scan: 287.64 ms
+avg triangle for time edge scan: 27383.47 ns
+total time for bounding box: 435.87 ms
+avg triangle for time bounding box: 41495.81 ns
+
+time to create 10394 triangles within box of 480:
+total time for edge scan: 287.01 ms
+avg triangle for time edge scan: 27613.05 ns
+total time for bounding box: 443.63 ms
+avg triangle for time bounding box: 42681.84 ns
+
+time to create 10286 triangles within box of 485:
+total time for edge scan: 283.94 ms
+avg triangle for time edge scan: 27604.61 ns
+total time for bounding box: 442.29 ms
+avg triangle for time bounding box: 42999.42 ns
+
+time to create 10181 triangles within box of 490:
+total time for edge scan: 285.96 ms
+avg triangle for time edge scan: 28087.32 ns
+total time for bounding box: 440.98 ms
+avg triangle for time bounding box: 43313.82 ns
+
+time to create 10078 triangles within box of 495:
+total time for edge scan: 292.31 ms
+avg triangle for time edge scan: 29004.47 ns
+total time for bounding box: 446.25 ms
+avg triangle for time bounding box: 44280.02 ns
+
+time to create 9977 triangles within box of 500:
+total time for edge scan: 290.89 ms
+avg triangle for time edge scan: 29156.06 ns
+total time for bounding box: 441.54 ms
+avg triangle for time bounding box: 44256.09 ns
+10000 loops: 442.027008 ms
+Average of 22623.05 FPS
