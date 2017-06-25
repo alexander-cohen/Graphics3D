@@ -1,8 +1,21 @@
 #include "graphics2d.h"
 
-
-int cur_color = BLACK;
 g2d_context *graphics_context;
+
+g2d_context *g2d_create_graphics_context (int *pixels, int width, int height)
+{
+	g2d_context *graphics_context = (g2d_context *) malloc (sizeof (g2d_context));
+    graphics_context -> pixels = pixels;
+    graphics_context -> width = width;
+    graphics_context -> height = height;
+
+    graphics_context -> color = BLACK;
+    graphics_context -> thickness = 1;
+
+    return graphics_context;
+}
+
+
 
 static int *g2d_buffer_get (int r, int c) {
 	assert (r >= 0 && c >= 0 && r < (graphics_context -> height) && c < (graphics_context -> width));
@@ -21,9 +34,22 @@ static int g2d_set_pixel (int r, int c, int col) {
 	}
 }
 
+static int g2d_set_thick_pixel (int r, int c, int col) {
+	g2d_set_col (col);
+	g2d_fill_rect (
+		r - (graphics_context -> thickness)/2, c - (graphics_context -> thickness)/2, 
+		(graphics_context -> thickness), (graphics_context -> thickness));
+}
+
 int g2d_set_col (int col)
 {
-	cur_color = col;
+	(graphics_context -> color) = col;
+	return 0;
+}
+
+int g2d_set_thickness (int thickness)
+{
+	(graphics_context -> thickness) = thickness;
 	return 0;
 }
 
@@ -54,31 +80,19 @@ void check_drawable_rect (int x, int y, int width, int height)
 
 int g2d_draw_rect (int x, int y, int width, int height)
 {
-	g2d_draw_thick_rect (x, y, width, height, 1);
-	return 0;
-}
-
-int g2d_draw_thick_rect (int x, int y, int width, int height, int thickness)
-{
 	check_drawable_rect (x, y, width, height);
 
 	//top and bottom
 	for (int c = x; c < x + width; c++)
 	{
-		for (int i = 0; i < thickness; i++)
-		{
-			g2d_set_pixel (y + i, c, cur_color);
-			g2d_set_pixel (y + height - i, c, cur_color);
-		}
+		g2d_set_thick_pixel (y, c, (graphics_context -> color));
+		g2d_set_thick_pixel (y + height, c, (graphics_context -> color));
 	}
 
 	for (int r = y; r < y + height; r++)
 	{
-		for (int i = 0; i < thickness; i++)
-		{
-			g2d_set_pixel (r, x + i, cur_color);
-			g2d_set_pixel (r, x + width - i, cur_color);
-		}
+		g2d_set_thick_pixel (r, x, (graphics_context -> color));
+		g2d_set_thick_pixel (r, x + width, (graphics_context -> color));
 	}
 	return 0;
 }
@@ -91,7 +105,7 @@ int g2d_fill_rect (int x, int y, int width, int height)
 	{
 		for (int c = x; c < x + width; c++)
 		{
-			g2d_set_pixel(r, c, cur_color);
+			g2d_set_pixel(r, c, (graphics_context -> color));
 		}
 	}
 
@@ -100,15 +114,10 @@ int g2d_fill_rect (int x, int y, int width, int height)
 
 int g2d_draw_point (int x, int y)
 {
-	return g2d_set_pixel (y, x, cur_color);
+	return g2d_set_pixel (y, x, (graphics_context -> color));
 }
 
 int g2d_draw_line (int x1, int y1, int x2, int y2)
-{
-	return g2d_draw_thick_line (x1, y2, x2, y2, 1);
-}
-
-int g2d_draw_thick_line (int x1, int y1, int x2, int y2, int thickness)
 {
 
 	if (x1 == x2 && y1 == y2)
@@ -130,10 +139,7 @@ int g2d_draw_thick_line (int x1, int y1, int x2, int y2, int thickness)
 
 	do
 	{
-		int rbeg = cur_y - thickness / 2;
-		int cbeg = cur_x - thickness / 2;
-		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
-
+		g2d_set_thick_pixel (cur_x, cur_y, (graphics_context -> color));
 		//minimize distance from line
 		//minimize |-overall_dy_abs * cur_dx + overall_dx_abs * cur_dy|
 
@@ -165,8 +171,11 @@ int g2d_draw_thick_line (int x1, int y1, int x2, int y2, int thickness)
 }
 
 
-int g2d_fill_circle (int x, int y, int rad)
+int g2d_fill_ellipse (int cx, int cy, int semimajor, int semiminor)
 {
+	int rad = semimajor;
+	int x = cx, y = cy;
+
 	int rad2 = rad * rad;
 	int cur_dist = rad2;
 
@@ -220,14 +229,11 @@ int g2d_fill_circle (int x, int y, int rad)
 	return 0;
 }
 
-int g2d_draw_circle (int x, int y, int rad)
+int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 {
-	g2d_draw_thick_circle (x, y, rad, 1);
-	return 0;
-}
+	int rad = semimajor;
+	int x = cx, y = cy;
 
-int g2d_draw_thick_circle (int x, int y, int rad, int thickness)
-{
 	int rad2 = rad * rad;
 	int cur_dist = rad2;
 
@@ -238,31 +244,13 @@ int g2d_draw_thick_circle (int x, int y, int rad, int thickness)
 	//iterate through the first quadrant simultaneously drawing all the other quadrants
 
 	do {
-
 		int dx = cur_x - x;
 		int dy = cur_y - y;
 
-		//current point, in quad 1
-		int rbeg = x + dx - thickness / 2;
-		int cbeg = y + dy - thickness / 2;
-		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
-
-		//current point in quad2, reflected over y-axis
-		rbeg = x - dx - thickness / 2;
-		cbeg = y + dy - thickness / 2;
-		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
-
-		//current point in quad3, reflected over origin
-		rbeg = x - dx - thickness / 2;
-		cbeg = y - dy - thickness / 2;
-		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
-
-		//current point in quad4, reflected over x-axis
-		rbeg = x + dx - thickness / 2;
-		cbeg = y - dy - thickness / 2;
-		g2d_fill_rect (rbeg, cbeg, thickness, thickness);
-
-		
+		g2d_set_thick_pixel (x + dy, y + dy, (graphics_context -> color));
+		g2d_set_thick_pixel (x - dy, y + dy, (graphics_context -> color));
+		g2d_set_thick_pixel (x + dy, y - dy, (graphics_context -> color));
+		g2d_set_thick_pixel (x - dy, y - dy, (graphics_context -> color));
 
 		int up = cur_dist + 2 * dy + 1;
 		int left = cur_dist - 2 * dx + 1;
