@@ -1,8 +1,8 @@
 CC=gcc -O3
 INC=-I.
 
-all: clean displayer.o graphics2d.o vector.o matrix.o g2dwrapper.o # recompiles
-	$(CC) displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o ${INC} -o display_xwindow -lX11 -lXext
+all: clean displayer.o graphics2d.o vector.o matrix.o g2dwrapper.o stack.o # recompiles
+	$(CC) displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o ${INC} -o display_xwindow -lX11 -lXext
 
 run: all
 	./display_xwindow
@@ -21,6 +21,9 @@ matrix.o: linalg/matrix.c
 
 g2dwrapper.o: graphics2d/g2dwrapper.c
 	$(CC) -c graphics2d/g2dwrapper.c ${INC} 
+
+stack.o: stack.c
+	$(CC) -c stack.c ${INC}
 
 clean:
 	-rm *.o

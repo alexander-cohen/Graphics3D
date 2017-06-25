@@ -39,12 +39,7 @@ int open_window() {
     XMapWindow(dis, win);
     XRaiseWindow(dis, win);
 
-    g2d_context *graphics_context = (g2d_context *) malloc (sizeof (g2d_context));
-    graphics_context -> pixels = col_arr;
-    graphics_context -> width = WIDTH;
-    graphics_context -> height = HEIGHT;
-
-    g2d_set_context (graphics_context);
+    g2d_set_context (g2d_create_graphics_context (col_arr, WIDTH, HEIGHT));
 
     return 0;
 }
@@ -90,10 +85,13 @@ int run_line ()
         }
 
         g2d_set_col (RED);
-        g2d_draw_thick_line (x1, y1, x2, y2, 1);
+
+        g2d_set_thickness (5);
+        g2d_draw_line (x1, y1, x2, y2);
+        //g2d_draw_thick_line (x1, y1, x2, y2, 3);
 
         g2d_set_col (YELLOW);
-        g2d_fill_circle (256, 256, 50);
+        g2d_fill_ellipse (256, 256, 50, 50);
 
         x1 += ((rand() % randspeed) * 2) - randspeed + 1;
         y1 += ((rand() % randspeed) * 2) - randspeed + 1;
@@ -120,7 +118,7 @@ int run_line ()
         //     printf ("\n");
         // }
 
-        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, col_arr, WIDTH, HEIGHT, 32, 0);
+        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
         frameNum++;
