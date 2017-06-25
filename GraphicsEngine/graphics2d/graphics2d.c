@@ -23,22 +23,22 @@ static inline int *g2d_buffer_get (int r, int c) {
 	return graphics_context -> pixels + r * (graphics_context -> width) + c;
 }
 
-static inline int g2d_set_pixel (int r, int c, int col) {
-	if (r < 0 || c < 0 || r > (graphics_context -> height) || r > (graphics_context -> width))
+static inline int g2d_set_pixel (int x, int y, int col) {
+	if (x < 0 || y < 0 || x > (graphics_context -> width) || y > (graphics_context -> height))
 	{
 		return 1;
 	}
 	else
 	{
-		*g2d_buffer_get (r, c) = col;
+		*g2d_buffer_get (y, x) = col;
 		return 0;
 	}
 }
 
-static int g2d_set_thick_pixel (int r, int c, int col) {
+static int g2d_set_thick_pixel (int x, int y, int col) {
 	g2d_set_col (col);
 	g2d_fill_rect (
-		r - (graphics_context -> thickness)/2, c - (graphics_context -> thickness)/2, 
+		x - (graphics_context -> thickness)/2, y - (graphics_context -> thickness)/2, 
 		(graphics_context -> thickness), (graphics_context -> thickness));
 
 	return 0;
@@ -74,17 +74,18 @@ int g2d_draw_rect (int x, int y, int width, int height)
 	assert (width > 0 && height > 0);
 
 	//top and bottom
-	for (int c = x; c < x + width; c++)
+	for (int px = x; px < x + width; px++)
 	{
-		g2d_set_thick_pixel (y, c, (graphics_context -> color));
-		g2d_set_thick_pixel (y + height, c, (graphics_context -> color));
+		g2d_set_thick_pixel (px, y, (graphics_context -> color));
+		g2d_set_thick_pixel (px, y + height, (graphics_context -> color));
 	}
 
-	for (int r = y; r < y + height; r++)
+	for (int py = y; py < y + height; py++)
 	{
-		g2d_set_thick_pixel (r, x, (graphics_context -> color));
-		g2d_set_thick_pixel (r, x + width, (graphics_context -> color));
+		g2d_set_thick_pixel (x, py, (graphics_context -> color));
+		g2d_set_thick_pixel (x + width, py, (graphics_context -> color));
 	}
+
 	return 0;
 }
 
@@ -92,11 +93,12 @@ int g2d_fill_rect (int x, int y, int width, int height)
 {	
 	assert (width > 0 && height > 0);
 
-	for (int r = y; r < y + height; r++)
+	//iterate by y first bc 2d arrays are faster that way
+	for (int py = y; py < y + height; py++)
 	{
-		for (int c = x; c < x + width; c++)
+		for (int px = x; px < x + width; px++)
 		{
-			g2d_set_pixel(r, c, (graphics_context -> color));
+			g2d_set_pixel (px, py, (graphics_context -> color));
 		}
 	}
 
@@ -105,7 +107,7 @@ int g2d_fill_rect (int x, int y, int width, int height)
 
 int g2d_draw_point (int x, int y)
 {
-	return g2d_set_pixel (y, x, (graphics_context -> color));
+	return g2d_set_thick_pixel (x, y, (graphics_context -> color));
 }
 
 int g2d_draw_line (int x1, int y1, int x2, int y2)
@@ -164,36 +166,36 @@ int g2d_draw_line (int x1, int y1, int x2, int y2)
 
 int g2d_fill_ellipse (int cx, int cy, int semimajor, int semiminor)
 {
-	int rad = semimajor;
-	int x = cx, y = cy;
-
-	int rad2 = rad * rad;
+	int semimajor2 = semimajor * semimajor;
+	int semiminor2 = semiminor * semiminor;
+	int rad2 = semimajor2 * semiminor2;
 	int cur_dist = rad2;
 
 	//start at right most point
-	int cur_x = x + rad;
-	int cur_y = y;
+	int cur_x = cx + semimajor;
+	int cur_y = cy;
 
 	//iterate through the first quadrant simultaneously drawing all the other quadrants
 
+	bool verbose = true;
+
 	do {
+		int dx = cur_x - cx;
+		int dy = cur_y - cy;
 
-		int dx = cur_x - x;
-		int dy = cur_y - y;
+		g2d_draw_line (cx + dx, cy + dy, cx - dx, cy + dy);
+		g2d_draw_line (cx + dx, cy - dy, cx - dx, cy - dy);
 
-
-		g2d_draw_line (x + dx, y + dy, x - dx, y + dy);
-		g2d_draw_line (x + dx, y - dy, x - dx, y - dy);
-		
-		int up = cur_dist + 2 * dy + 1;
-		int left = cur_dist - 2 * dx + 1;
-		int diag = cur_dist + 2 * dy - 2 * dx + 2;
+		int up = cur_dist + semimajor2 * (2 * dy + 1);
+		int left = cur_dist + semiminor2 * (- 2 * dx + 1);
+		int diag = up + left - cur_dist;
 
 		int up_err = abs (up - rad2);
 		int left_err = abs (left - rad2);
 		int diag_err = abs (diag - rad2);
 
-		//printf ("current point: %d, %d; %d, %d; %d, %d, %d; %d\n", cur_x, cur_y, dx, dy, up, left, diag, cur_dist);
+		if (verbose) 
+			printf ("current point: %d, %d; %d, %d; %d, %d, %d; %d", cur_x, cur_y, dx, dy, up, left, diag, cur_dist);
 
 		//diagonal is optimal
 		if (diag_err <= up_err && diag_err <= left_err)
@@ -201,57 +203,68 @@ int g2d_fill_ellipse (int cx, int cy, int semimajor, int semiminor)
 			cur_dist = diag;
 			cur_x--;
 			cur_y++;
+
+			if (verbose)
+				printf("; DIAG\n");
 		}
 
 		else if (up_err <= left_err)
 		{
 			cur_dist = up;
 			cur_y++;
+
+			if (verbose)
+				printf("; UP\n");
 		}
 
 		else
 		{
 			cur_dist = left;
 			cur_x--;
+
+			if (verbose)
+				printf("; LEFT\n");
 		}
 
-	} while (cur_x > x);
+	} while (cur_x > cx);
 
 	return 0;
 }
 
 int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 {
-	int rad = semimajor;
-	int x = cx, y = cy;
-
-	int rad2 = rad * rad;
+	int semimajor2 = semimajor * semimajor;
+	int semiminor2 = semiminor * semiminor;
+	int rad2 = semimajor2 * semiminor2;
 	int cur_dist = rad2;
 
 	//start at right most point
-	int cur_x = x + rad;
-	int cur_y = y;
+	int cur_x = cx + semimajor;
+	int cur_y = cy;
 
 	//iterate through the first quadrant simultaneously drawing all the other quadrants
 
+	bool verbose = true;
+
 	do {
-		int dx = cur_x - x;
-		int dy = cur_y - y;
+		int dx = cur_x - cx;
+		int dy = cur_y - cy;
 
-		g2d_set_thick_pixel (x + dy, y + dy, (graphics_context -> color));
-		g2d_set_thick_pixel (x - dy, y + dy, (graphics_context -> color));
-		g2d_set_thick_pixel (x + dy, y - dy, (graphics_context -> color));
-		g2d_set_thick_pixel (x - dy, y - dy, (graphics_context -> color));
+		g2d_set_thick_pixel (cx + dx, cy + dy, (graphics_context -> color));
+		g2d_set_thick_pixel (cx - dx, cy + dy, (graphics_context -> color));
+		g2d_set_thick_pixel (cx + dx, cy - dy, (graphics_context -> color));
+		g2d_set_thick_pixel (cx - dx, cy - dy, (graphics_context -> color));
 
-		int up = cur_dist + 2 * dy + 1;
-		int left = cur_dist - 2 * dx + 1;
-		int diag = cur_dist + 2 * dy - 2 * dx + 2;
+		int up = cur_dist + semimajor2 * (2 * dy + 1);
+		int left = cur_dist + semiminor2 * (- 2 * dx + 1);
+		int diag = up + left - cur_dist;
 
 		int up_err = abs (up - rad2);
 		int left_err = abs (left - rad2);
 		int diag_err = abs (diag - rad2);
 
-		//printf ("current point: %d, %d; %d, %d; %d, %d, %d; %d\n", cur_x, cur_y, dx, dy, up, left, diag, cur_dist);
+		if (verbose) 
+			printf ("current point: %d, %d; %d, %d; %d, %d, %d; %d", cur_x, cur_y, dx, dy, up, left, diag, cur_dist);
 
 		//diagonal is optimal
 		if (diag_err <= up_err && diag_err <= left_err)
@@ -259,21 +272,30 @@ int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 			cur_dist = diag;
 			cur_x--;
 			cur_y++;
+
+			if (verbose)
+				printf("; DIAG\n");
 		}
 
 		else if (up_err <= left_err)
 		{
 			cur_dist = up;
 			cur_y++;
+
+			if (verbose)
+				printf("; UP\n");
 		}
 
 		else
 		{
 			cur_dist = left;
 			cur_x--;
+
+			if (verbose)
+				printf("; LEFT\n");
 		}
 
-	} while (cur_x > x);
+	} while (cur_x > cx);
 
 	return 0;
 }
