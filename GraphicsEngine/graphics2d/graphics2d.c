@@ -325,11 +325,6 @@ int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 	return 0;
 }
 
-int fill_flat_top (int y_top, int left_top, int right_top, int botx, int boty)
-{
-
-}
-
 int draw_horizontal_line (int left, int right, int y)
 {
 	for (int x = left; x <= right; x++)
