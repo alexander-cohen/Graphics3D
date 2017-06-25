@@ -87,10 +87,12 @@ int run_line ()
 
         
         g2d_set_thickness (2);
+        g2d_set_col (RED);
+        g2d_draw_line (40, 40, 100, 100);
 
         g2d_set_col (YELLOW);
-        g2d_fill_ellipse (256, 256, 100, 25);
-
+        //g2d_fill_ellipse (256, 256, 100, 25);
+        g2d_fill_triangle (30, 10, 10, 80, 50, 50);
 
         x1 += ((rand() % randspeed) * 2) - randspeed + 1;
         y1 += ((rand() % randspeed) * 2) - randspeed + 1;

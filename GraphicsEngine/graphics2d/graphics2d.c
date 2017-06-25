@@ -37,10 +37,19 @@ static inline int g2d_set_pixel (int x, int y, int col) {
 
 static int g2d_set_thick_pixel (int x, int y, int col) {
 	g2d_set_col (col);
-	g2d_fill_rect (
+
+	//avoid unnecessary function calls
+	if ((graphics_context -> thickness) == 1)
+	{
+		g2d_set_pixel (x, y, col);
+	}
+	else
+	{
+		g2d_fill_rect (
 		x - (graphics_context -> thickness)/2, y - (graphics_context -> thickness)/2, 
 		(graphics_context -> thickness), (graphics_context -> thickness));
-
+	}
+	
 	return 0;
 }
 
@@ -64,6 +73,7 @@ int g2d_set_context (g2d_context *buff)
 
 int g2d_fill_bg (int col)
 {
+	g2d_set_thickness (1);
 	g2d_set_col (col);
 	g2d_fill_rect (0, 0, graphics_context -> width, graphics_context -> height);
 	return 0;
@@ -93,6 +103,7 @@ int g2d_fill_rect (int x, int y, int width, int height)
 {	
 	assert (width > 0 && height > 0);
 
+	g2d_set_thickness (1);
 	//iterate by y first bc 2d arrays are faster that way
 	for (int py = y; py < y + height; py++)
 	{
@@ -108,6 +119,44 @@ int g2d_fill_rect (int x, int y, int width, int height)
 int g2d_draw_point (int x, int y)
 {
 	return g2d_set_thick_pixel (x, y, (graphics_context -> color));
+}
+
+static int next_line_point (
+	const int x1, const int y1, 
+	const int x2, const int y2, 
+	int *cur_x, int *cur_y, int *cur_dist)
+{	
+	int overall_dx_abs = abs(x2 - x1);
+	int overall_dy_abs = abs(y2 - y1);
+
+	bool lateral = overall_dx_abs >= overall_dy_abs;
+
+	int move_straight = *cur_dist + (lateral ? overall_dy_abs : -overall_dx_abs);
+	int move_diagonally = *cur_dist + overall_dy_abs - overall_dx_abs;
+
+	char xmov = (x2 > x1 ? 1 : -1);
+	char ymov = (y2 > y1 ? 1 : -1);
+
+	if (abs(move_straight) < abs(move_diagonally))
+	{
+		if (lateral)
+		{
+			*cur_x += xmov;
+		}
+		else
+		{
+			*cur_y += ymov;
+		}
+		*cur_dist = move_straight;
+	}
+	else
+	{
+		*cur_x += xmov;
+		*cur_y += ymov;
+		*cur_dist = move_diagonally;
+	}
+
+	return 0;
 }
 
 int g2d_draw_line (int x1, int y1, int x2, int y2)
@@ -128,36 +177,10 @@ int g2d_draw_line (int x1, int y1, int x2, int y2)
 	int xmov = x2 > x1 ? 1 : -1;
 	int ymov = y2 > y1 ? 1 : -1;
 
-	bool lateral = overall_dx_abs >= overall_dy_abs;
-
 	do
 	{
 		g2d_set_thick_pixel (cur_x, cur_y, (graphics_context -> color));
-		//minimize distance from line
-		//minimize |-overall_dy_abs * cur_dx + overall_dx_abs * cur_dy|
-
-		int move_straight = cur_dist + (lateral ? overall_dy_abs : -overall_dx_abs);
-		int move_diagonally = cur_dist + overall_dy_abs - overall_dx_abs;
-
-		if (abs(move_straight) < abs(move_diagonally))
-		{
-			if (lateral)
-			{
-				cur_x += xmov;
-			}
-			else
-			{
-				cur_y += ymov;
-			}
-			cur_dist = move_straight;
-		}
-		else
-		{
-			cur_x += xmov;
-			cur_y += ymov;
-			cur_dist = move_diagonally;
-		}
-
+		next_line_point (x1, y1, x2, y2, &cur_x, &cur_y, &cur_dist);
 	} while (cur_x != x2 || cur_y != y2);
 
 	return 0;
@@ -166,6 +189,8 @@ int g2d_draw_line (int x1, int y1, int x2, int y2)
 
 int g2d_fill_ellipse (int cx, int cy, int semimajor, int semiminor)
 {
+	g2d_set_thickness (1);
+
 	int semimajor2 = semimajor * semimajor;
 	int semiminor2 = semiminor * semiminor;
 	int rad2 = semimajor2 * semiminor2;
@@ -302,6 +327,8 @@ int g2d_draw_ellipse (int cx, int cy, int semimajor, int semiminor)
 
 int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 {
+	g2d_set_thickness (1);
+
 	//make sure its not degenerate
 	assert (
 		!(x1 == x2 && y1 == y2) && 
@@ -316,5 +343,90 @@ int g2d_fill_triangle (int x1, int y1, int x2, int y2, int x3, int y3)
 	leftx = x2, lefty = y2, 
 	rightx = x3, righty = y3;
 
+	//set topx and topy correctly
+	if (y1 <= y2 && y1 <= y3)
+	{
+		topx = x1;
+		topy = y1;
 
+		leftx = x2;
+		lefty = y2;
+
+		rightx = x3;
+		righty = y3;
+	}
+	else if (y2 <= y1 && y2 <= y3)
+	{
+		topx = x2;
+		topy = y2;
+
+		leftx = x1;
+		lefty = y1;
+
+		rightx = x3;
+		righty = y3;
+	}
+	else
+	{
+		topx = x3;
+		topy = y3;
+
+		leftx = x1;
+		lefty = y1;
+
+		rightx = x2;
+		righty = y2;
+	}
+
+	//set left and right correctly
+	if (leftx > rightx)
+	{
+		int 
+		leftx_temp = leftx,
+		lefty_temp = lefty,
+		rightx_temp = rightx,
+		righty_temp = righty;
+
+		leftx = rightx_temp;
+		lefty = righty_temp;
+
+		rightx = leftx_temp;
+		righty = lefty_temp;
+	}
+
+
+	int cur_left = topx, cur_right = topx, cur_y = topy;
+	int cur_y_left = cur_y, cur_y_right = cur_y;
+	int left_err = 0, right_err = 0;
+
+
+	printf ("triangle points (top, left, right): %d, %d; %d, %d; %d, %d\n", topx, topy, leftx, lefty, rightx, righty);
+	do
+	{
+
+		//printf ("cur y, leftx, rightx: %d, %d, %d\n", cur_y, cur_left, cur_right);
+		while (cur_y_left == cur_y)
+		{
+			printf ("%d, %d, %d\n", cur_left, cur_y_left, left_err);
+			if (cur_y < lefty)
+				next_line_point (topx, topy, leftx, lefty, &cur_left, &cur_y_left, &left_err);
+			else
+				next_line_point (leftx, lefty, rightx, righty, &cur_left, &cur_y_left, &left_err);
+
+		}
+
+		while (cur_y_right == cur_y)
+		{
+			if (cur_y < righty) 
+				next_line_point (topx, topy, rightx, righty, &cur_right, &cur_y_right, &right_err);
+			else
+				next_line_point (rightx, righty, leftx, lefty, &cur_right, &cur_y_right, &right_err);
+		}
+
+		cur_y++;
+		g2d_draw_line (cur_left, cur_y, cur_right, cur_y);
+
+	} while (cur_left < cur_right && cur_y < max (lefty, righty));
+
+	return 0;
 }
