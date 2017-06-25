@@ -15,8 +15,9 @@ typedef struct {
 
 g2d_context *g2d_create_graphics_context (int *pixels, int width, int height);
 
-int g2d_set_col (int col);
 int g2d_set_context (g2d_context *buff);
+int g2d_set_col (int col);
+int g2d_set_thickness (int thickness);
 
 int g2d_fill_bg (int col);
 

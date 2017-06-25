@@ -17,12 +17,13 @@ g2d_context *g2d_create_graphics_context (int *pixels, int width, int height)
 
 
 
-static int *g2d_buffer_get (int r, int c) {
+
+static inline int *g2d_buffer_get (int r, int c) {
 	assert (r >= 0 && c >= 0 && r < (graphics_context -> height) && c < (graphics_context -> width));
 	return graphics_context -> pixels + r * (graphics_context -> width) + c;
 }
 
-static int g2d_set_pixel (int r, int c, int col) {
+static inline int g2d_set_pixel (int r, int c, int col) {
 	if (r < 0 || c < 0 || r > (graphics_context -> height) || r > (graphics_context -> width))
 	{
 		return 1;
@@ -39,6 +40,8 @@ static int g2d_set_thick_pixel (int r, int c, int col) {
 	g2d_fill_rect (
 		r - (graphics_context -> thickness)/2, c - (graphics_context -> thickness)/2, 
 		(graphics_context -> thickness), (graphics_context -> thickness));
+
+	return 0;
 }
 
 int g2d_set_col (int col)
@@ -66,21 +69,9 @@ int g2d_fill_bg (int col)
 	return 0;
 }
 
-void checkrect (int x, int y, int width, int height)
-{
-	assert (x >= 0 && y >= 0);
-	assert (width > 0 && height > 0);
-	assert (x + width <= (graphics_context -> width) && y + height <= (graphics_context -> height));
-}
-
-void check_drawable_rect (int x, int y, int width, int height)
-{
-	assert (width > 0 && height > 0);
-}
-
 int g2d_draw_rect (int x, int y, int width, int height)
 {
-	check_drawable_rect (x, y, width, height);
+	assert (width > 0 && height > 0);
 
 	//top and bottom
 	for (int c = x; c < x + width; c++)
@@ -99,7 +90,7 @@ int g2d_draw_rect (int x, int y, int width, int height)
 
 int g2d_fill_rect (int x, int y, int width, int height)
 {	
-	check_drawable_rect (x, y, width, height);
+	assert (width > 0 && height > 0);
 
 	for (int r = y; r < y + height; r++)
 	{

@@ -1,8 +1,7 @@
 #include "displayer.h"
 
-const int 
-BORDER_COL = BLACK,
-BG_COL = WHITE;
+#define BORDER_COL (BLACK)
+#define BG_COL (WHITE)
 
 Display *dis;
 Window win;
@@ -68,7 +67,8 @@ int run_line ()
     
     int x1 = 30, y1 = 30, x2 = 300, y2 = 300;
 
-    int randspeed = 20;
+
+    int randspeed = 5;
 
     while(frameNum < 10000) {
         g2d_fill_bg (CYAN);
@@ -92,10 +92,10 @@ int run_line ()
         g2d_set_col (YELLOW);
         g2d_fill_ellipse (256, 256, 50, 50);
 
-        x1 += (rand() % randspeed * 2) - randspeed;
-        y1 += (rand() % randspeed * 2) - randspeed;
-        x2 += (rand() % randspeed * 2) - randspeed;
-        y2 += (rand() % randspeed * 2) - randspeed;
+        x1 += ((rand() % randspeed) * 2) - randspeed + 1;
+        y1 += ((rand() % randspeed) * 2) - randspeed + 1;
+        x2 += ((rand() % randspeed) * 2) - randspeed + 1;
+        y2 += ((rand() % randspeed) * 2) - randspeed + 1;
 
         if (x1 < 0) x1 = 0;
         if (y1 < 0) y1 = 0;
