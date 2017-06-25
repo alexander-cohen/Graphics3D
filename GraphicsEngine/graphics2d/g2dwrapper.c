@@ -56,12 +56,15 @@ int draw_encoded_rect_outline (g2d_context *graphics_context, int *data)
 	g2d_set_context (graphics_context);
 	g2d_set_col (data[5]);
 	g2d_draw_thick_rect (data[0], data[1], data[2], data[3], data[4]);
+
+	return 0;
 }
 
 g2d_primitive *create_rect_fill (int x, int y, int width, int height, int col)
 {
 	g2d_primitive *rect_fill = (g2d_primitive *)malloc (sizeof (g2d_primitive));
-	encode_rect_fill (rect_fill, x, y, width, height, thickness, col);
+	encode_rect_fill (rect_fill, x, y, width, height, col);
+
 	return rect_fill;
 	
 }
@@ -83,14 +86,16 @@ int draw_encoded_rect_fill (g2d_context *graphics_context, int *data)
 	g2d_set_context (graphics_context);
 	g2d_set_col (data[4]);
 	g2d_fill_rect (data[0], data[1], data[2], data[3]);
+
+	return 0;
 }
 
 g2d_primitive *create_circle_outline (int x, int y, int rad, int thickness, int col)
 {
 	g2d_primitive *circle_outline = (g2d_primitive *)malloc (sizeof (g2d_primitive));
-	encode_circle_outline (circle_outline, x, y, width, height, thickness, col);
+	encode_circle_outline (circle_outline, x, y, rad, thickness, col);
+
 	return circle_outline;
-	
 }
 int encode_circle_outline (g2d_primitive *dst, int x, int y, int rad, int thickness, int col)
 {
@@ -109,17 +114,19 @@ int draw_encoded_circle_outline (g2d_context *graphics_context, int *data)
 {
 	g2d_set_context (graphics_context);
 	g2d_set_col (data[4]);
-	g2d_draw_circle_outline (data[0], data[1], data[2], data[3]);
+	g2d_draw_thick_circle (data[0], data[1], data[2], data[3]);
+
+	return 0;
 }
 
-g2d_primitive *create_circle_fill (int x, int y, int rad, int thickness, int col)
+g2d_primitive *create_circle_fill (int x, int y, int rad, int col)
 {
 	g2d_primitive *circle_fill = (g2d_primitive *)malloc (sizeof (g2d_primitive));
-	g2d_draw_thick_circle (circle_fill, x, y, width, height, thickness, col);
+	encode_circle_fill (circle_fill, x, y, rad, col);
+
 	return circle_fill;
-	
 }
-int encode_circle_fill (g2d_primitive *dst, int x, int y, int rad, int thickness, int col)
+int encode_circle_fill (g2d_primitive *dst, int x, int y, int rad, int col)
 {
 	(dst -> type) = CIRCLE_FILL;
 	memset (dst -> data, 0, sizeof (dst -> data));
@@ -136,6 +143,8 @@ int draw_encoded_circle_fill (g2d_context *graphics_context, int *data)
 	g2d_set_context (graphics_context);
 	g2d_set_col (data[3]);
 	g2d_fill_circle (data[0], data[1], data[2]);
+
+	return 0;
 }
 
 int draw_primitive (g2d_context *graphics_context, g2d_primitive *primitive)
@@ -155,7 +164,7 @@ int draw_primitive (g2d_context *graphics_context, g2d_primitive *primitive)
 			draw_encoded_circle_outline (graphics_context, primitive -> data);
 			break;
 		case CIRCLE_FILL:
-			draw_encoded_circel_fill (graphics_context, primitive -> data);
+			draw_encoded_circle_fill (graphics_context, primitive -> data);
 			break;
 		default:
 			printf ("did not find matching primitive.\n");

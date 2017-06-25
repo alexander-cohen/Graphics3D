@@ -163,3 +163,19 @@ int g2d_draw_thick_line (int x1, int y1, int x2, int y2, int thickness)
 
 	return 0;
 }
+
+
+int g2d_fill_circle (int x, int y, int rad)
+{
+	return 0;
+}
+
+int g2d_draw_circle (int x, int y, int rad)
+{
+	return 0;
+}
+
+int g2d_draw_thick_circle (int x, int y, int rad, int thickness)
+{
+	return 0;
+}

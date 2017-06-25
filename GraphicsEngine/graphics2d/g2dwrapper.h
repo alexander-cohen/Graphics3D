@@ -20,18 +20,18 @@ g2d_primitive *create_rect_outline (int x, int y, int width, int height, int thi
 int encode_rect_outline (g2d_primitive *dst, int x, int y, int width, int height, int thickness, int col);
 int draw_encoded_rect_outline (g2d_context *graphics_context, int *data);
 
-g2d_primitive *create_rect_fill (g2d_primitive *dst, int x, int y, int width, int height, int col);
+g2d_primitive *create_rect_fill (int x, int y, int width, int height, int col);
 int encode_rect_fill (g2d_primitive *dst, int x, int y, int width, int height, int col);
 int draw_encoded_rect_fill (g2d_context *graphics_context, int *data);
 
-g2d_primitive *create_circle_outline (g2d_primitive *dst, int x, int y, int rad, int thickness, int col);
+g2d_primitive *create_circle_outline (int x, int y, int rad, int thickness, int col);
 int encode_circle_outline (g2d_primitive *dst, int x, int y, int rad, int thickness, int col);
 int draw_encoded_circle_outline (g2d_context *graphics_context, int *data);
 
-g2d_primitive *create_circle_fill (g2d_primitive *dst, int x, int y, int rad, int col);
+g2d_primitive *create_circle_fill (int x, int y, int rad, int col);
 int encode_circle_fill (g2d_primitive *dst, int x, int y, int rad, int col);
 int draw_encoded_circle_fill (g2d_context *graphics_context, int *data);
 
-int draw_primitive (g2d_primitive *primitive);
+int draw_primitive (g2d_context *graphics_context, g2d_primitive *primitive);
 
 #endif
