@@ -414,11 +414,22 @@ int g2d_fill_triangle (
 	printf ("triangle points (top, left, right): %d, %d; %d, %d; %d, %d\n", topx, topy, leftx, lefty, rightx, righty);
 	do
 	{
+		int prev_left = cur_left, prev_right = cur_right;
+
 		//printf ("cur y, leftx, rightx: %d, %d, %d\n", cur_y, cur_left, cur_right);
 		while (cur_y_left == cur_y)
 		{
+			prev_left = cur_left;
+
+			if (cur_y == lefty && cur_left == leftx)
+			{
+				cur_y_left++;
+				break;
+			}
+
+
 			//printf ("%d, %d, %d\n", cur_left, cur_y_left, left_err);
-			if (cur_y <= lefty)
+			if (cur_y_left <= lefty)
 				next_line_point (topx, topy, leftx, lefty, &cur_left, &cur_y_left, &left_err);
 			else
 				next_line_point (leftx, lefty, rightx, righty, &cur_left, &cur_y_left, &left_err);
@@ -427,14 +438,22 @@ int g2d_fill_triangle (
 
 		while (cur_y_right == cur_y)
 		{
-			if (cur_y <= righty) 
+			prev_right = cur_right;
+
+			if (cur_y == righty && cur_right == rightx)
+			{
+				cur_y_right++;
+				break;
+			}
+
+			if (cur_y_right <= righty) 
 				next_line_point (topx, topy, rightx, righty, &cur_right, &cur_y_right, &right_err);
 			else
 				next_line_point (rightx, righty, leftx, lefty, &cur_right, &cur_y_right, &right_err);
 		}
 
 		cur_y++;
-		g2d_draw_line (cur_left, cur_y, cur_right, cur_y);
+		g2d_draw_line (prev_left, cur_y, prev_right, cur_y);
 
 	} while (cur_left <= cur_right && cur_y < max (lefty, righty));
 
