@@ -344,9 +344,9 @@ int orient2d (short x1, short y1, short x2, short y2, short x3, short y3)
 }
 
 int g2d_fill_triangle_boundingbox (
-	const int x1, const int y1, 
-	const int x2, const int y2,
-	const int x3, const int y3)
+	const short x1, const short y1, 
+	const short x2, const short y2,
+	const short x3, const short y3)
 {
 
 	//y's are negated bc the axis is inverted
