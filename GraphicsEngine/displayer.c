@@ -349,28 +349,28 @@ int run_tri_test() {
         g2d_set_col (YELLOW);
         //g2d_fill_ellipse (256, 256, 100, 25);
         // flat top+flat left
-        g2d_fill_triangle_boundingbox(0,0,100,0,0,100);
+        //g2d_fill_triangle_boundingbox(0,0,100,0,0,100);
         // other way flat top+flat left
-        g2d_fill_triangle_boundingbox(100,200,0,200,0,300);
+        //g2d_fill_triangle_boundingbox(100,200,0,200,0,300);
         //flat bot+flat right
-        g2d_fill_triangle_boundingbox(200,0,200,100,100,100);
+        //g2d_fill_triangle_boundingbox(200,0,200,100,100,100);
         //orhter way flat bot + flat right
-        g2d_fill_triangle_boundingbox(200,200,100,300,200,300);
+        //g2d_fill_triangle_boundingbox(200,200,100,300,200,300);
         //downright-slanting top, downright-slanting left
-        g2d_fill_triangle_boundingbox(200,0,300,10,210,100);
+        //g2d_fill_triangle_boundingbox(200,0,300,10,210,100);
         //downleft-slanting top, downleft-slanting right
-        g2d_fill_triangle_boundingbox(300,10,400,0,390,100);
+        //g2d_fill_triangle_boundingbox(300,10,400,0,390,100);
         //all near vertical, diff sides
-        g2d_fill_triangle_boundingbox(450,0,460,90,440,40);
+        //g2d_fill_triangle_boundingbox(450,0,460,90,440,40);
         //all near horizontal, diff sides
-        g2d_fill_triangle_boundingbox(0,150,100,140,40,160);
+        //g2d_fill_triangle_boundingbox(0,150,100,140,40,160);
         //all near vertical, same side
-        g2d_fill_triangle_boundingbox(150,100,140,200,135,140);
+        //g2d_fill_triangle_boundingbox(150,100,140,200,135,140);
         //all near horizontal, same side
-        g2d_fill_triangle_boundingbox(200,150,300,140,240,135);
+        //g2d_fill_triangle_boundingbox(200,150,300,140,240,135);
         //all near horizontal, same side, flipped
-        g2d_fill_triangle_boundingbox(300,150,400,160,340,165);
-
+        //g2d_fill_triangle_boundingbox(300,150,400,160,340,165);
+        g2d_fill_triangle_boundingbox(0,0,500,100,200,500);
         int 
         x1 = 30, y1 = 30,
         x2 = 200, y2 = 40,

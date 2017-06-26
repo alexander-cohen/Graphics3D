@@ -12,7 +12,7 @@ displayer.o: displayer.c
 	$(CC) -c displayer.c ${INC} ${CARGS}
 
 graphics2d.o: graphics2d/graphics2d.c
-	$(CC) -c graphics2d/graphics2d.c ${INC} ${CARGS}
+	$(CC) -c -mavx graphics2d/graphics2d.c ${INC} ${CARGS}
 
 vector.o: linalg/vector.c
 	$(CC) -c linalg/vector.c ${INC} ${CARGS}

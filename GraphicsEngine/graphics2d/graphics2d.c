@@ -374,16 +374,16 @@ int g2d_fill_triangle_boundingbox (
 
 	//printsf ("min: %d, %d\n", min_x, min_y);
 
-	short w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
-	short w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
-	short w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
+	int w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
+	int w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
+	int w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
 
 
 	for (short y = min_y; y <= max_y; y++)
 	{
-		short w1 = w1_row;
-		short w2 = w2_row;
-		short w3 = w3_row;
+		int w1 = w1_row;
+		int w2 = w2_row;
+		int w3 = w3_row;
 		bool found = false;
 
 		for (short x = min_x; x <= max_x; x++)
