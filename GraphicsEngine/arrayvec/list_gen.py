@@ -8,7 +8,4 @@ def newAV(type, typen):
 	with open('%sarrayvec.c'%(typen), 'w') as f:
 		f.write(ctemp.replace('@', typen).replace('$', type))
 
-newAV('int *', 'intptr')
-newAV('int', 'int')
-newAV('double', 'double')
-newAV('void *', 'voidptr')
+newAV('material', 'mat')
