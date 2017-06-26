@@ -26,7 +26,7 @@
 typedef unsigned long long ui64;
 typedef long long i64;
 
-extern inline int swap_int (int *a, int *b);
+int swap_int (int *a, int *b);
 
 
 #endif

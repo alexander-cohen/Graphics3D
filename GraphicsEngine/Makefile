@@ -1,6 +1,6 @@
-CC=gcc
+CC=/opt/local/bin/gcc-mp-5
 INC=-I.
-CARGS=-msse2 -msse -ggdb
+CARGS=-mavx -mavx2
 
 all: clean displayer.o graphics2d.o vector.o matrix.o g2dwrapper.o stack.o pong.o helper.o # recompiles
 	$(CC) displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o pong.o helper.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext

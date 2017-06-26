@@ -411,6 +411,14 @@ int g2d_fill_triangle_boundingbox (
 	}
 }
 
+void print_vec (__m256i vec)
+{
+	int *ptr = (int *) &vec;
+	printf("%d %d %d %d %d %d %d %d\n", 
+				ptr[0], ptr[1], ptr[2], ptr[3],
+				ptr[4], ptr[5], ptr[6], ptr[7]);
+}
+
 
 int g2d_fill_triangle_boundingbox_avx (
 	const int x1, const int y1, 
@@ -430,10 +438,7 @@ int g2d_fill_triangle_boundingbox_avx (
 		return g2d_fill_triangle_boundingbox_avx (x1, y1, x3, y3, x2, y2);
 	}
 
-	//printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
-	//printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
-
-	int vecsize = 4;
+	int vecsize = 8;
 
 	int min_x = max (min3 (x1, x2, x3), 0);
 	int min_y = max (min3 (y1, y2, y3), 0);
@@ -479,52 +484,68 @@ int g2d_fill_triangle_boundingbox_avx (
 		w3_add_row_dat[i] = dx12;
 		w3_add_col_dat[i] = w3addcol;
 	}
-	/*
+
 	__m256i w1_rvec = _mm256_loadu_si256 (w1_row);
 	__m256i w2_rvec = _mm256_loadu_si256 (w2_row);
 	__m256i w3_rvec = _mm256_loadu_si256 (w3_row);
+
+	__m256i w1_add_per_col = _mm256_loadu_si256 (w1_add_col_dat);
+	__m256i w2_add_per_col = _mm256_loadu_si256 (w2_add_col_dat);
+	__m256i w3_add_per_col = _mm256_loadu_si256 (w3_add_col_dat);
 
 	__m256i w1_add_per_row = _mm256_loadu_si256 (w1_add_row_dat);
 	__m256i w2_add_per_row = _mm256_loadu_si256 (w2_add_row_dat);
 	__m256i w3_add_per_row = _mm256_loadu_si256 (w3_add_row_dat);
 
-	__m256i w1_add_per_col = _mm256_loadu_si256 (w1_add_col_dat);
-	__m256i w2_add_per_col = _mm256_loadu_si256 (w2_add_col_dat);
-	__m256i w3_add_per_col = _mm256_loadu_si256 (w3_add_col_dat);
-	*/
-	__m128i w1_rvec = _mm_loadu_si128 (w1_row);
-	__m128i w2_rvec = _mm_loadu_si128 (w2_row);
-	__m128i w3_rvec = _mm_loadu_si128 (w3_row);
+	short w1_row_scalar = orient2d (x2, y2, x3, y3, min_x, min_y);
+	short w2_row_scalar = orient2d (x3, y3, x1, y1, min_x, min_y);
+	short w3_row_scalar = orient2d (x1, y1, x2, y2, min_x, min_y);
 
-	__m128i w1_add_per_col = _mm_loadu_si128 (w1_add_col_dat);
-	__m128i w2_add_per_col = _mm_loadu_si128 (w2_add_col_dat);
-	__m128i w3_add_per_col = _mm_loadu_si128 (w3_add_col_dat);
-
-	__m128i w1_add_per_row = _mm_loadu_si128 (w1_add_row_dat);
-	__m128i w2_add_per_row = _mm_loadu_si128 (w2_add_row_dat);
-	__m128i w3_add_per_row = _mm_loadu_si128 (w3_add_row_dat);
-
-
-	int *ptr = (int*)&w1_rvec;
-	printf("%d %d %d %d\n", ptr[0], ptr[1], ptr[2], ptr[3]);
-
+	__m256i zero = _mm256_set1_epi32(0);
+	__m256i allone = _mm256_set1_epi32(((unsigned int) -1));
+	
+	__m256i w1, w2, w3, allor, comp;
 	for (short y = min_y; y <= max_y; y++)
 	{
-		__m128i w1 = w1_rvec;
-		__m128i w2 = w2_rvec;
-		__m128i w3 = w3_rvec;
-		// bool found = false;
+		w1 = w1_rvec;
+		w2 = w2_rvec;
+		w3 = w3_rvec;
 
-		for (short x = min_x; x <= max_x; x++)
+		short w1_scalar = w1_row_scalar;
+		short w2_scalar = w2_row_scalar;
+		short w3_scalar = w3_row_scalar;
+
+		for (short x = min_x; x <= max_x; x += vecsize)
 		{
-			w1 = _mm_add_epi32 (w1, w1_add_per_col);
-			w2 = _mm_add_epi32 (w2, w2_add_per_col);
-			w3 = _mm_add_epi32 (w3, w3_add_per_col);
+			allor = _mm256_set_epi32(-5, -5, -5, 1, 1, -5, -5, -5); //w1 | w2 | w3;
+			comp = zero;
+
+			printf ("comparison: %d\n", _mm256_cmp_epi32 (allor, zero));
+
+
+			printf ("!0x05 = %d\n", (!0x05));
+			
+			print_vec (allor);
+			print_vec (comp);
+			printf ("\n");
+			//printf("%d\n\n", w1_scalar);
+
+			w1 += w1_add_per_col;
+			w2 += w2_add_per_col;
+			w3 += w3_add_per_col;
+
+			w1_scalar -= vecsize * dy23;
+			w2_scalar -= vecsize * dy31;
+			w3_scalar -= vecsize * dy12;
 		}
 
-		w1_rvec = _mm_add_epi32 (w1_rvec, w1_add_per_row);
-		w2_rvec = _mm_add_epi32 (w2_rvec, w2_add_per_row);
-		w3_rvec = _mm_add_epi32 (w3_rvec, w3_add_per_row);
+		w1_rvec += w1_add_per_row;
+		w2_rvec += w2_add_per_row;
+		w3_rvec += w3_add_per_row;
+
+		w1_row_scalar += dx23;
+		w2_row_scalar += dx31;
+		w3_row_scalar += dx12;
 	}
 
 	free (w1_row);
