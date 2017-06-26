@@ -411,6 +411,36 @@ int g2d_fill_triangle_boundingbox (
 	}
 }
 
+__m256i scalar_gt(__m256i a, __m256i b) {
+	__m256i out;
+	int *outpt = &out;
+	int *apt = &a;
+	int *bpt = &b;
+	int i = 0;
+	for(; i < 8; i++) {
+		outpt[i] = apt[i] > bpt[i];
+	}
+	return out;
+}
+
+__m256i scalar_3and(__m256i a, __m256i b, __m256i c) {
+	__m256i out;
+	int *outpt = &out;
+	int *apt = &a;
+	int *bpt = &b;
+	int *cpt = &c;
+	int i = 0;
+	for(; i < 8; i++) {
+		outpt[i] = apt[i] & bpt[i] & cpt[i];
+	}
+	return out;
+}
+
+printvec(__m256i v) {
+	int *p = &v;
+	printf("{%d %d %d %d %d %d %d %d}", p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+}
+
 int g2d_fill_triangle_boundingbox_avx2 (
 	const short x1, const short y1, 
 	const short x2, const short y2,
@@ -445,16 +475,22 @@ int g2d_fill_triangle_boundingbox_avx2 (
 	int w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
 	int w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
 
-	__m256i ran8 = _mm256_set_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+	__m256i ran8 = _mm256_set_epi32(-8, -7, -6, -5, -4, -3, -2, -1);
 	__m256i w1vinc = _mm256_set1_epi32(dy23 << 3);
 	__m256i w2vinc = _mm256_set1_epi32(dy31 << 3);
 	__m256i w3vinc = _mm256_set1_epi32(dy12 << 3);
 	int m1inc = dy23 << 3;
 	int m2inc = dy31 << 3;
 	int m3inc = dy12 << 3;
-	__m256i w1v_row = _mm256_set1_epi32(dy23) * ran8 + _mm256_set1_epi32(w1_row);
-	__m256i w2v_row = _mm256_set1_epi32(dy31) * ran8 + _mm256_set1_epi32(w2_row);
-	__m256i w3v_row = _mm256_set1_epi32(dy12) * ran8 + _mm256_set1_epi32(w3_row);
+	__m256i w1v_row = _mm256_mullo_epi32(_mm256_set1_epi32(dy23), ran8) + _mm256_set1_epi32(w1_row);
+	__m256i w2v_row = _mm256_mullo_epi32(_mm256_set1_epi32(dy31), ran8) + _mm256_set1_epi32(w2_row);
+	__m256i w3v_row = _mm256_mullo_epi32(_mm256_set1_epi32(dy12), ran8) + _mm256_set1_epi32(w3_row);
+	printf("w1v_row: ");
+	printvec(w1v_row);
+	printf("\nw2v_row: ");
+	printvec(w2v_row);
+	printf("\nw3v_row: ");
+	printvec(w3v_row);
 	__m256i w1v;
 	__m256i w2v;
 	__m256i w3v;
@@ -464,8 +500,7 @@ int g2d_fill_triangle_boundingbox_avx2 (
 	__m256i v0 = _mm256_set1_epi32(0);
 	__m256i v1 = _mm256_set1_epi32(1);
 	__m256i condval;
-	int i = 0;
-	int j = 0;
+	int i = min_x;
 	int iinc = graphics_context->width;
 	int ireset = iinc + min_x;
 	
@@ -479,25 +514,33 @@ int g2d_fill_triangle_boundingbox_avx2 (
 		for (short x = min_x; x <= max_x; x+=8, i+=8)
 		{
 			condval = _mm256_and_si256(_mm256_cmpgt_epi32(w1v, v0), _mm256_and_si256(_mm256_cmpgt_epi32(w2v, v0), _mm256_cmpgt_epi32(w3v, v0)));
-			int *ptr = &condval;
-			printf("condval: %d %d %d %d %d %d %d %d\n", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7]);
-			//if(!_mm256_testc_si256(condval, v1)) { // condval && true == false, condval = false
-			//	if(!found) {
-			//		found = true; // condval has trues
-			//      memcpy((graphics_context->pixels) + i + j, ptr[j], x + 8 > max_x ? (x + 8 - max_x) * 32 : 256);
-			for(j = 0; j < 8; j++) {
-				if (ptr[j] && x + j >= 0 && x + j < graphics_context->width && y >= 0 && y < graphics_context->height) {
-					(graphics_context->pixels)[i + j] = graphics_context->color;
-				}
-			}
-			//	}
-				//else { // found is true, check if there are any false vals
-				//	if(_mm)
-				//}
-			//}
-			//else if(found) { // none are true, but previously were
-			//	break;
-			//}
+			//int *ptr = &condval;
+			// for(j = 0; j < 8; j++) {
+				// 	if((x + j) < 20 && y < 20) {
+				// 		printf("point (%d, %d) tested, ptr[j] = %d\n", x + j, y, ptr[j]);
+				// 	}
+				// 	if (ptr[j] && x + j >= 0 && x + j < graphics_context->width && y >= 0 && y < graphics_context->height) {
+						
+				// 		(graphics_context->pixels)[i + j] = graphics_context->color;
+				// 	}
+				// }
+			//printf("condval: %d %d %d %d %d %d %d %d\n", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7]);
+			// if(!_mm256_testc_si256(condval, v1)) { // condval && true == false, condval = false
+			// 	if(!found) {
+			// 		found = true; // condval has trues
+			if(i <= 100)
+			printf("%d\n", i);
+			      	memcpy((graphics_context->pixels) + i, &condval, 256);
+								
+			// 	}
+			// }
+			// 	// else { // found is true, check if there are any false vals
+			// 	// 	if(_mm)
+			// 	// }
+			// //}
+			// else if(found) { // none are true, but previously were
+			// 	break;
+			// }
 			
 			w1v -= w1vinc;
 			w2v -= w2vinc;
