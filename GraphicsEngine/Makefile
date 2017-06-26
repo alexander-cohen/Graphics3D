@@ -1,6 +1,6 @@
 CC=gcc -g
 INC=-I.
-CARGS=-mavx -mavx2
+CARGS=
 
 all: clean displayer.o graphics2d.o vector.o matrix.o g2dwrapper.o stack.o pong.o helper.o # recompiles
 	$(CC) displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o pong.o helper.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext

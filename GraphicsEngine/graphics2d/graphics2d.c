@@ -411,6 +411,7 @@ int g2d_fill_triangle_boundingbox (
 	}
 }
 
+/*
 __m256i scalar_gt(__m256i a, __m256i b) {
 	__m256i out;
 	int *outpt = &out;
@@ -525,22 +526,24 @@ int g2d_fill_triangle_boundingbox_avx2 (
 				// 	}
 				// }
 			//printf("condval: %d %d %d %d %d %d %d %d\n", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7]);
-			// if(!_mm256_testc_si256(condval, v1)) { // condval && true == false, condval = false
-			// 	if(!found) {
-			// 		found = true; // condval has trues
-			if(i <= 100)
-			printf("%d\n", i);
-			      	memcpy((graphics_context->pixels) + i, &condval, 256);
-								
-			// 	}
-			// }
-			// 	// else { // found is true, check if there are any false vals
-			// 	// 	if(_mm)
-			// 	// }
-			// //}
-			// else if(found) { // none are true, but previously were
-			// 	break;
-			// }
+			if(!_mm256_testz_si256(condval, v1)) { // condval && true == false, condval = false
+				memcpy((graphics_context->pixels) + i, &condval, 256); 
+				if(!found) {
+					found = true; // condval has trues	
+				}
+				else { // found is true, check if there are any false vals
+					if(_mm256_testc_si256(v1, condval)) { // true && !condval == false, !condval == false, condval == true for all
+						printf("\nnot all true:");
+						printvec(condval);
+						break; // previously found was true, but there is at least one false value
+					}
+				}
+			}
+			else if(found) { // none are true, but previously were
+				printf("\nnone tru: ");
+				printvec(condval);
+				break;
+			}
 			
 			w1v -= w1vinc;
 			w2v -= w2vinc;
@@ -703,7 +706,7 @@ int g2d_fill_triangle_boundingbox_avx (
 	free (w2_add_col_dat);
 	free (w3_add_col_dat);
 }
-
+*/
 
 int g2d_fill_triangle (
 	const int x1, const int y1, 

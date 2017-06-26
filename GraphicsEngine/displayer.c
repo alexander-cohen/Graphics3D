@@ -27,13 +27,13 @@ int main() {
     run_tri_test ();
 }
 
-int run_avx_test() 
+/*int run_avx_test() 
 {
     g2d_set_col (BLACK);
     g2d_fill_triangle_boundingbox_avx (1, 1, 100, 100, 400, 1);
     put_frame();
 }
-
+*/
 int run_pong ()
 {
     struct timeval begin, end;
@@ -371,7 +371,7 @@ int run_tri_test() {
         //g2d_fill_triangle_boundingbox(200,150,300,140,240,135);
         //all near horizontal, same side, flipped
         //g2d_fill_triangle_boundingbox(300,150,400,160,340,165);
-        g2d_fill_triangle_boundingbox_avx2(0,0,511,100,200,511);
+        g2d_fill_triangle_boundingbox(0,0,511,100,200,511);
         int 
         x1 = 30, y1 = 30,
         x2 = 200, y2 = 40,
