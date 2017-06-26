@@ -1,4 +1,4 @@
-CC=/opt/local/bin/gcc-mp-5
+CC=gcc -g
 INC=-I.
 CARGS=-mavx -mavx2
 

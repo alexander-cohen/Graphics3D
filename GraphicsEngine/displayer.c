@@ -14,7 +14,7 @@ XImage *img = NULL;
 g2d_context *my_g2d_context;
 
 
-int col_arr[HEIGHT * WIDTH];
+int *col_arr; // [HEIGHT * WIDTH] __attribute__((aligned(32)));
 
 int main() {
     setbuf(stdout, NULL);
@@ -24,7 +24,7 @@ int main() {
     //run_line();
     //run_pong();
     //run_triangle();
-    run_avx_test ();
+    run_tri_test ();
 }
 
 int run_avx_test() 
@@ -70,6 +70,7 @@ int put_frame ()
 }
 
 int open_window() {
+    col_arr = _mm_malloc(WIDTH * HEIGHT * sizeof(int), 32);
     dis = XOpenDisplay(NULL);
     if (dis == NULL) {
         fprintf(stderr, "Cannot open display\n");
@@ -370,7 +371,7 @@ int run_tri_test() {
         //g2d_fill_triangle_boundingbox(200,150,300,140,240,135);
         //all near horizontal, same side, flipped
         //g2d_fill_triangle_boundingbox(300,150,400,160,340,165);
-        g2d_fill_triangle_boundingbox(0,0,500,100,200,500);
+        g2d_fill_triangle_boundingbox_avx2(0,0,511,100,200,511);
         int 
         x1 = 30, y1 = 30,
         x2 = 200, y2 = 40,

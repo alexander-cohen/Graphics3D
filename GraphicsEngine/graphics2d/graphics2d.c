@@ -5,7 +5,7 @@ g2d_context *graphics_context;
 
 g2d_context *g2d_create_graphics_context (int *pixels, int width, int height)
 {
-	g2d_context *graphics_context = (g2d_context *) malloc (sizeof (g2d_context));
+	g2d_context *graphics_context = (g2d_context *) malloc(sizeof(g2d_context));
     graphics_context -> pixels = pixels;
     graphics_context -> width = width;
     graphics_context -> height = height;
@@ -411,6 +411,100 @@ int g2d_fill_triangle_boundingbox (
 	}
 }
 
+int g2d_fill_triangle_boundingbox_avx2 (
+	const short x1, const short y1, 
+	const short x2, const short y2,
+	const short x3, const short y3)
+{
+
+	//y's are negated bc the axis is inverted
+	short 
+	dx12 = (x2 - x1), dy12 = (y2 - y1),
+	dx23 = (x3 - x2), dy23 = (y3 - y2),
+	dx31 = (x1 - x3), dy31 = (y1 - y3);
+
+	//change the order so its counter clockwise
+	if (cross2d (dx12, dy12, dx23, dy23) < 0)
+	{
+		return g2d_fill_triangle_boundingbox_avx2 (x1, y1, x3, y3, x2, y2);
+	}
+
+	//printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
+	//printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
+
+
+	short min_x = min3 (x1, x2, x3);
+	short min_y = min3 (y1, y2, y3);
+
+	short max_x = max3 (x1, x2, x3);
+	short max_y = max3 (y1, y2, y3);
+
+	//printsf ("min: %d, %d\n", min_x, min_y);
+
+	int w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
+	int w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
+	int w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
+
+	__m256i ran8 = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+	__m256i w1vinc = _mm256_set1_epi32(dy23 << 3);
+	__m256i w2vinc = _mm256_set1_epi32(dy31 << 3);
+	__m256i w3vinc = _mm256_set1_epi32(dy12 << 3);
+	int m1inc = dy23 << 3;
+	int m2inc = dy31 << 3;
+	int m3inc = dy12 << 3;
+	__m256i w1v_row = _mm256_set1_epi32(dy23) * ran8 + _mm256_set1_epi32(w1_row);
+	__m256i w2v_row = _mm256_set1_epi32(dy31) * ran8 + _mm256_set1_epi32(w2_row);
+	__m256i w3v_row = _mm256_set1_epi32(dy12) * ran8 + _mm256_set1_epi32(w3_row);
+	__m256i w1v;
+	__m256i w2v;
+	__m256i w3v;
+	__m256i w1vinc_row = _mm256_set1_epi32(dx23);
+	__m256i w2vinc_row = _mm256_set1_epi32(dx31);
+	__m256i w3vinc_row = _mm256_set1_epi32(dx12);
+	__m256i v0 = _mm256_set1_epi32(0);
+	__m256i v1 = _mm256_set1_epi32(1);
+	__m256i condval;
+	int i = 0;
+	int ireset = graphics_context->width;
+	int iinc = graphics_context->width;
+	for (short y = min_y; y <= max_y; y++)
+	{
+		w1v = w1v_row;
+		w2v = w2v_row;
+		w3v = w3v_row;
+		bool found = false;
+
+		for (short x = min_x; x <= max_x; x+=8, i+=8)
+		{
+			printf("i: %d,  \t", i);
+			condval = _mm256_and_si256(_mm256_cmpgt_epi32(w1v, v0), _mm256_and_si256(_mm256_cmpgt_epi32(w2v, v0), _mm256_cmpgt_epi32(w3v, v0)));
+			int *ptr = &condval;
+			printf("condval: %d %d %d %d %d %d %d %d\n", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7]);
+			if(!_mm256_testc_si256(condval, v1)) { // condval && true == false, condval = false
+				if(!found) {
+					found = true; // condval has trues
+					memcpy((graphics_context->pixels) + i, &condval, x + 8 > max_x ? (x + 8 - max_x) * 32 : 256);
+				}
+				//else { // found is true, check if there are any false vals
+				//	if(_mm)
+				//}
+			}
+			else if(found) { // none are true, but previously were
+				break;
+			}
+			
+			w1v -= w1vinc;
+			w2v -= w2vinc;
+			w3v -= w3vinc;
+		}
+		i = ireset;
+		ireset += iinc;
+		w1v_row += w1vinc_row;
+		w2v_row += w2vinc_row;
+		w3v_row += w3vinc_row;
+	}
+}
+
 void print_vec (__m256i vec)
 {
 	int *ptr = (int *) &vec;
@@ -520,14 +614,14 @@ int g2d_fill_triangle_boundingbox_avx (
 			allor = _mm256_set_epi32(-5, -5, -5, 1, 1, -5, -5, -5); //w1 | w2 | w3;
 			comp = zero;
 
-			printf ("comparison: %d\n", _mm256_cmp_epi32 (allor, zero));
+			//printf ("comparison: %d\n", _mm256_cmpeq_epi32 (allor, zero));
 
 
-			printf ("!0x05 = %d\n", (!0x05));
+			//printf ("!0x05 = %d\n", (!0x05));
 			
-			print_vec (allor);
-			print_vec (comp);
-			printf ("\n");
+			//print_vec (allor);
+			//print_vec (comp);
+			//printf ("\n");
 			//printf("%d\n\n", w1_scalar);
 
 			w1 += w1_add_per_col;
