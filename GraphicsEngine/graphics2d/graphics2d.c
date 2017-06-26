@@ -445,7 +445,7 @@ int g2d_fill_triangle_boundingbox_avx2 (
 	int w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
 	int w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
 
-	__m256i ran8 = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+	__m256i ran8 = _mm256_set_epi32(0, 1, 2, 3, 4, 5, 6, 7);
 	__m256i w1vinc = _mm256_set1_epi32(dy23 << 3);
 	__m256i w2vinc = _mm256_set1_epi32(dy31 << 3);
 	__m256i w3vinc = _mm256_set1_epi32(dy12 << 3);
@@ -465,8 +465,10 @@ int g2d_fill_triangle_boundingbox_avx2 (
 	__m256i v1 = _mm256_set1_epi32(1);
 	__m256i condval;
 	int i = 0;
-	int ireset = graphics_context->width;
+	int j = 0;
 	int iinc = graphics_context->width;
+	int ireset = iinc + min_x;
+	
 	for (short y = min_y; y <= max_y; y++)
 	{
 		w1v = w1v_row;
@@ -476,22 +478,26 @@ int g2d_fill_triangle_boundingbox_avx2 (
 
 		for (short x = min_x; x <= max_x; x+=8, i+=8)
 		{
-			printf("i: %d,  \t", i);
 			condval = _mm256_and_si256(_mm256_cmpgt_epi32(w1v, v0), _mm256_and_si256(_mm256_cmpgt_epi32(w2v, v0), _mm256_cmpgt_epi32(w3v, v0)));
 			int *ptr = &condval;
 			printf("condval: %d %d %d %d %d %d %d %d\n", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7]);
-			if(!_mm256_testc_si256(condval, v1)) { // condval && true == false, condval = false
-				if(!found) {
-					found = true; // condval has trues
-					memcpy((graphics_context->pixels) + i, &condval, x + 8 > max_x ? (x + 8 - max_x) * 32 : 256);
+			//if(!_mm256_testc_si256(condval, v1)) { // condval && true == false, condval = false
+			//	if(!found) {
+			//		found = true; // condval has trues
+			//      memcpy((graphics_context->pixels) + i + j, ptr[j], x + 8 > max_x ? (x + 8 - max_x) * 32 : 256);
+			for(j = 0; j < 8; j++) {
+				if (ptr[j] && x + j >= 0 && x + j < graphics_context->width && y >= 0 && y < graphics_context->height) {
+					(graphics_context->pixels)[i + j] = graphics_context->color;
 				}
+			}
+			//	}
 				//else { // found is true, check if there are any false vals
 				//	if(_mm)
 				//}
-			}
-			else if(found) { // none are true, but previously were
-				break;
-			}
+			//}
+			//else if(found) { // none are true, but previously were
+			//	break;
+			//}
 			
 			w1v -= w1vinc;
 			w2v -= w2vinc;
@@ -504,6 +510,8 @@ int g2d_fill_triangle_boundingbox_avx2 (
 		w3v_row += w3vinc_row;
 	}
 }
+
+
 
 void print_vec (__m256i vec)
 {
