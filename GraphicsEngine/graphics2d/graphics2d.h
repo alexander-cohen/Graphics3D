@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include "helper.h"
 #include "stack.h"
+#include "displayer.h"
+
+#define FIXED_POINT_SIZE 8
 
 typedef struct {
 	int *pixels;
@@ -41,6 +44,11 @@ int g2d_fill_triangle (
 	const int x3, const int y3);
 
 int g2d_fill_triangle_boundingbox (
+	const short x1, const short y1, 
+	const short x2, const short y2,
+	const short x3, const short y3);
+
+int g2d_fill_triangle_boundingbox_baseline (
 	const short x1, const short y1, 
 	const short x2, const short y2,
 	const short x3, const short y3);
