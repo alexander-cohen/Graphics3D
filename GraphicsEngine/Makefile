@@ -1,6 +1,5 @@
 CC=gcc -O3
 INC=-I.
-CARGS=-mavx
 
 all: clean displayer.o graphics2d.o vector.o matrix.o g2dwrapper.o stack.o pong.o # recompiles
 	$(CC) displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o pong.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext
@@ -12,7 +11,7 @@ displayer.o: displayer.c
 	$(CC) -c displayer.c ${INC} ${CARGS}
 
 graphics2d.o: graphics2d/graphics2d.c
-	$(CC) -c graphics2d/graphics2d.c ${INC} ${CARGS}
+	$(CC) -c -mavx graphics2d/graphics2d.c ${INC} ${CARGS}
 
 vector.o: linalg/vector.c
 	$(CC) -c linalg/vector.c ${INC} ${CARGS}
