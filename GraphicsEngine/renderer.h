@@ -2,12 +2,6 @@
 #include "primitives.h"
 #include "arrayvec/intarrayvec.h"
 #include "arrayvec/matarrayvec.h"
-//#include "input_assembler.h"
-//#include "vertex_shader.h"
-//#include "tessellation_shader.h"
-//#include "geometry_shader.h"
-//#include "clipper.h"
-//#include "fragment_shader.h"
 
 
 typedef struct {
@@ -25,3 +19,5 @@ typedef struct {
 	int *color_buffer;
 	matarrayvec materials;
 } raster_context;
+
+int *render(triangle *ts, size_t ntriangles, matarrayvec materials);

@@ -97,7 +97,7 @@ void raster_tri(raster_context *rac, triangle tri) {
 
     double w1, w2, w3, z;
     int xnext = min_x;
-
+    int idx;
     for (short y = min_y; y <= max_y; y++)
     {
         w1 = w1_row;
@@ -114,7 +114,11 @@ void raster_tri(raster_context *rac, triangle tri) {
             //printf ("x: %d, y: %d\n", xnext, y);
             //*g2d_buffer_get (y, xnext) = graphics_context -> color;
             //PUT PIXEL AT Y, XNEXT
-
+            idx = y * rac->width + xnext;
+            if(z > rac->z_buffer[idx]) {
+                rac->z_buffer[idx] = z;
+                rac->mat_buffer[idx] = tri.mat;
+            }
             //printf ("(after) x: %d, y: %d\n", xnext, y);
             w1_row += dy23;
             w2_row += dy31;
@@ -130,7 +134,11 @@ void raster_tri(raster_context *rac, triangle tri) {
             {
                 //*g2d_buffer_get (y, x) = graphics_context -> color;
                 //PUT PIXEL AT Y, X
-
+                idx = y * rac->width + x;
+                if(z > rac->z_buffer[idx]) {
+                    rac->z_buffer[idx] = z;
+                    rac->mat_buffer[idx] = tri.mat;
+                }
                 found = true;
             }
 
@@ -153,8 +161,8 @@ void raster_tri(raster_context *rac, triangle tri) {
     }
 }
 
-main() {
-    render_context *rc = input_assembler((triangle[]){{1, 1, (Vec3){0,0,0},(Vec3){200,100,100},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},
-                                                              (Vec2){0,0},(Vec2){0,0},(Vec2){0,0},1}}, 1, new_matarrayvec());
-    rasterizer(rc, 512, 512);
-}
+//main() {
+//    render_context *rc = input_assembler((triangle[]){{1, 1, (Vec3){0,0,0},(Vec3){200,100,100},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},
+//                                                              (Vec2){0,0},(Vec2){0,0},(Vec2){0,0},1}}, 1, new_matarrayvec());
+//    rasterizer(rc, 512, 512);
+//}

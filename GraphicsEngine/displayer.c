@@ -16,16 +16,17 @@ g2d_context *my_g2d_context;
 
 int *col_arr; // [HEIGHT * WIDTH] __attribute__((aligned(32)));
 
-//int main() {
-//    setbuf(stdout, NULL);
-//    srand(time(NULL));
-//
-//    open_window();
-//    //run_line();
-//    //run_pong();
-//    run_triangle();
-//    //run_tri_test ();
-//}
+int main() {
+    setbuf(stdout, NULL);
+    srand(time(NULL));
+
+    open_window();
+    //run_line();
+    //run_pong();
+    //run_triangle();
+    //run_tri_test ();
+    run_render_test();
+}
 
 /*int run_avx_test() 
 {
@@ -418,5 +419,61 @@ int run_tri_test() {
 
     //XCloseDisplay(dis);
     
+    return 0;
+}
+
+int run_render_test() {
+
+    struct timespec slptime = {0, 20000000}; // 50 fps
+    int frameNum = 0;
+    // make a bunch of windows
+
+    printf("Frame generation complete\n");
+    while(XPending(dis)) {
+        XNextEvent(dis, &evt);
+        if(evt.type == Expose)
+            break;
+        else {
+
+        }
+    }
+    printf("Got Expose event, moving on\n");
+    struct timeval begin, end;
+    XImage *img = NULL;
+    gettimeofday(&begin, NULL);
+
+
+    while(frameNum < 10000) {
+        g2d_fill_bg (CYAN);
+
+        printf("Frame %d\n", frameNum);
+        while(XPending(dis)) {
+            XNextEvent(dis, &evt);
+            if (evt.type == KeyPress)
+                break;
+            else if(evt.type == Expose) {}
+            else {
+                printf("this event not handled currently\n");
+            }
+        }
+
+        col_arr = render((triangle[]){{1, 1, (Vec3){0,0,0},(Vec3){200,100,100},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},
+                                              (Vec2){0,0},(Vec2){0,0},(Vec2){0,0},1}}, 1, new_matarrayvec());
+
+        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
+        XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
+
+        frameNum++;
+        gettimeofday(&end, NULL);
+        float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+        printf("Average of %d FPS\n", (int)(frameNum / nsecs));
+    }
+    gettimeofday(&end, NULL);
+    float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+    printf("10000 loops: %f ms\n", nsecs * 1000);
+    printf("Average of %d FPS", (int)(10000 / nsecs));
+
+    //XCloseDisplay(dis);
+
     return 0;
 }

@@ -13,8 +13,8 @@
 #include "helper.h"
 #include "graphics2d/graphics2d.h"
 #include "pong.h"
+#include "renderer.h"
 
-int ____a(g2d_context);
 int open_window();
 int run_line();
 int run_test();
