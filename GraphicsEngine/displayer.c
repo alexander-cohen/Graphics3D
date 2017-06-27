@@ -23,8 +23,8 @@ int main() {
     open_window();
     //run_line();
     //run_pong();
-    //run_triangle();
-    run_tri_test ();
+    run_triangle();
+    //run_tri_test ();
 }
 
 /*int run_avx_test() 
@@ -172,7 +172,7 @@ int run_triangle ()
 
 
             g2d_set_col (color);
-            g2d_fill_triangle (x1, y1, x2, y2, x3, y3);
+            //g2d_fill_triangle_boundingbox_baseline (x1, y1, x2, y2, x3, y3);
 
             // g2d_set_col (0xFF0000);
             // g2d_fill_ellipse (x1, y1, 5, 5);
@@ -201,7 +201,7 @@ int run_triangle ()
             int midx = rand() % 512;
             int midy = rand() % 512;
 
-            int color = rand() % (0x00FFFF);
+            int color = rand() % (0xFFFFFF);
 
 
             int x1 = midx + (rand() % tri_box_size) - tri_box_size / 2;
@@ -215,11 +215,20 @@ int run_triangle ()
 
             g2d_set_col (color);
             g2d_fill_triangle_boundingbox (x1, y1, x2, y2, x3, y3);
+
+            // g2d_set_col (0xFF0000);
+            // g2d_fill_ellipse (x1, y1, 5, 5);
+
+            // g2d_set_col (0x00FF00);
+            // g2d_fill_ellipse (x2, y2, 5, 5);
+
+            // g2d_set_col (0x0000FF);
+            // g2d_fill_ellipse (x3, y3, 5, 5);
         }
 
         gettimeofday(&end, NULL);
         nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
-        printf("%0.2f,", nsecs * 1000);
+        printf("%0.2f\n", nsecs * 1000);
         //printf ("%0.2f,", nsecs / ntrials * 1000000000);
 
         put_frame();
@@ -233,13 +242,11 @@ int run_triangle ()
         }
 
         frameNum++;
-        
-        
         //printf("Average of %0.2f FPS\n", ((double)frameNum/ (double)nsecs));
     }
     gettimeofday(&end, NULL);
     float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
-    printf("10000 loops: %f ms\n", nsecs * 1000);
+    printf("\n10000 loops: %f ms\n", nsecs * 1000);
     printf("Average of %0.2f FPS\n", (10000.0 / (double)nsecs));
 
     //XCloseDisplay(dis);
