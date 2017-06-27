@@ -1,5 +1,7 @@
 #include "primitives.h"
-#include "arrayvec/tricorarrayvec.h"
+#include "arrayvec/intarrayvec.h"
+#include "arrayvec/matarrayvec.h"
+
 
 typedef struct {
 	vec3arrayvec vlist;
@@ -8,3 +10,11 @@ typedef struct {
 	intarrayvec  mlist;
 	matarrayvec  materials;
 } render_context;
+
+typedef struct {
+	int width, height;
+	double *z_buffer;
+	int *mat_buffer;
+	int *color_buffer;
+	matarrayvec materials;
+} raster_context;

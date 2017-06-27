@@ -15,5 +15,6 @@ struct __voidptrAV {
 };
 
 typedef struct __voidptrAV* voidptrarrayvec;
+voidptrarrayvec new_voidptrarrayvec();
 
 #endif

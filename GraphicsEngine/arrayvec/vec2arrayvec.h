@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "linalg/vector.h"
 typedef Vec2 vec2;
 struct __vec2AV {
 	vec2 *data;
@@ -15,5 +16,6 @@ struct __vec2AV {
 };
 
 typedef struct __vec2AV* vec2arrayvec;
+vec2arrayvec new_vec2arrayvec();
 
 #endif

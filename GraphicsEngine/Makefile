@@ -3,7 +3,7 @@ INC=-I.
 CARGS=
 
 all: clean displayer.o graphics2d.o vector.o matrix.o g2dwrapper.o stack.o pong.o helper.o # recompiles
-	$(CC) displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o pong.o helper.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext
+	$(CC) displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o pong.o helper.o ${INC} ${CARGS} -o $(CLION_EXE_DIR)/Graphics3D -lX11 -lXext
 
 run: all
 	./display_xwindow

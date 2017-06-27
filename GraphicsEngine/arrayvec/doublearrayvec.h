@@ -15,5 +15,6 @@ struct __doubleAV {
 };
 
 typedef struct __doubleAV* doublearrayvec;
+doublearrayvec new_doublearrayvec();
 
 #endif

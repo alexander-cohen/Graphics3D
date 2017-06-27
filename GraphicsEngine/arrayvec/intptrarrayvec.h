@@ -15,5 +15,6 @@ struct __intptrAV {
 };
 
 typedef struct __intptrAV* intptrarrayvec;
+intptrarrayvec new_intptrarrayvec();
 
 #endif

@@ -15,5 +15,6 @@ struct __@AV {
 };
 
 typedef struct __@AV* @arrayvec;
+@arrayvec new_@arrayvec();
 
 #endif

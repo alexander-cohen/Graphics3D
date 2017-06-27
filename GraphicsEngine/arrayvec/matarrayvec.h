@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "primitives.h"
+#include "renderer.h"
 
 typedef material mat;
 struct __matAV {
@@ -17,5 +17,6 @@ struct __matAV {
 };
 
 typedef struct __matAV* matarrayvec;
+matarrayvec new_matarrayvec();
 
 #endif
