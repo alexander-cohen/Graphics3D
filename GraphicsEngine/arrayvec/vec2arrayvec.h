@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "linalg/vector.h"
 typedef Vec2 vec2;
 struct __vec2AV {

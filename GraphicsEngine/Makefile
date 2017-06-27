@@ -1,36 +1,24 @@
-CC=gcc -O3
+CC=gcc -O3 -w -g
 INC=-I.
 CARGS=
 
-all: clean displayer.o graphics2d.o vector.o matrix.o g2dwrapper.o stack.o pong.o helper.o # recompiles
-	$(CC) displayer.o graphics2d.o g2dwrapper.o vector.o matrix.o stack.o pong.o helper.o ${INC} ${CARGS} -o $(CLION_EXE_DIR)/Graphics3D -lX11 -lXext
+all: clean arrayveco graphics2do linalgo thiso
+	$(CC) *.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext
 
 run: all
 	./display_xwindow
 
-displayer.o: displayer.c
-	$(CC) -c displayer.c ${INC} ${CARGS}
+thiso:
+	$(CC) -c *.c ${INC} ${CARGS}
 
-graphics2d.o: graphics2d/graphics2d.c
-	$(CC) -c -mavx graphics2d/graphics2d.c ${INC} ${CARGS}
+arrayveco:
+	$(CC) -c arrayvec/*.c ${INC} ${CARGS}
 
-vector.o: linalg/vector.c
-	$(CC) -c linalg/vector.c ${INC} ${CARGS}
+graphics2do:
+	$(CC) -c graphics2d/*.c ${INC} ${CARGS}
 
-matrix.o: linalg/matrix.c
-	$(CC) -c linalg/matrix.c ${INC} ${CARGS}
-
-g2dwrapper.o: graphics2d/g2dwrapper.c
-	$(CC) -c graphics2d/g2dwrapper.c ${INC} ${CARGS}
-
-stack.o: stack.c
-	$(CC) -c stack.c ${INC} ${CARGS}
-
-pong.o: pong.c
-	$(CC) -c pong.c ${INC} ${CARGS}
-
-helper.o: helper.c
-	$(CC) -c helper.c ${INC} ${CARGS}
+linalgo:
+	$(CC) -c linalg/*.c ${INC} ${CARGS}
 
 clean:
 	-rm *.o

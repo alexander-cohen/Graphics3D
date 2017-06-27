@@ -1,5 +1,4 @@
 #include "input_assembler.h"
-#include "renderer.h"
 
 render_context *input_assembler(triangle *ts, size_t ntriangles, matarrayvec materials) {
 	render_context *rc = malloc(sizeof(render_context));
@@ -9,17 +8,19 @@ render_context *input_assembler(triangle *ts, size_t ntriangles, matarrayvec mat
     rc->mlist = new_intarrayvec();
     rc->materials = materials;
     int i;
+    triangle t;
     for(i = 0; i < ntriangles; i++) {
-        rc->vlist->append(rc->vlist, ts[i].p1);
-        rc->vlist->append(rc->vlist, ts[i].p2);
-        rc->vlist->append(rc->vlist, ts[i].p3);
-        rc->nlist->append(rc->nlist, ts[i].n1);
-        rc->nlist->append(rc->nlist, ts[i].n2);
-        rc->nlist->append(rc->nlist, ts[i].n3);
-        rc->tlist->append(rc->tlist, ts[i].t1);
-        rc->tlist->append(rc->tlist, ts[i].t2);
-        rc->tlist->append(rc->tlist, ts[i].t3);
-        rc->mlist->append(rc->mlist, ts[i].mat);
+        t = ts[i];
+        rc->vlist->append(rc->vlist, t.p1);
+        rc->vlist->append(rc->vlist, t.p2);
+        rc->vlist->append(rc->vlist, t.p3);
+        rc->nlist->append(rc->nlist, t.n1);
+        rc->nlist->append(rc->nlist, t.n2);
+        rc->nlist->append(rc->nlist, t.n3);
+        rc->tlist->append(rc->tlist, t.t1);
+        rc->tlist->append(rc->tlist, t.t2);
+        rc->tlist->append(rc->tlist, t.t3);
+        rc->mlist->append(rc->mlist, t.mat);
     }
     return rc;
 }

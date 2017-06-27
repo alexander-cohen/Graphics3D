@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-typedef double double;
+#include <assert.h>
 struct __doubleAV {
 	double *data;
 	int len;

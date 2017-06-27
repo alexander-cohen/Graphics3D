@@ -10,8 +10,7 @@ void __vec2av_append(vec2arrayvec st, vec2 dat) {
 }
 
 vec2 __vec2av_pop(vec2arrayvec st) {
-	if(!st->len)
-		return NULL;
+	assert(st->len);
 	st->len--;
 	return st->data[st->len];
 }
@@ -21,10 +20,8 @@ void __vec2av_replace(vec2arrayvec st, size_t i, vec2 dat) {
 }
 
 void __vec2av_replacemultiple(vec2arrayvec st, size_t i, vec2 *dats, size_t lendats) {
-	if(lendats == 0) {
-		st->data[i] = NULL;
-	}
-	else if(lendats == 1) {
+	assert(lendats);
+	if(lendats == 1) {
 		return __vec2av_replace(st, i, dats[0]);
 	}
 	__vec2av_replace(st, i, dats[0]);
@@ -42,18 +39,9 @@ vec2arrayvec new_vec2arrayvec() {
 	res->pop = __vec2av_pop;
 	res->replace = __vec2av_replace;
 	res->replace_many = __vec2av_replacemultiple;
+	return res;
 }
 
 void free_vec2arrayvec(vec2arrayvec st) {
 	free(st->data);
-}
-
-main() {
-	vec2arrayvec a = new_vec2arrayvec();
-	a->append(a, 1);
-	a->append(a, 4);
-	a->append(a, 9);
-	a->replace(a, 1, 7); // 1 7 9
-	a->replace_many(a, 0, (vec2[]){5, 4, 3}, 3); // 5 7 9 4 3
-	printf("%d %d %d %d %d", a->data[0], a->data[1], a->data[2], a->data[3], a->data[4]);
 }

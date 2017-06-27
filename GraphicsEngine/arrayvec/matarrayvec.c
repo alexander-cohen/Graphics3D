@@ -10,8 +10,7 @@ void __matav_append(matarrayvec st, mat dat) {
 }
 
 mat __matav_pop(matarrayvec st) {
-	if(!st->len)
-		return NULL;
+	assert(st->len);
 	st->len--;
 	return st->data[st->len];
 }
@@ -21,10 +20,8 @@ void __matav_replace(matarrayvec st, size_t i, mat dat) {
 }
 
 void __matav_replacemultiple(matarrayvec st, size_t i, mat *dats, size_t lendats) {
-	if(lendats == 0) {
-		st->data[i] = NULL;
-	}
-	else if(lendats == 1) {
+	assert(lendats);
+	if(lendats == 1) {
 		return __matav_replace(st, i, dats[0]);
 	}
 	__matav_replace(st, i, dats[0]);
@@ -42,18 +39,9 @@ matarrayvec new_matarrayvec() {
 	res->pop = __matav_pop;
 	res->replace = __matav_replace;
 	res->replace_many = __matav_replacemultiple;
+    return res;
 }
 
 void free_matarrayvec(matarrayvec st) {
 	free(st->data);
-}
-
-main() {
-	matarrayvec a = new_matarrayvec();
-	a->append(a, 1);
-	a->append(a, 4);
-	a->append(a, 9);
-	a->replace(a, 1, 7); // 1 7 9
-	a->replace_many(a, 0, (mat[]){5, 4, 3}, 3); // 5 7 9 4 3
-	printf("%d %d %d %d %d", a->data[0], a->data[1], a->data[2], a->data[3], a->data[4]);
 }

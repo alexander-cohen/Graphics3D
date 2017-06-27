@@ -10,8 +10,7 @@ void __@av_append(@arrayvec st, @ dat) {
 }
 
 @ __@av_pop(@arrayvec st) {
-	if(!st->len)
-		return NULL;
+	assert(st->len);
 	st->len--;
 	return st->data[st->len];
 }
@@ -21,10 +20,8 @@ void __@av_replace(@arrayvec st, size_t i, @ dat) {
 }
 
 void __@av_replacemultiple(@arrayvec st, size_t i, @ *dats, size_t lendats) {
-	if(lendats == 0) {
-		st->data[i] = NULL;
-	}
-	else if(lendats == 1) {
+	assert(lendats);
+	if(lendats == 1) {
 		return __@av_replace(st, i, dats[0]);
 	}
 	__@av_replace(st, i, dats[0]);
@@ -42,18 +39,9 @@ void __@av_replacemultiple(@arrayvec st, size_t i, @ *dats, size_t lendats) {
 	res->pop = __@av_pop;
 	res->replace = __@av_replace;
 	res->replace_many = __@av_replacemultiple;
+    return res;
 }
 
 void free_@arrayvec(@arrayvec st) {
 	free(st->data);
-}
-
-main() {
-	@arrayvec a = new_@arrayvec();
-	a->append(a, 1);
-	a->append(a, 4);
-	a->append(a, 9);
-	a->replace(a, 1, 7); // 1 7 9
-	a->replace_many(a, 0, (@[]){5, 4, 3}, 3); // 5 7 9 4 3
-	printf("%d %d %d %d %d", a->data[0], a->data[1], a->data[2], a->data[3], a->data[4]);
 }

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-typedef int int;
+#include <assert.h>
 struct __intAV {
 	int *data;
 	int len;

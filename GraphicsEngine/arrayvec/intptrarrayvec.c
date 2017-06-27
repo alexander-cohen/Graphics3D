@@ -10,8 +10,7 @@ void __intptrav_append(intptrarrayvec st, intptr dat) {
 }
 
 intptr __intptrav_pop(intptrarrayvec st) {
-	if(!st->len)
-		return NULL;
+	assert(st->len);
 	st->len--;
 	return st->data[st->len];
 }
@@ -21,10 +20,8 @@ void __intptrav_replace(intptrarrayvec st, size_t i, intptr dat) {
 }
 
 void __intptrav_replacemultiple(intptrarrayvec st, size_t i, intptr *dats, size_t lendats) {
-	if(lendats == 0) {
-		st->data[i] = NULL;
-	}
-	else if(lendats == 1) {
+	assert(lendats);
+	if(lendats == 1) {
 		return __intptrav_replace(st, i, dats[0]);
 	}
 	__intptrav_replace(st, i, dats[0]);
@@ -42,18 +39,9 @@ intptrarrayvec new_intptrarrayvec() {
 	res->pop = __intptrav_pop;
 	res->replace = __intptrav_replace;
 	res->replace_many = __intptrav_replacemultiple;
+	return res;
 }
 
 void free_intptrarrayvec(intptrarrayvec st) {
 	free(st->data);
-}
-
-main() {
-	intptrarrayvec a = new_intptrarrayvec();
-	a->append(a, 1);
-	a->append(a, 4);
-	a->append(a, 9);
-	a->replace(a, 1, 7); // 1 7 9
-	a->replace_many(a, 0, (intptr[]){5, 4, 3}, 3); // 5 7 9 4 3
-	printf("%d %d %d %d %d", a->data[0], a->data[1], a->data[2], a->data[3], a->data[4]);
 }

@@ -16,16 +16,16 @@ g2d_context *my_g2d_context;
 
 int *col_arr; // [HEIGHT * WIDTH] __attribute__((aligned(32)));
 
-int main() {
-    setbuf(stdout, NULL);
-    srand(time(NULL));
-
-    open_window();
-    //run_line();
-    //run_pong();
-    run_triangle();
-    //run_tri_test ();
-}
+//int main() {
+//    setbuf(stdout, NULL);
+//    srand(time(NULL));
+//
+//    open_window();
+//    //run_line();
+//    //run_pong();
+//    run_triangle();
+//    //run_tri_test ();
+//}
 
 /*int run_avx_test() 
 {

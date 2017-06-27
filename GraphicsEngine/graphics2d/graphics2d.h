@@ -1,5 +1,4 @@
-#ifndef GRAPHICS2D_H
-#define GRAPHICS2D_H
+#pragma once
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,4 +56,3 @@ int g2d_fill_triangle_boundingbox_avx (
 	const int x1, const int y1, 
 	const int x2, const int y2,
 	const int x3, const int y3);
-#endif

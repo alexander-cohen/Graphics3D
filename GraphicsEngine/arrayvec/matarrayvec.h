@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "renderer.h"
+#include <assert.h>
+#include "primitives.h"
 
 typedef material mat;
 struct __matAV {

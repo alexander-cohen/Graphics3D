@@ -1,5 +1,4 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
 
 #include "helper.h"
 
@@ -51,5 +50,3 @@ inline Vec4 vec4isub(Vec4 v, Vec4 o);
 inline Vec4 vec4mul(Vec4 v, double o);
 inline double vec4norm(Vec4 v);
 inline Vec4 vec4sub(Vec4 v, Vec4 o);
-
-#endif

@@ -1,4 +1,3 @@
-
 #include "graphics2d.h"
 
 g2d_context *graphics_context;
