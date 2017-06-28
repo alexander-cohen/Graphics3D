@@ -186,3 +186,15 @@ inline double vec4norm(Vec4 v) {
 inline Vec3 vec4con(Vec4 v) {
 	return (Vec3){v.x, v.y, v.z};
 }
+
+inline Vec2 vec2lerp(Vec2 v, Vec2 o, double t) {
+    return (Vec2){v.x*(1-t) + o.x*t, v.y*(1-t) + o.y*t};
+}
+
+inline Vec3 vec3lerp(Vec3 v, Vec3 o, double t) {
+    return (Vec3){v.x*(1-t) + o.x*t, v.y*(1-t) + o.y*t, v.z*(1-t) + o.z*t};
+}
+
+inline Vec4 vec4lerp(Vec4 v, Vec4 o, double t) {
+    return (Vec4){v.x*(1-t) + o.x*t, v.y*(1-t) + o.y*t, v.z*(1-t) + o.z*t, v.w*(1-t) + o.w*t};
+}

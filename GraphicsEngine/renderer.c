@@ -11,7 +11,7 @@ int *render(triangle *ts, size_t ntriangles, matarrayvec materials) {
     vertex_shader(rc);
     tessellation_shader(rc);
     geometry_shader(rc);
-    clip(rc);
+    clip(rc, 512, 512); // might not be necessary because our triangle algorithm uses bbox
     raster_context *rac = rasterizer(rc, 512, 512);
     fragment_shader(rac);
     free_vec3arrayvec(rc->vlist);
@@ -21,6 +21,7 @@ int *render(triangle *ts, size_t ntriangles, matarrayvec materials) {
     free_intarrayvec(rc->mlist);
     printf("rc mlist %d %d", rc->mlist->data[0], rc->mlist->data[1]);
     free(rc);
+    printf("zbuf corners %f %f %f %f", rac->z_buffer[0], rac->z_buffer[511], rac->z_buffer[511*512], rac->z_buffer[512*512 - 1]);
     free(rac->z_buffer);
     free(rac->mat_buffer);
     int *ret = rac->color_buffer;

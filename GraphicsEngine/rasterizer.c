@@ -12,6 +12,9 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
     rac->height = height;
     rac->color_buffer = malloc(sizeof(int) * width * height);
     rac->z_buffer = malloc(sizeof(double) * width * height);
+    if(rac->z_buffer == NULL) {
+        printf("WARNING!!! ZBUF NULL!!!!\n");
+    }
     rac->mat_buffer = malloc(sizeof(int) * width * height);
     int i;
     for(i = 0; i < width*height; i++) {
@@ -94,8 +97,8 @@ void raster_tri(raster_context *rac, triangle tri) {
     short min_x = max(0, min3 (x1, x2, x3));
     short min_y = max(0, min3 (y1, y2, y3));
 
-    short max_x = 1 + min(rac->width, max3 (x1, x2, x3));
-    short max_y = 1 + min(rac->height, max3 (y1, y2, y3));
+    short max_x = min(rac->width-1, max3 (x1, x2, x3));
+    short max_y = min(rac->height-1, max3 (y1, y2, y3));
     //printf("bbox: (%d,%d),(%d,%d)\n", min_x, min_y, max_x, max_y);
     Vec3 baryTL, baryTR, baryBL;
     barycentric(&baryTL, (Vec2){min_x, min_y}, tri.p1, tri.p2, tri.p3, idt);
@@ -128,7 +131,7 @@ void raster_tri(raster_context *rac, triangle tri) {
 
         bool found = false;
 
-        short x = xnext;
+        short x = max(xnext, min_x);
         for (; w1_row >= 0 && w2_row >= 0 && w3_row >= 0 && xnext >= min_x; xnext--)
         {
             //printf ("x: %d, y: %d\n", xnext, y);
@@ -149,7 +152,6 @@ void raster_tri(raster_context *rac, triangle tri) {
             w3_row += dy12;
             z_row += z_row_inc;
         }
-
         for (; x <= max_x; x++)
         {
             //printf ("x2: %d, y2: %d\n", x, y);
