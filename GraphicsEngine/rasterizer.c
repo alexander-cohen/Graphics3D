@@ -96,7 +96,7 @@ void raster_tri(raster_context *rac, triangle tri) {
 
     short max_x = 1 + min(rac->width, max3 (x1, x2, x3));
     short max_y = 1 + min(rac->height, max3 (y1, y2, y3));
-    printf("bbox: (%d,%d),(%d,%d)\n", min_x, min_y, max_x, max_y);
+    //printf("bbox: (%d,%d),(%d,%d)\n", min_x, min_y, max_x, max_y);
     Vec3 baryTL, baryTR, baryBL;
     barycentric(&baryTL, (Vec2){min_x, min_y}, tri.p1, tri.p2, tri.p3, idt);
     barycentric(&baryTR, (Vec2){max_x, min_y}, tri.p1, tri.p2, tri.p3, idt);
@@ -106,7 +106,7 @@ void raster_tri(raster_context *rac, triangle tri) {
     double zTR = z1*baryTR.x + z2*baryTR.y + z3*baryTR.z;
     double zBL = z1*baryBL.x + z2*baryBL.y + z3*baryBL.z;
 
-    printf("tl: %f tr: %f bl: %f\n", zTL, zTR, zBL);
+    //printf("tl: %f tr: %f bl: %f\n", zTL, zTR, zBL);
     double z_inc = (zTR - zTL) / (max_x - min_x);
     double z_row_inc = (zBL - zTL) / (max_y - min_y);
     double z_row = zTL;
@@ -114,7 +114,7 @@ void raster_tri(raster_context *rac, triangle tri) {
     double w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
     double w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
     double w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
-    printf("%f %f %f\n", w1_row, w2_row, w3_row);
+    //printf("%f %f %f\n", w1_row, w2_row, w3_row);
     double w1, w2, w3, z;
     int xnext = min_x;
     int idx;
@@ -136,12 +136,12 @@ void raster_tri(raster_context *rac, triangle tri) {
             //PUT PIXEL AT Y, XNEXT
             idx = y * rac->width + xnext;
             if(z > rac->z_buffer[idx]) {
-                printf("passed z-buffer test\n");
+                //printf("passed z-buffer test\n");
                 rac->z_buffer[idx] = z;
                 rac->mat_buffer[idx] = tri.mat;
             }
             else {
-                printf("failed z-buffer test\n");
+                //printf("failed z-buffer test\n");
             }
             //printf ("(after) x: %d, y: %d\n", xnext, y);
             w1_row += dy23;
@@ -160,12 +160,12 @@ void raster_tri(raster_context *rac, triangle tri) {
                 //PUT PIXEL AT Y, X
                 idx = y * rac->width + x;
                 if(z > rac->z_buffer[idx]) {
-                    printf("passed z-buffer test\n");
+                    //printf("passed z-buffer test\n");
                     rac->z_buffer[idx] = z;
                     rac->mat_buffer[idx] = tri.mat;
                 }
                 else {
-                    printf("failed z-buffer test\n");
+                    //printf("failed z-buffer test\n");
                 }
                 found = true;
             }
