@@ -1,4 +1,4 @@
-CC=gcc -O3 -w -g
+CC=gcc -O3 -w -g -mno-avx
 INC=-I.
 CARGS=
 

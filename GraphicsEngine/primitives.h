@@ -16,7 +16,7 @@ typedef struct {
 } VNTlist;
 
 typedef struct {
-	int placeholder;
+	int color;
 } material;
 
 typedef struct {

@@ -13,6 +13,13 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
     rac->color_buffer = malloc(sizeof(int) * width * height);
     rac->z_buffer = malloc(sizeof(double) * width * height);
     rac->mat_buffer = malloc(sizeof(int) * width * height);
+    int i;
+    for(i = 0; i < width*height; i++) {
+        rac->z_buffer[i] = -INFINITY;
+        rac->color_buffer[i] = (1 << 24) - 1;
+        rac->mat_buffer[i] = -1;
+    }
+
     int i1, i3;
     triangle tri;
     for(i1 = 0, i3 = 0; i1 < rc->mlist->len; i1++, i3+=3) {
@@ -28,6 +35,7 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
         tri.mat = rc->mlist->data[i1];
         raster_tri(rac, tri);
     }
+    return rac;
 }
 
 double idet(Vec3 p1, Vec3 p2, Vec3 p3) {
@@ -51,6 +59,17 @@ static inline int inheight (raster_context *rac, int y)
     return (int) min (max (y, 0), (rac -> height) - 1);
 }
 
+static double orient2d (double x1, double y1, double x2, double y2, double x3, double y3)
+{
+    return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+}
+
+static double cross2d (double dx1, double dy1, double dx2, double dy2)
+{
+    return dx1 * dy2 - dx2 * dy1;
+}
+
+
 void raster_tri(raster_context *rac, triangle tri) {
     double idt = idet(tri.p1, tri.p2, tri.p3);
     double x1 = tri.p1.x, y1 = tri.p1.y, z1 = tri.p1.z,
@@ -72,11 +91,12 @@ void raster_tri(raster_context *rac, triangle tri) {
     //printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
 
 
-    short min_x = inwidth (rac, min3 (x1, x2, x3));
-    short min_y = inheight (rac, min3 (y1, y2, y3));
+    short min_x = max(0, min3 (x1, x2, x3));
+    short min_y = max(0, min3 (y1, y2, y3));
 
-    short max_x = 1 + inwidth (rac, max3 (x1, x2, x3));
-    short max_y = 1 + inheight (rac, max3 (y1, y2, y3));
+    short max_x = 1 + min(rac->width, max3 (x1, x2, x3));
+    short max_y = 1 + min(rac->height, max3 (y1, y2, y3));
+    printf("bbox: (%d,%d),(%d,%d)\n", min_x, min_y, max_x, max_y);
     Vec3 baryTL, baryTR, baryBL;
     barycentric(&baryTL, (Vec2){min_x, min_y}, tri.p1, tri.p2, tri.p3, idt);
     barycentric(&baryTR, (Vec2){max_x, min_y}, tri.p1, tri.p2, tri.p3, idt);
@@ -94,7 +114,7 @@ void raster_tri(raster_context *rac, triangle tri) {
     double w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
     double w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
     double w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
-
+    printf("%f %f %f\n", w1_row, w2_row, w3_row);
     double w1, w2, w3, z;
     int xnext = min_x;
     int idx;
@@ -116,8 +136,12 @@ void raster_tri(raster_context *rac, triangle tri) {
             //PUT PIXEL AT Y, XNEXT
             idx = y * rac->width + xnext;
             if(z > rac->z_buffer[idx]) {
+                printf("passed z-buffer test\n");
                 rac->z_buffer[idx] = z;
                 rac->mat_buffer[idx] = tri.mat;
+            }
+            else {
+                printf("failed z-buffer test\n");
             }
             //printf ("(after) x: %d, y: %d\n", xnext, y);
             w1_row += dy23;
@@ -136,8 +160,12 @@ void raster_tri(raster_context *rac, triangle tri) {
                 //PUT PIXEL AT Y, X
                 idx = y * rac->width + x;
                 if(z > rac->z_buffer[idx]) {
+                    printf("passed z-buffer test\n");
                     rac->z_buffer[idx] = z;
                     rac->mat_buffer[idx] = tri.mat;
+                }
+                else {
+                    printf("failed z-buffer test\n");
                 }
                 found = true;
             }

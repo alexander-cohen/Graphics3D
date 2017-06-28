@@ -5,15 +5,18 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
+#include <math.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
 #include <X11/extensions/Xdbe.h>
+
 #include "helper.h"
 #include "graphics2d/graphics2d.h"
 #include "pong.h"
 #include "renderer.h"
+#include "arrayvec/triarrayvec.h"
 
 int open_window();
 int run_line();

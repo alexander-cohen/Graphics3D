@@ -12,7 +12,7 @@ int *render(triangle *ts, size_t ntriangles, matarrayvec materials) {
     tessellation_shader(rc);
     geometry_shader(rc);
     clip(rc);
-    raster_context *rac = rasterizer(rc);
+    raster_context *rac = rasterizer(rc, 512, 512);
     fragment_shader(rac);
     free_vec3arrayvec(rc->vlist);
     free_vec3arrayvec(rc->nlist);
@@ -23,6 +23,7 @@ int *render(triangle *ts, size_t ntriangles, matarrayvec materials) {
     free(rac->z_buffer);
     free(rac->mat_buffer);
     int *ret = rac->color_buffer;
+    printf("%d %d", rac->width, rac->height);
     free(rac);
     return ret;
 }

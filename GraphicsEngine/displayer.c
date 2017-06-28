@@ -71,7 +71,7 @@ int put_frame ()
 }
 
 int open_window() {
-    col_arr = _mm_malloc(WIDTH * HEIGHT * sizeof(int), 32);
+    col_arr = malloc(WIDTH * HEIGHT * sizeof(int));
     dis = XOpenDisplay(NULL);
     if (dis == NULL) {
         fprintf(stderr, "Cannot open display\n");
@@ -444,7 +444,7 @@ int run_render_test() {
 
 
     while(frameNum < 10000) {
-        g2d_fill_bg (CYAN);
+        //g2d_fill_bg (CYAN);
 
         printf("Frame %d\n", frameNum);
         while(XPending(dis)) {
@@ -456,9 +456,14 @@ int run_render_test() {
                 printf("this event not handled currently\n");
             }
         }
-
-        col_arr = render((triangle[]){{1, 1, (Vec3){0,0,0},(Vec3){200,100,100},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},
-                                              (Vec2){0,0},(Vec2){0,0},(Vec2){0,0},1}}, 1, new_matarrayvec());
+        free(col_arr);
+        matarrayvec materials = new_matarrayvec();
+        materials->append(materials, (material){CYAN});
+        materials->append(materials, (material){RED});
+        triarrayvec tris = new_triarrayvec();
+        tris->append(tris, (triangle){1,1,{0,0,300},{500,200,100},{300,500,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},0});
+        tris->append(tris, (triangle){1,1,{500,200,300},{0,500,0},{300,0,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},1});
+        col_arr = render(tris->data, 2, materials);
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);

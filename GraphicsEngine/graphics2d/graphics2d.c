@@ -342,12 +342,12 @@ int draw_horizontal_line (int left, int right, int y)
 	}
 }
 
-int cross2d (int dx1, int dy1, int dx2, int dy2)
+static int cross2d (int dx1, int dy1, int dx2, int dy2)
 {
 	return dx1 * dy2 - dx2 * dy1;
 }
 
-int orient2d (short x1, short y1, short x2, short y2, short x3, short y3)
+static int orient2d (short x1, short y1, short x2, short y2, short x3, short y3)
 {
 	return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
 }
