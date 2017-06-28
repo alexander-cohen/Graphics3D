@@ -19,6 +19,7 @@ int *render(triangle *ts, size_t ntriangles, matarrayvec materials) {
     free_vec2arrayvec(rc->tlist);
     free_matarrayvec(rc->materials);
     free_intarrayvec(rc->mlist);
+    printf("rc mlist %d %d", rc->mlist->data[0], rc->mlist->data[1]);
     free(rc);
     free(rac->z_buffer);
     free(rac->mat_buffer);

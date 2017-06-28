@@ -6,7 +6,7 @@ render_context *input_assembler(triangle *ts, size_t ntriangles, matarrayvec mat
     rc->nlist = new_vec3arrayvec();
     rc->tlist = new_vec2arrayvec();
     rc->mlist = new_intarrayvec();
-    rc->materials = materials;
+    rc->materials = new_matarrayvec();
     int i;
     triangle t;
     for(i = 0; i < ntriangles; i++) {
@@ -21,6 +21,9 @@ render_context *input_assembler(triangle *ts, size_t ntriangles, matarrayvec mat
         rc->tlist->append(rc->tlist, t.t2);
         rc->tlist->append(rc->tlist, t.t3);
         rc->mlist->append(rc->mlist, t.mat);
+    }
+    for(i = 0; i < materials->len; i++) {
+        rc->materials->append(rc->materials, materials->data[i]);
     }
     return rc;
 }

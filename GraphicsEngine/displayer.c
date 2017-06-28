@@ -446,8 +446,10 @@ int run_render_test() {
     materials->append(materials, (material){CYAN});
     materials->append(materials, (material){RED});
     triarrayvec tris = new_triarrayvec();
-    tris->append(tris, (triangle){1,1,{0,0,300},{500,200,100},{300,500,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},0});
-    tris->append(tris, (triangle){1,1,{500,200,300},{0,500,0},{300,0,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},1});
+    triangle t1 = (triangle){1,1,{0,0,300},{500,200,100},{300,500,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},0};
+    triangle t2 = (triangle){1,1,{500,200,300},{0,500,0},{300,0,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},1};
+    tris->append(tris, t1);
+    tris->append(tris, t2);
     while(frameNum < 10000) {
         //g2d_fill_bg (CYAN);
 
@@ -461,13 +463,16 @@ int run_render_test() {
                 printf("this event not handled currently\n");
             }
         }
-        free(col_arr);
+
 
         col_arr = render(tris->data, 2, materials);
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
+        t1.p1.x += 1;
 
+        printf("t1 p1 x: %f\n", t1.p1.x);
+        free(col_arr);
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
