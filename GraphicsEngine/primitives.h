@@ -1,8 +1,9 @@
-#pragma once
+#ifndef PRIMITIVES_H
+#define PRIMITIVES_H
 
 #include "linalg/vector.h"
-#include "arrayvec/vec3arrayvec.h"
 #include "arrayvec/vec2arrayvec.h"
+#include "arrayvec/vec3arrayvec.h"
 #include <stdbool.h>
 
 typedef struct {
@@ -25,3 +26,5 @@ typedef struct {
 	Vec2 t1, t2, t3;
 	int mat;
 } triangle;
+
+#endif
