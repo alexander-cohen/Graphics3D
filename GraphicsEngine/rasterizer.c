@@ -84,12 +84,7 @@ void raster_tri(raster_context *rac, triangle tri) {
             dx23 = (x3 - x2), dy23 = (y3 - y2),
             dx31 = (x1 - x3), dy31 = (y1 - y3);
 
-    //change the order so its counter clockwise
-    if (cross2d (dx12, dy12, dx23, dy23) < 0)
-    {
-        return g2d_fill_triangle_boundingbox (x1, y1, x3, y3, x2, y2);
-    }
-
+   
     //printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
     //printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);
 
