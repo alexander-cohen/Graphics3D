@@ -4,7 +4,7 @@ void fragment_shader(raster_context *rac){
     for(y = 0; y < rac->height; y++) {
         for(x = 0; x < rac->width; x++, i++) {
             if(rac->mat_buffer[i] > -1) {
-                rac->color_buffer[i] = rac->materials->data[rac->mat_buffer[i]].color;
+                rac->color_buffer[i] = get(rac->materials, material, rac->mat_buffer[i]).color;
             }
         }
     }

@@ -16,7 +16,7 @@
 #include "graphics2d/graphics2d.h"
 #include "pong.h"
 #include "renderer.h"
-#include "allav.h"
+#include "av2.h"
 
 int open_window();
 int run_line();

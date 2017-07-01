@@ -1,4 +1,5 @@
 #pragma once
 #include "renderer.h"
 #include "primitives.h"
-render_context *input_assembler(triangle *ts, size_t ntriangles, matarrayvec materials);
+#include "linalg/vector.h"
+render_context *input_assembler(arrayvec tris, size_t ntriangles, arrayvec materials);

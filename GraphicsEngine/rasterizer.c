@@ -26,16 +26,16 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
     int i1, i3;
     triangle tri;
     for(i1 = 0, i3 = 0; i1 < rc->mlist->len; i1++, i3+=3) {
-        tri.p1 = rc->vlist->data[i3];
-        tri.p2 = rc->vlist->data[i3 + 1];
-        tri.p3 = rc->vlist->data[i3 + 2];
-        tri.n1 = rc->nlist->data[i3];
-        tri.n2 = rc->nlist->data[i3 + 1];
-        tri.n3 = rc->nlist->data[i3 + 2];
-        tri.t1 = rc->tlist->data[i3];
-        tri.t2 = rc->tlist->data[i3 + 1];
-        tri.t3 = rc->tlist->data[i3 + 2];
-        tri.mat = rc->mlist->data[i1];
+        tri.p1 = get(rc->vlist, Vec3, i3);
+        tri.p2 = get(rc->vlist, Vec3, i3 + 1);
+        tri.p3 = get(rc->vlist, Vec3, i3 + 2);
+        tri.n1 = get(rc->nlist, Vec3, i3);
+        tri.n2 = get(rc->nlist, Vec3, i3 + 1);
+        tri.n3 = get(rc->nlist, Vec3, i3 + 2);
+        tri.t1 = get(rc->tlist, Vec2, i3);
+        tri.t2 = get(rc->tlist, Vec2, i3 + 1);
+        tri.t3 = get(rc->tlist, Vec2, i3 + 2);
+        tri.mat = get(rc->mlist, int, i1);
         raster_tri(rac, tri);
     }
     return rac;

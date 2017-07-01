@@ -1,14 +1,9 @@
 #pragma once
 #include "primitives.h"
-#include "allav.h"
 
 
 typedef struct {
-	vec3arrayvec vlist;
-	vec3arrayvec nlist;
-	vec2arrayvec tlist;
-	intarrayvec  mlist;
-	matarrayvec  materials;
+	arrayvec vlist, nlist, tlist, mlist, materials;
 } render_context;
 
 typedef struct {
@@ -16,7 +11,7 @@ typedef struct {
 	double *z_buffer;
 	int *mat_buffer;
 	int *color_buffer;
-	matarrayvec materials;
+	arrayvec materials;
 } raster_context;
 
-int *render(triangle *ts, size_t ntriangles, matarrayvec materials);
+int *render(arrayvec tris, size_t ntriangles, arrayvec materials);
