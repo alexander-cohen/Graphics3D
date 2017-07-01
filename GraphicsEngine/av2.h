@@ -1,6 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+
+#define append(av, type, data) (av->append(av, &(type){data}))
+#define pop(av, type) (*(type *)av->pop(av))
+#define set(av, type, i, data) (av->replace(av, i, &(type){data}))
+#define get(av, type, i) (*(type *)av->data[i])
+// for setptr type is unused, but it fits
+#define setptr(av, type, i, ptr) (av->data[i] = ptr)
+#define getptr(av, type, i) ((type *)av->data[i])
+
+
 struct _AV_ {
  void * *data;
  int len;
