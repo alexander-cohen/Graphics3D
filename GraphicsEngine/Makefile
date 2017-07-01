@@ -2,7 +2,7 @@ CC=gcc -w -g
 INC=-I.
 CARGS=
 
-all: clean arrayveco graphics2do linalgo thiso
+all: clean graphics2do linalgo thiso
 	$(CC) *.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext
 
 run: all

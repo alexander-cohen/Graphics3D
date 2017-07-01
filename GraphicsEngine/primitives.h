@@ -2,8 +2,7 @@
 #define PRIMITIVES_H
 
 #include "linalg/vector.h"
-#include "arrayvec/vec2arrayvec.h"
-#include "arrayvec/vec3arrayvec.h"
+#include "av2.h"
 #include <stdbool.h>
 
 typedef struct {
@@ -12,8 +11,7 @@ typedef struct {
 
 typedef struct {
 	bool hasn, hast;
-	vec3arrayvec vlist, nlist;
-	vec2arrayvec tlist;
+	arrayvec vlist, nlist, tlist;
 } VNTlist;
 
 typedef struct {
