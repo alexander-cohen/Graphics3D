@@ -441,14 +441,7 @@ int run_render_test() {
     struct timeval begin, end;
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
-    arrayvec materials = new_arrayvec();
-    append(materials, material, (material){CYAN});
-    append(materials, material, (material){RED});
-    arrayvec tris = new_arrayvec();
-    triangle t1 = (triangle){1,1,{0,0,300},{500,200,100},{300,500,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},0};
-    triangle t2 = (triangle){1,1,{500,200,300},{0,500,0},{300,0,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},1};
-    appendptr(tris, triangle, &t1);
-    appendptr(tris, triangle, &t2);
+    
     while(frameNum < 10000) {
         //g2d_fill_bg (CYAN);
 
@@ -464,7 +457,16 @@ int run_render_test() {
         }
 
        
-        
+        arrayvec materials = new_arrayvec();
+        material m1 = (material){CYAN};
+        material m2 = (material){RED};
+        append(materials, material, m1);
+        append(materials, material, m2);
+        arrayvec tris = new_arrayvec();
+        triangle t1 = (triangle){1,1,{0,0,300},{500,200,100},{300,500,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},0};
+        triangle t2 = (triangle){1,1,{500,200,300},{0,500,0},{300,0,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},1};
+        append(tris, triangle, t1);
+        append(tris, triangle, t2);
         col_arr = render(tris, 2, materials);
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);

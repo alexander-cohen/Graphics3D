@@ -12,6 +12,10 @@ render_context *input_assembler(arrayvec tris, size_t ntriangles, arrayvec mater
     for(i = 0; i < ntriangles; i++) {
         t = get(tris, triangle, i);
         append(rc->vlist, Vec3, t.p1);
+        printf("p1: %f, %f, %f\n", t.p1.x, t.p1.y, t.p1.z);
+        Vec3 vvv = pop(rc->vlist, Vec3);
+        printf("just added: %f, %f, %f\n", vvv.x, vvv.y, vvv.z);
+        append(rc->vlist, Vec3, t.p1);
         append(rc->vlist, Vec3, t.p2);
         append(rc->vlist, Vec3, t.p3);
         append(rc->nlist, Vec3, t.n1);

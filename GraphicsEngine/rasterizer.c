@@ -25,17 +25,28 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
 
     int i1, i3;
     triangle tri;
-    for(i1 = 0, i3 = 0; i1 < rc->mlist->len; i1++, i3+=3) {
-        tri.p1 = get(rc->vlist, Vec3, i3);
-        tri.p2 = get(rc->vlist, Vec3, i3 + 1);
-        tri.p3 = get(rc->vlist, Vec3, i3 + 2);
-        tri.n1 = get(rc->nlist, Vec3, i3);
-        tri.n2 = get(rc->nlist, Vec3, i3 + 1);
-        tri.n3 = get(rc->nlist, Vec3, i3 + 2);
-        tri.t1 = get(rc->tlist, Vec2, i3);
-        tri.t2 = get(rc->tlist, Vec2, i3 + 1);
-        tri.t3 = get(rc->tlist, Vec2, i3 + 2);
-        tri.mat = get(rc->mlist, int, i1);
+    for(i1 = 0, i3 = 0; rc->mlist->len > 0; i1++, i3+=3) {
+        // tri.p1 = get(rc->vlist, Vec3, i3);
+        // tri.p2 = get(rc->vlist, Vec3, i3 + 1);
+        // tri.p3 = get(rc->vlist, Vec3, i3 + 2);
+        // tri.n1 = get(rc->nlist, Vec3, i3);
+        // tri.n2 = get(rc->nlist, Vec3, i3 + 1);
+        // tri.n3 = get(rc->nlist, Vec3, i3 + 2);
+        // tri.t1 = get(rc->tlist, Vec2, i3);
+        // tri.t2 = get(rc->tlist, Vec2, i3 + 1);
+        // tri.t3 = get(rc->tlist, Vec2, i3 + 2);
+        // tri.mat = get(rc->mlist, int, i1);
+
+        tri.p1 = pop(rc->vlist, Vec3);
+        tri.p2 = pop(rc->vlist, Vec3);
+        tri.p3 = pop(rc->vlist, Vec3);
+        tri.n1 = pop(rc->nlist, Vec3);
+        tri.n2 = pop(rc->nlist, Vec3);
+        tri.n3 = pop(rc->nlist, Vec3);
+        tri.t1 = pop(rc->tlist, Vec2);
+        tri.t2 = pop(rc->tlist, Vec2);
+        tri.t3 = pop(rc->tlist, Vec2);
+        tri.mat = pop(rc->mlist, int);
         raster_tri(rac, tri);
     }
     return rac;
@@ -78,6 +89,7 @@ void raster_tri(raster_context *rac, triangle tri) {
     double x1 = tri.p1.x, y1 = tri.p1.y, z1 = tri.p1.z,
         x2 = tri.p2.x, y2 = tri.p2.y, z2 = tri.p2.z,
         x3 = tri.p3.x, y3 = tri.p3.y, z3 = tri.p3.z;
+    printf("coords: (%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", x1, y1, z1, x2, y2, z2, x3, y3, z3);
     //y's are negated bc the axis is inverted
     double
             dx12 = (x2 - x1), dy12 = (y2 - y1),
@@ -121,6 +133,7 @@ void raster_tri(raster_context *rac, triangle tri) {
     double w1, w2, w3, z;
     int xnext = min_x;
     int idx;
+    printf("(%d,%d),(%d,%d)\n", min_x, min_y, max_x, max_y);
     for (short y = min_y; y <= max_y; y++)
     {
         w1 = w1_row;
@@ -139,12 +152,12 @@ void raster_tri(raster_context *rac, triangle tri) {
             //PUT PIXEL AT Y, XNEXT
             idx = y * rac->width + xnext;
             if(z > rac->z_buffer[idx]) {
-                //printf("passed z-buffer test\n");
+                printf("passed z-buffer test\n");
                 rac->z_buffer[idx] = z;
                 rac->mat_buffer[idx] = tri.mat;
             }
             else {
-                //printf("failed z-buffer test\n");
+                printf("failed z-buffer test\n");
             }
             //printf ("(after) x: %d, y: %d\n", xnext, y);
             w1_row += dy23;
@@ -154,20 +167,20 @@ void raster_tri(raster_context *rac, triangle tri) {
         }
         for (; x <= max_x; x++)
         {
-            //printf ("x2: %d, y2: %d\n", x, y);
 
             if (w1 >= 0 && w2 >= 0 && w3 >= 0)
             {
+                //printf ("x2: %d, y2: %d\n", xnext, y);
                 //*g2d_buffer_get (y, x) = graphics_context -> color;
                 //PUT PIXEL AT Y, X
                 idx = y * rac->width + x;
                 if(z > rac->z_buffer[idx]) {
-                    //printf("passed z-buffer test\n");
+                    printf("passed z-buffer test\n");
                     rac->z_buffer[idx] = z;
                     rac->mat_buffer[idx] = tri.mat;
                 }
                 else {
-                    //printf("failed z-buffer test\n");
+                    printf("failed z-buffer test\n");
                 }
                 found = true;
             }
