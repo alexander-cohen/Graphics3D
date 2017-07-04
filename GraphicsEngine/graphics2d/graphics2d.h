@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "helper.h"
-#include "stack.h"
+#include "datastructures/stack.h"
 #include "displayer.h"
 
 #define FIXED_POINT_SIZE 8

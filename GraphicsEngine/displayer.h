@@ -14,9 +14,9 @@
 
 #include "helper.h"
 #include "graphics2d/graphics2d.h"
-#include "pong.h"
-#include "renderer.h"
-#include "av2.h"
+#include "pong/pong.h"
+#include "pipeline/renderer.h"
+#include "datastructures/arrayvec.h"
 
 int open_window();
 int run_line();

@@ -2,7 +2,7 @@ CC=gcc -w -g
 INC=-I.
 CARGS=
 
-all: clean graphics2do linalgo thiso
+all: clean graphics2do linalgo thiso pipelineo datastructureso pongo
 	$(CC) *.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext
 
 run: all
@@ -11,14 +11,20 @@ run: all
 thiso:
 	$(CC) -c *.c ${INC} ${CARGS}
 
-arrayveco:
-	$(CC) -c arrayvec/*.c ${INC} ${CARGS}
+pipelineo:
+	$(CC) -c pipeline/*.c ${INC} ${CARGS}
+
+datastructureso:
+	$(CC) -c datastructures/*.c ${INC} ${CARGS}
 
 graphics2do:
 	$(CC) -c graphics2d/*.c ${INC} ${CARGS}
 
 linalgo:
 	$(CC) -c linalg/*.c ${INC} ${CARGS}
+
+pongo:
+	$(CC) -c pong/*.c ${INC} ${CARGS}
 
 clean:
 	-rm *.o

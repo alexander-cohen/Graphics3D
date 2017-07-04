@@ -457,16 +457,45 @@ int run_render_test() {
         }
 
        
-        arrayvec materials = new_arrayvec();
+        arrayvec *materials = av_create (2, sizeof (materials));
         material m1 = (material){CYAN};
         material m2 = (material){RED};
-        append(materials, material, m1);
-        append(materials, material, m2);
-        arrayvec tris = new_arrayvec();
-        triangle t1 = (triangle){1,1,{0,0,300},{500,200,100},{300,500,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},0};
-        triangle t2 = (triangle){1,1,{500,200,300},{0,500,0},{300,0,100},{0,0,0},{0,0,0},{0,0,0},{0,0},{0,0},{0,0},1};
-        append(tris, triangle, t1);
-        append(tris, triangle, t2);
+        av_append (materials, &m1, false);
+        av_append (materials, &m2, false);
+
+
+        arrayvec *tris = av_create (2, sizeof (triangle));
+        triangle t1;
+        t1.hasn = true;
+        t1.hast = true;
+        t1.p1 = (Vec3) {0, 0, 300};
+        t1.p2 = (Vec3) {500, 200, 100};
+        t1.p3 = (Vec3) {300, 500, 100};
+        t1.n1 = (Vec3) {0, 0, 0};
+        t1.n2 = (Vec3) {0, 0, 0};
+        t1.n3 = (Vec3) {0, 0, 0};
+        t1.t1 = (Vec2) {0, 0};
+        t1.t2 = (Vec2) {0, 0};
+        t1.t3 = (Vec2) {0, 0};
+        t1.mat = 0;
+        
+        triangle t2;
+        t2.hasn = true;
+        t2.hast = true;
+        t2.p1 = (Vec3) {500, 200, 300};
+        t2.p2 = (Vec3) {0, 500, 0};
+        t2.p3 = (Vec3) {300, 0, 100};
+        t2.n1 = (Vec3) {0, 0, 0};
+        t2.n2 = (Vec3) {0, 0, 0};
+        t2.n3 = (Vec3) {0, 0, 0};
+        t2.t1 = (Vec2) {0, 0};
+        t2.t2 = (Vec2) {0, 0};
+        t2.t3 = (Vec2) {0, 0};
+        t2.mat = 1;
+
+        av_append(tris, &t1, false);
+        av_append(tris, &t2, false);
+
         col_arr = render(tris, 2, materials);
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
