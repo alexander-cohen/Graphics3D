@@ -1,5 +1,5 @@
 #include "displayer.h"
-
+#include <mcheck.h>
 #define BORDER_COL (BLACK)
 #define BG_COL (WHITE)
 
@@ -13,10 +13,14 @@ XImage *img = NULL;
 
 g2d_context *my_g2d_context;
 
+void noop(enum mcheck_status mstatus){}
 
 int *col_arr; // [HEIGHT * WIDTH] __attribute__((aligned(32)));
 
 int main() {
+    #ifdef ALLO
+    mcheck_pedantic(&noop);
+    #endif
     setbuf(stdout, NULL);
     srand(time(NULL));
 
@@ -316,6 +320,7 @@ int run_test() {
 }
 
 int run_tri_test() {
+
     struct timespec slptime = {0, 20000000}; // 50 fps
     int frameNum = 0;
     // make a bunch of windows
@@ -423,7 +428,7 @@ int run_tri_test() {
 }
 
 int run_render_test() {
-
+    
     struct timespec slptime = {0, 20000000}; // 50 fps
     int frameNum = 0;
     // make a bunch of windows
@@ -441,7 +446,49 @@ int run_render_test() {
     struct timeval begin, end;
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
+    arrayvec *tris = av_create (2, sizeof (triangle)),
+        *materials = av_create (2, sizeof (materials));
+    triangle *t1 = malloc(sizeof(triangle)),
+        *t2 = malloc(sizeof(triangle));
+    material *m1 = malloc(sizeof(material)),
+        *m2 = malloc(sizeof(material));
+
+    t1->hasn = true;
+    t1->hast = true;
+    t1->p1 = (Vec3) {0, 0, 300};
+    t1->p2 = (Vec3) {500, 200, 100};
+    t1->p3 = (Vec3) {300, 500, 100};
+    t1->n1 = (Vec3) {0, 0, 0};
+    t1->n2 = (Vec3) {0, 0, 0};
+    t1->n3 = (Vec3) {0, 0, 0};
+    t1->t1 = (Vec2) {0, 0};
+    t1->t2 = (Vec2) {0, 0};
+    t1->t3 = (Vec2) {0, 0};
+    t1->mat = 0;
     
+    t2->hasn = true;
+    t2->hast = true;
+    t2->p1 = (Vec3) {500, 200, 300};
+    t2->p2 = (Vec3) {0, 500, 0};
+    t2->p3 = (Vec3) {300, 0, 100};
+    t2->n1 = (Vec3) {0, 0, 0};
+    t2->n2 = (Vec3) {0, 0, 0};
+    t2->n3 = (Vec3) {0, 0, 0};
+    t2->t1 = (Vec2) {0, 0};
+    t2->t2 = (Vec2) {0, 0};
+    t2->t3 = (Vec2) {0, 0};
+    t2->mat = 1;
+
+    m1->color = CYAN;
+    m2->color = RED;
+
+    av_append(tris, t1, true);
+    av_append(tris, t2, true);
+    av_append(materials, m1, false);
+    av_append(materials, m2, false);
+
+    t1 = tris->data;
+    t2 = t1 + sizeof(triangle);
     while(frameNum < 10000) {
         //g2d_fill_bg (CYAN);
 
@@ -456,66 +503,32 @@ int run_render_test() {
             }
         }
 
-       
-        arrayvec *materials = av_create (2, sizeof (materials));
-        material m1 = (material){CYAN};
-        material m2 = (material){RED};
-        av_append (materials, &m1, false);
-        av_append (materials, &m2, false);
-
-
-        arrayvec *tris = av_create (2, sizeof (triangle));
-        triangle t1;
-        t1.hasn = true;
-        t1.hast = true;
-        t1.p1 = (Vec3) {0, 0, 300};
-        t1.p2 = (Vec3) {500, 200, 100};
-        t1.p3 = (Vec3) {300, 500, 100};
-        t1.n1 = (Vec3) {0, 0, 0};
-        t1.n2 = (Vec3) {0, 0, 0};
-        t1.n3 = (Vec3) {0, 0, 0};
-        t1.t1 = (Vec2) {0, 0};
-        t1.t2 = (Vec2) {0, 0};
-        t1.t3 = (Vec2) {0, 0};
-        t1.mat = 0;
-        
-        triangle t2;
-        t2.hasn = true;
-        t2.hast = true;
-        t2.p1 = (Vec3) {500, 200, 300};
-        t2.p2 = (Vec3) {0, 500, 0};
-        t2.p3 = (Vec3) {300, 0, 100};
-        t2.n1 = (Vec3) {0, 0, 0};
-        t2.n2 = (Vec3) {0, 0, 0};
-        t2.n3 = (Vec3) {0, 0, 0};
-        t2.t1 = (Vec2) {0, 0};
-        t2.t2 = (Vec2) {0, 0};
-        t2.t3 = (Vec2) {0, 0};
-        t2.mat = 1;
-
-        av_append(tris, &t1, false);
-        av_append(tris, &t2, false);
-
         col_arr = render(tris, 2, materials);
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
-        t1.p1.z += 1;
-        t1.p2.z -= 1;
-        t1.p3.z -= 1;
-        t1.p1.x -= 1;
-        t1.p1.y -= 1;
-        t2.p2.y -= 1;
-        t2.p2.x += 1;
-        t2.p3.x += 1;
-        t2.p3.y += 1;
-        t2.p1.z += 1;
-        t2.p2.z -= 1;
-        t2.p3.z += 1;
-        t2.p2.y -= 1;
-        t2.p1.x -= 1;
-        printf("t1 p1 x: %f\n", t1.p1.x);
-        free(col_arr);
+        t1->p1.z += 1;
+        t1->p2.z -= 1;
+        t1->p3.z -= 1;
+        //t1->p1.x -= 1;
+        //t1->p1.y -= 1;
+        //t2->p2.y -= 1;
+        //t2->p2.x += 1;
+        //t2->p3.x += 1;
+        //t2->p3.y += 1;
+        t2->p1.z += 1;
+        t2->p2.z -= 1;
+        t2->p3.z += 1;
+        //t2->p2.y -= 1;
+        //t2->p1.x -= 1;
+        printf("t1 p1 x: %f\n", t1->p1.x);
+        #ifdef ALLO
+        printf("mprobe on col_arr before free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
+        #endif
+        //free(col_arr);
+        #ifdef ALLO
+        printf("mprobe on col_arr after free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
+        #endif
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);

@@ -18,8 +18,8 @@ int *render(arrayvec *tris, size_t ntriangles, arrayvec *materials) {
     av_clear(rc->nlist);
     av_clear(rc->tlist);
     av_clear(rc->materials);
-    av_clear(rc->mlist);
     printf("rc mlist %d %d", av_get_value(rc->mlist, 0, int), av_get_value(rc->mlist, 1, int));
+    av_clear(rc->mlist);
     free(rc);
     printf("zbuf corners %f %f %f %f", rac->z_buffer[0], rac->z_buffer[511], rac->z_buffer[511*512], rac->z_buffer[512*512 - 1]);
     free(rac->z_buffer);
@@ -27,6 +27,7 @@ int *render(arrayvec *tris, size_t ntriangles, arrayvec *materials) {
     int *ret = rac->color_buffer;
     printf("%d %d", rac->width, rac->height);
     free(rac);
+    printf("first col in the buf: %d", ret[0]);
     return ret;
 }
 

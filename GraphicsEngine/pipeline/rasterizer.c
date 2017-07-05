@@ -25,28 +25,28 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
 
     int i1, i3;
     triangle tri;
-    for(i1 = 0, i3 = 0; rc->mlist->used_len > 0; i1++, i3+=3) {
-        // tri.p1 = get(rc->vlist, Vec3, i3);
-        // tri.p2 = get(rc->vlist, Vec3, i3 + 1);
-        // tri.p3 = get(rc->vlist, Vec3, i3 + 2);
-        // tri.n1 = get(rc->nlist, Vec3, i3);
-        // tri.n2 = get(rc->nlist, Vec3, i3 + 1);
-        // tri.n3 = get(rc->nlist, Vec3, i3 + 2);
-        // tri.t1 = get(rc->tlist, Vec2, i3);
-        // tri.t2 = get(rc->tlist, Vec2, i3 + 1);
-        // tri.t3 = get(rc->tlist, Vec2, i3 + 2);
-        // tri.mat = get(rc->mlist, int, i1);
+    for(i1 = 0, i3 = 0; i1 < rc->mlist->used_len; i1++, i3+=3) {
+        tri.p1 = av_get_value(rc->vlist, i3, Vec3);
+        tri.p2 = av_get_value(rc->vlist, i3 + 1, Vec3);
+        tri.p3 = av_get_value(rc->vlist, i3 + 2, Vec3);
+        tri.n1 = av_get_value(rc->nlist, i3, Vec3);
+        tri.n2 = av_get_value(rc->nlist, i3 + 1, Vec3);
+        tri.n3 = av_get_value(rc->nlist, i3 + 2, Vec3);
+        tri.t1 = av_get_value(rc->tlist, i3, Vec2);
+        tri.t2 = av_get_value(rc->tlist, i3 + 1, Vec2);
+        tri.t3 = av_get_value(rc->tlist, i3 + 2, Vec2);
+        tri.mat = av_get_value(rc->mlist, i1, int);
 
-        av_pop_value(rc->vlist, &tri.p1, Vec3);
-        av_pop_value(rc->vlist, &tri.p2, Vec3);
-        av_pop_value(rc->vlist, &tri.p3, Vec3);
-        av_pop_value(rc->nlist, &tri.n1, Vec3);
-        av_pop_value(rc->nlist, &tri.n2, Vec3);
-        av_pop_value(rc->nlist, &tri.n3, Vec3);
-        av_pop_value(rc->tlist, &tri.t1, Vec2);
-        av_pop_value(rc->tlist, &tri.t2, Vec2);
-        av_pop_value(rc->tlist, &tri.t3, Vec2);
-        av_pop_value(rc->mlist, &tri.mat, int);
+        // av_pop_value(rc->vlist, &tri.p1, Vec3);
+        // av_pop_value(rc->vlist, &tri.p2, Vec3);
+        // av_pop_value(rc->vlist, &tri.p3, Vec3);
+        // av_pop_value(rc->nlist, &tri.n1, Vec3);
+        // av_pop_value(rc->nlist, &tri.n2, Vec3);
+        // av_pop_value(rc->nlist, &tri.n3, Vec3);
+        // av_pop_value(rc->tlist, &tri.t1, Vec2);
+        // av_pop_value(rc->tlist, &tri.t2, Vec2);
+        // av_pop_value(rc->tlist, &tri.t3, Vec2);
+        // av_pop_value(rc->mlist, &tri.mat, int);
 
         raster_tri(rac, tri);
     }
@@ -148,12 +148,12 @@ void raster_tri(raster_context *rac, triangle tri) {
             //PUT PIXEL AT Y, XNEXT
             idx = y * rac->width + xnext;
             if(z > rac->z_buffer[idx]) {
-                printf("passed z-buffer test\n");
+                //printf("passed z-buffer test\n");
                 rac->z_buffer[idx] = z;
                 rac->mat_buffer[idx] = tri.mat;
             }
             else {
-                printf("failed z-buffer test\n");
+                //printf("failed z-buffer test\n");
             }
             //printf ("(after) x: %d, y: %d\n", xnext, y);
             w1_row += dy23;
@@ -171,12 +171,12 @@ void raster_tri(raster_context *rac, triangle tri) {
                 //PUT PIXEL AT Y, X
                 idx = y * rac->width + x;
                 if(z > rac->z_buffer[idx]) {
-                    printf("passed z-buffer test\n");
+                    //printf("passed z-buffer test\n");
                     rac->z_buffer[idx] = z;
                     rac->mat_buffer[idx] = tri.mat;
                 }
                 else {
-                    printf("failed z-buffer test\n");
+                    //printf("failed z-buffer test\n");
                 }
                 found = true;
             }
