@@ -25,6 +25,7 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
 
     int i1, i3;
     triangle tri;
+    printf("num tris: %d\n", rc->vlist->used_len);
     for(i1 = 0, i3 = 0; i1 < rc->mlist->used_len; i1++, i3+=3) {
         tri.p1 = av_get_value(rc->vlist, i3, Vec3);
         tri.p2 = av_get_value(rc->vlist, i3 + 1, Vec3);
@@ -84,6 +85,20 @@ static double cross2d (double dx1, double dy1, double dx2, double dy2)
     return dx1 * dy2 - dx2 * dy1;
 }
 
+static triangle rot_tri(triangle tri) {
+    Vec3 p1, n1;
+    Vec2 t1;
+    p1 = tri.p1;
+    n1 = tri.n1;
+    t1 = tri.t1;
+    tri.p1 = tri.p2;
+    tri.n1 = tri.n2;
+    tri.t1 = tri.t2;
+    tri.p2 = p1;
+    tri.n2 = n1;
+    tri.t2 = t1;
+    return tri;
+}
 
 void raster_tri(raster_context *rac, triangle tri) {
     double idt = idet(tri.p1, tri.p2, tri.p3);
@@ -92,11 +107,17 @@ void raster_tri(raster_context *rac, triangle tri) {
         x3 = tri.p3.x, y3 = tri.p3.y, z3 = tri.p3.z;
     printf("coords: (%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", x1, y1, z1, x2, y2, z2, x3, y3, z3);
     //y's are negated bc the axis is inverted
+    
+
     double
             dx12 = (x2 - x1), dy12 = (y2 - y1),
             dx23 = (x3 - x2), dy23 = (y3 - y2),
             dx31 = (x1 - x3), dy31 = (y1 - y3);
 
+    if (cross2d (dx12, dy12, dx23, dy23) < 0) {
+        printf("triangle failed orient test, reorienting...\n");
+        return raster_tri(rac, rot_tri(tri));
+    }
    
     //printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
     //printf ("difs: %d, %d; %d, %d; %d %d\n", dx12, dy12, dx23, dy23, dx31, dy31);

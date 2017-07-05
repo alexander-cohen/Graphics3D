@@ -29,7 +29,7 @@ int main() {
     //run_pong();
     //run_triangle();
     //run_tri_test ();
-    run_render_test();
+    run_tetra();
 }
 
 /*int run_avx_test() 
@@ -521,6 +521,147 @@ int run_render_test() {
         t2->p3.z += 1;
         //t2->p2.y -= 1;
         //t2->p1.x -= 1;
+        printf("t1 p1 x: %f\n", t1->p1.x);
+        #ifdef ALLO
+        printf("mprobe on col_arr before free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
+        #endif
+        //free(col_arr);
+        #ifdef ALLO
+        printf("mprobe on col_arr after free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
+        #endif
+        frameNum++;
+        gettimeofday(&end, NULL);
+        float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+        printf("Average of %d FPS\n", (int)(frameNum / nsecs));
+    }
+    gettimeofday(&end, NULL);
+    float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
+    printf("10000 loops: %f ms\n", nsecs * 1000);
+    printf("Average of %d FPS", (int)(10000 / nsecs));
+
+    //XCloseDisplay(dis);
+
+    return 0;
+}
+
+int run_tetra() {
+
+    struct timespec slptime = {0, 20000000}; // 50 fps
+    int frameNum = 0;
+    // make a bunch of windows
+
+    printf("Frame generation complete\n");
+    while(XPending(dis)) {
+        XNextEvent(dis, &evt);
+        if(evt.type == Expose)
+            break;
+        else {
+
+        }
+    }
+    printf("Got Expose event, moving on\n");
+    struct timeval begin, end;
+    XImage *img = NULL;
+    gettimeofday(&begin, NULL);
+    Vec3 p1 = {400, 400, 400};
+    Vec3 p2 = {400, 100, 100};
+    Vec3 p3 = {100, 400, 100};
+    Vec3 p4 = {100, 100, 400};
+
+    arrayvec *tris = av_create (2, sizeof (triangle)),
+        *materials = av_create (2, sizeof (materials));
+    triangle *t1 = malloc(sizeof(triangle)),
+        *t2 = malloc(sizeof(triangle)), 
+        *t3 = malloc(sizeof(triangle)),
+        *t4 = malloc(sizeof(triangle));
+    material *m1 = malloc(sizeof(material)),
+        *m2 = malloc(sizeof(material));
+
+    t1->hasn = true;
+    t1->hast = true;
+    t1->p1 = p1;
+    t1->p2 = p2;
+    t1->p3 = p3;
+    t1->n1 = (Vec3) {0, 0, 0};
+    t1->n2 = (Vec3) {0, 0, 0};
+    t1->n3 = (Vec3) {0, 0, 0};
+    t1->t1 = (Vec2) {0, 0};
+    t1->t2 = (Vec2) {0, 0};
+    t1->t3 = (Vec2) {0, 0};
+    t1->mat = 0;
+    
+    t2->hasn = true;
+    t2->hast = true;
+    t2->p1 = p1;
+    t2->p2 = p2;
+    t2->p3 = p4;
+    t2->n1 = (Vec3) {0, 0, 0};
+    t2->n2 = (Vec3) {0, 0, 0};
+    t2->n3 = (Vec3) {0, 0, 0};
+    t2->t1 = (Vec2) {0, 0};
+    t2->t2 = (Vec2) {0, 0};
+    t2->t3 = (Vec2) {0, 0};
+    t2->mat = 0;
+
+    t3->hasn = true;
+    t3->hast = true;
+    t3->p1 = p2;
+    t3->p2 = p3;
+    t3->p3 = p4;
+    t3->n1 = (Vec3) {0, 0, 0};
+    t3->n2 = (Vec3) {0, 0, 0};
+    t3->n3 = (Vec3) {0, 0, 0};
+    t3->t1 = (Vec2) {0, 0};
+    t3->t2 = (Vec2) {0, 0};
+    t3->t3 = (Vec2) {0, 0};
+    t3->mat = 0;
+
+    t4->hasn = true;
+    t4->hast = true;
+    t4->p1 = p1;
+    t4->p2 = p3;
+    t4->p3 = p4;
+    t4->n1 = (Vec3) {0, 0, 0};
+    t4->n2 = (Vec3) {0, 0, 0};
+    t4->n3 = (Vec3) {0, 0, 0};
+    t4->t1 = (Vec2) {0, 0};
+    t4->t2 = (Vec2) {0, 0};
+    t4->t3 = (Vec2) {0, 0};
+    t4->mat = 0;
+
+    m1->color = CYAN;
+    m2->color = RED;
+
+    av_append(tris, t1, true);
+    av_append(tris, t2, true);
+    av_append(tris, t3, true);
+    av_append(tris, t4, true);
+    av_append(materials, m1, false);
+    av_append(materials, m2, false);
+
+    t1 = tris->data;
+    t2 = t1 + sizeof(triangle);
+    t3 = t2 + sizeof(triangle);
+    t4 = t3 + sizeof(triangle);
+    while(frameNum < 10000) {
+        //g2d_fill_bg (CYAN);
+
+        printf("Frame %d\n", frameNum);
+        while(XPending(dis)) {
+            XNextEvent(dis, &evt);
+            if (evt.type == KeyPress)
+                break;
+            else if(evt.type == Expose) {}
+            else {
+                printf("this event not handled currently\n");
+            }
+        }
+
+        col_arr = render(tris, 4, materials);
+
+        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
+        XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
+
         printf("t1 p1 x: %f\n", t1->p1.x);
         #ifdef ALLO
         printf("mprobe on col_arr before free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
