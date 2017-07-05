@@ -12,6 +12,7 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
     rac->height = height;
     rac->color_buffer = malloc(sizeof(int) * width * height);
     rac->z_buffer = malloc(sizeof(double) * width * height);
+    rac->n_buffer = malloc(sizeof(Vec3) * width * height);
     if(rac->z_buffer == NULL) {
         printf("WARNING!!! ZBUF NULL!!!!\n");
     }
@@ -25,7 +26,7 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
 
     int i1, i3;
     triangle tri;
-    printf("num tris: %d\n", rc->vlist->used_len);
+    printf("num tris: %d\n", rc->mlist->used_len);
     for(i1 = 0, i3 = 0; i1 < rc->mlist->used_len; i1++, i3+=3) {
         tri.p1 = av_get_value(rc->vlist, i3, Vec3);
         tri.p2 = av_get_value(rc->vlist, i3 + 1, Vec3);
@@ -33,6 +34,7 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
         tri.n1 = av_get_value(rc->nlist, i3, Vec3);
         tri.n2 = av_get_value(rc->nlist, i3 + 1, Vec3);
         tri.n3 = av_get_value(rc->nlist, i3 + 2, Vec3);
+        printf("surface norm for tri %d: (%f, %f, %f)\n", i1, tri.n1.x, tri.n1.y, tri.n1.z);
         tri.t1 = av_get_value(rc->tlist, i3, Vec2);
         tri.t2 = av_get_value(rc->tlist, i3 + 1, Vec2);
         tri.t3 = av_get_value(rc->tlist, i3 + 2, Vec2);
@@ -115,8 +117,8 @@ void raster_tri(raster_context *rac, triangle tri) {
             dx31 = (x1 - x3), dy31 = (y1 - y3);
 
     if (cross2d (dx12, dy12, dx23, dy23) < 0) {
-        printf("triangle failed orient test, reorienting...\n");
-        return raster_tri(rac, rot_tri(tri));
+        printf("triangle culled because it is a backface.\n");
+        //return raster_tri(rac, rot_tri(tri));
     }
    
     //printf ("points: %d, %d; %d, %d; %d %d; %d\n", x1, y1, x2, y2, x3, y3, cross2d (dx12, dy12, dx23, dy23));
@@ -137,17 +139,24 @@ void raster_tri(raster_context *rac, triangle tri) {
     double zTL = z1*baryTL.x + z2*baryTL.y + z3*baryTL.z;
     double zTR = z1*baryTR.x + z2*baryTR.y + z3*baryTR.z;
     double zBL = z1*baryBL.x + z2*baryBL.y + z3*baryBL.z;
+    Vec3 nTL = vec3iadd(vec3iadd(vec3imul(tri.n1, baryTL.x), vec3imul(tri.n2, baryTL.y)), vec3imul(tri.n3, baryTL.z));
+    Vec3 nTR = vec3iadd(vec3iadd(vec3imul(tri.n1, baryTR.x), vec3imul(tri.n2, baryTR.y)), vec3imul(tri.n3, baryTR.z));
+    Vec3 nBL = vec3iadd(vec3iadd(vec3imul(tri.n1, baryBL.x), vec3imul(tri.n2, baryBL.y)), vec3imul(tri.n3, baryBL.z));
 
     //printf("tl: %f tr: %f bl: %f\n", zTL, zTR, zBL);
     double z_inc = (zTR - zTL) / (max_x - min_x);
     double z_row_inc = (zBL - zTL) / (max_y - min_y);
     double z_row = zTL;
+    Vec3 n_inc = vec3idiv(vec3isub(nTR, nTL), max_x - min_x);
+    Vec3 n_row_inc = vec3idiv(vec3isub(nBL, nTL), max_y - min_y);
+    Vec3 n_row = nTL;
     //printsf ("min: %d, %d\n", min_x, min_y);
     double w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
     double w2_row = orient2d (x3, y3, x1, y1, min_x, min_y);
     double w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
     //printf("%f %f %f\n", w1_row, w2_row, w3_row);
     double w1, w2, w3, z;
+    Vec3 norm;
     int xnext = min_x;
     int idx;
     printf("(%d,%d),(%d,%d)\n", min_x, min_y, max_x, max_y);
@@ -157,6 +166,7 @@ void raster_tri(raster_context *rac, triangle tri) {
         w2 = w2_row;
         w3 = w3_row;
         z = z_row;
+        norm = n_row;
         //printf ("%d, %d\n", xnext, y);
 
         bool found = false;
@@ -168,8 +178,9 @@ void raster_tri(raster_context *rac, triangle tri) {
             //*g2d_buffer_get (y, xnext) = graphics_context -> color;
             //PUT PIXEL AT Y, XNEXT
             idx = y * rac->width + xnext;
-            if(z > rac->z_buffer[idx]) {
+            if(z > rac->z_buffer[idx] && norm.z >= 0) {
                 //printf("passed z-buffer test\n");
+                rac->n_buffer[idx] = norm;
                 rac->z_buffer[idx] = z;
                 rac->mat_buffer[idx] = tri.mat;
             }
@@ -181,6 +192,7 @@ void raster_tri(raster_context *rac, triangle tri) {
             w2_row += dy31;
             w3_row += dy12;
             z_row += z_row_inc;
+            n_row = vec3iadd(n_row, n_row_inc);
         }
         for (; x <= max_x; x++)
         {
@@ -191,8 +203,9 @@ void raster_tri(raster_context *rac, triangle tri) {
                 //*g2d_buffer_get (y, x) = graphics_context -> color;
                 //PUT PIXEL AT Y, X
                 idx = y * rac->width + x;
-                if(z > rac->z_buffer[idx]) {
+                if(z > rac->z_buffer[idx] && norm.z >= 0) {
                     //printf("passed z-buffer test\n");
+                    rac->n_buffer[idx] = norm;
                     rac->z_buffer[idx] = z;
                     rac->mat_buffer[idx] = tri.mat;
                 }
@@ -212,12 +225,14 @@ void raster_tri(raster_context *rac, triangle tri) {
             w2 -= dy31;
             w3 -= dy12;
             z += z_inc;
+            norm = vec3iadd(norm, n_inc);
         }
 
         w1_row += dx23;
         w2_row += dx31;
         w3_row += dx12;
         z_row += z_row_inc;
+        n_row = vec3iadd(n_row, n_row_inc);
     }
 }
 

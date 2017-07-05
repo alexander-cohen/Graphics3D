@@ -3,7 +3,7 @@ INC=-I.
 CARGS=
 
 all: clean graphics2do linalgo thiso pipelineo datastructureso pongo
-	$(CC) *.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext
+	$(CC) *.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext -lm
 
 run: all
 	./display_xwindow

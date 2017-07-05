@@ -10,7 +10,7 @@
 #include <x86intrin.h>
 //#include <immintrin.h>
 
-#define rgbToHex(r, g, b) ((r << 16) + (g << 8) + b)
+#define rgbToHex(r, g, b) (((r) << 16) + ((g) << 8) + (b))
 
 #define max(a, b) (a > b ? a : b)
 #define min(a, b) (a < b ? a : b)

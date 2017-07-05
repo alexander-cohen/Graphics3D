@@ -589,45 +589,20 @@ int run_tetra() {
     t1->t2 = (Vec2) {0, 0};
     t1->t3 = (Vec2) {0, 0};
     t1->mat = 0;
-    
-    t2->hasn = true;
-    t2->hast = true;
+
+    *t4 = *t3 = *t2 = *t1;
+
     t2->p1 = p1;
-    t2->p2 = p2;
-    t2->p3 = p4;
-    t2->n1 = (Vec3) {0, 0, 0};
-    t2->n2 = (Vec3) {0, 0, 0};
-    t2->n3 = (Vec3) {0, 0, 0};
-    t2->t1 = (Vec2) {0, 0};
-    t2->t2 = (Vec2) {0, 0};
-    t2->t3 = (Vec2) {0, 0};
-    t2->mat = 0;
+    t2->p2 = p4;
+    t2->p3 = p2;
 
-    t3->hasn = true;
-    t3->hast = true;
     t3->p1 = p2;
-    t3->p2 = p3;
-    t3->p3 = p4;
-    t3->n1 = (Vec3) {0, 0, 0};
-    t3->n2 = (Vec3) {0, 0, 0};
-    t3->n3 = (Vec3) {0, 0, 0};
-    t3->t1 = (Vec2) {0, 0};
-    t3->t2 = (Vec2) {0, 0};
-    t3->t3 = (Vec2) {0, 0};
-    t3->mat = 0;
+    t3->p2 = p4;
+    t3->p3 = p3;
 
-    t4->hasn = true;
-    t4->hast = true;
     t4->p1 = p1;
     t4->p2 = p3;
     t4->p3 = p4;
-    t4->n1 = (Vec3) {0, 0, 0};
-    t4->n2 = (Vec3) {0, 0, 0};
-    t4->n3 = (Vec3) {0, 0, 0};
-    t4->t1 = (Vec2) {0, 0};
-    t4->t2 = (Vec2) {0, 0};
-    t4->t3 = (Vec2) {0, 0};
-    t4->mat = 0;
 
     m1->color = CYAN;
     m2->color = RED;
