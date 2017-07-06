@@ -708,6 +708,7 @@ int run_sphere() {
     av_append(materials, m1, false);
     av_append(materials, m2, false);
     av_append(tris, t1, true);
+    gen_surface_normals(tris);
 
     while(frameNum < 100) {
         //g2d_fill_bg (CYAN);

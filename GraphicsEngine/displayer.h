@@ -18,6 +18,7 @@
 #include "pipeline/renderer.h"
 #include "datastructures/arrayvec.h"
 #include "objects/shapes.h"
+#include "prepipeline/vnt.h"
 
 int open_window();
 int run_line();

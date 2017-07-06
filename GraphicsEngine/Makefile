@@ -2,7 +2,7 @@ CC=gcc -w -g
 INC=-I.
 CARGS=
 
-all: clean graphics2do linalgo thiso pipelineo datastructureso pongo objectso
+all: clean graphics2do linalgo thiso pipelineo datastructureso pongo objectso prepipelineo
 	$(CC) *.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext -lm
 
 run: all
@@ -28,6 +28,9 @@ pongo:
 
 objectso:
 	$(CC) -c objects/*.c ${INC} ${CARGS}
+
+prepipelineo:
+	$(CC) -c prepipeline/*.c ${INC} ${CARGS}
 
 clean:
 	-rm *.o
