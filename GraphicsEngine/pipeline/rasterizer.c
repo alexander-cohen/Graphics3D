@@ -34,7 +34,7 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
         tri.n1 = av_get_value(rc->nlist, i3, Vec3);
         tri.n2 = av_get_value(rc->nlist, i3 + 1, Vec3);
         tri.n3 = av_get_value(rc->nlist, i3 + 2, Vec3);
-        printf("surface norm for tri %d: (%f, %f, %f)\n", i1, tri.n1.x, tri.n1.y, tri.n1.z);
+        //printf("surface norm for tri %d: (%f, %f, %f)\n", i1, tri.n1.x, tri.n1.y, tri.n1.z);
         tri.t1 = av_get_value(rc->tlist, i3, Vec2);
         tri.t2 = av_get_value(rc->tlist, i3 + 1, Vec2);
         tri.t3 = av_get_value(rc->tlist, i3 + 2, Vec2);
@@ -107,7 +107,7 @@ void raster_tri(raster_context *rac, triangle tri) {
     double x1 = tri.p1.x, y1 = tri.p1.y, z1 = tri.p1.z,
         x2 = tri.p2.x, y2 = tri.p2.y, z2 = tri.p2.z,
         x3 = tri.p3.x, y3 = tri.p3.y, z3 = tri.p3.z;
-    printf("coords: (%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", x1, y1, z1, x2, y2, z2, x3, y3, z3);
+    //printf("coords: (%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", x1, y1, z1, x2, y2, z2, x3, y3, z3);
     //y's are negated bc the axis is inverted
     
 
@@ -117,7 +117,7 @@ void raster_tri(raster_context *rac, triangle tri) {
             dx31 = (x1 - x3), dy31 = (y1 - y3);
 
     if (cross2d (dx12, dy12, dx23, dy23) < 0) {
-        printf("triangle culled because it is a backface.\n");
+        //printf("triangle culled because it is a backface.\n");
         //return raster_tri(rac, rot_tri(tri));
     }
    
@@ -159,7 +159,7 @@ void raster_tri(raster_context *rac, triangle tri) {
     Vec3 norm;
     int xnext = min_x;
     int idx;
-    printf("(%d,%d),(%d,%d)\n", min_x, min_y, max_x, max_y);
+    //printf("(%d,%d),(%d,%d)\n", min_x, min_y, max_x, max_y);
     for (short y = min_y; y <= max_y; y++)
     {
         w1 = w1_row;
