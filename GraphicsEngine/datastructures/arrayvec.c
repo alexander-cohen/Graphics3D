@@ -17,6 +17,11 @@ void vec_init_space (arrayvec *vec) {
 	vec->data = malloc (vec->reserved_len * vec->elem_size);
 }
 
+void av_alloc_space(arrayvec *vec, int numElem) {
+	vec->reserved_len += numElem;
+	vec->data = realloc(vec->data, vec->elem_size * (vec->reserved_len));
+}
+
 int av_add (arrayvec *vec, void *datum, int index, bool remove) {
 	assert (0 <= index && index <= vec->used_len);
 

@@ -15,4 +15,4 @@ typedef struct {
 	arrayvec *materials;
 } raster_context;
 
-int *render(arrayvec *tris, size_t ntriangles, arrayvec *materials);
+int *render(arrayvec *tris, arrayvec *materials);

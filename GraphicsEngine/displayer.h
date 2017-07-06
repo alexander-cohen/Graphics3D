@@ -17,6 +17,7 @@
 #include "pong/pong.h"
 #include "pipeline/renderer.h"
 #include "datastructures/arrayvec.h"
+#include "objects/shapes.h"
 
 int open_window();
 int run_line();

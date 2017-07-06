@@ -29,7 +29,7 @@ int main() {
     //run_pong();
     //run_triangle();
     //run_tri_test ();
-    run_tetra();
+    run_sphere();
 }
 
 /*int run_avx_test() 
@@ -503,7 +503,7 @@ int run_render_test() {
             }
         }
 
-        col_arr = render(tris, 2, materials);
+        col_arr = render(tris, materials);
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
@@ -551,9 +551,9 @@ int run_tetra() {
     // make a bunch of windows
 
     printf("Frame generation complete\n");
-    while(XPending(dis)) {
+    while (XPending(dis)) {
         XNextEvent(dis, &evt);
-        if(evt.type == Expose)
+        if (evt.type == Expose)
             break;
         else {
 
@@ -568,14 +568,14 @@ int run_tetra() {
     Vec3 p3 = {100, 400, 100};
     Vec3 p4 = {100, 100, 400};
 
-    arrayvec *tris = av_create (2, sizeof (triangle)),
-        *materials = av_create (2, sizeof (materials));
+    arrayvec *tris = av_create(2, sizeof(triangle)),
+            *materials = av_create(2, sizeof(materials));
     triangle *t1 = malloc(sizeof(triangle)),
-        *t2 = malloc(sizeof(triangle)), 
-        *t3 = malloc(sizeof(triangle)),
-        *t4 = malloc(sizeof(triangle));
+            *t2 = malloc(sizeof(triangle)),
+            *t3 = malloc(sizeof(triangle)),
+            *t4 = malloc(sizeof(triangle));
     material *m1 = malloc(sizeof(material)),
-        *m2 = malloc(sizeof(material));
+            *m2 = malloc(sizeof(material));
 
     t1->hasn = true;
     t1->hast = true;
@@ -618,7 +618,98 @@ int run_tetra() {
     t2 = t1 + sizeof(triangle);
     t3 = t2 + sizeof(triangle);
     t4 = t3 + sizeof(triangle);
-    while(frameNum < 10000) {
+    while (frameNum < 10000) {
+        //g2d_fill_bg (CYAN);
+
+        printf("Frame %d\n", frameNum);
+        while (XPending(dis)) {
+            XNextEvent(dis, &evt);
+            if (evt.type == KeyPress)
+                break;
+            else if (evt.type == Expose) {}
+            else {
+                printf("this event not handled currently\n");
+            }
+        }
+
+        col_arr = render(tris, materials);
+
+        img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *) col_arr, WIDTH, HEIGHT, 32, 0);
+        XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
+
+        printf("t1 p1 x: %f\n", t1->p1.x);
+#ifdef ALLO
+        printf("mprobe on col_arr before free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
+#endif
+        //free(col_arr);
+#ifdef ALLO
+        printf("mprobe on col_arr after free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
+#endif
+        nanosleep(&slptime, NULL);
+        frameNum++;
+        gettimeofday(&end, NULL);
+        float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec) / 1000000.0);
+        printf("Average of %d FPS\n", (int) (frameNum / nsecs));
+    }
+    gettimeofday(&end, NULL);
+    float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec) / 1000000.0);
+    printf("10000 loops: %f ms\n", nsecs * 1000);
+    printf("Average of %d FPS", (int) (10000 / nsecs));
+
+    //XCloseDisplay(dis);
+
+    return 0;
+}
+
+int run_sphere() {
+
+    struct timespec slptime = {0, 20000000}; // 50 fps
+    int frameNum = 0;
+    // make a bunch of windows
+
+    printf("Frame generation complete\n");
+    while(XPending(dis)) {
+        XNextEvent(dis, &evt);
+        if(evt.type == Expose)
+            break;
+        else {
+
+        }
+    }
+    printf("Got Expose event, moving on\n");
+    struct timeval begin, end;
+    XImage *img = NULL;
+    gettimeofday(&begin, NULL);
+    Vec3 p1 = {400, 400, 400};
+    Vec3 p2 = {400, 100, 100};
+    Vec3 p3 = {100, 400, 100};
+    Vec3 p4 = {100, 100, 400};
+
+    arrayvec *tris = ptsTrisToTriangles(spherePoints(250, 250, 0, 200, 50), sphereTris(50), 0),
+            *materials = av_create(2, sizeof(materials));
+    material *m1 = malloc(sizeof(material)),
+            *m2 = malloc(sizeof(material));
+    triangle *t1 = malloc(sizeof(triangle));
+    t1->hasn = true;
+    t1->hast = true;
+    t1->p1 = p1;
+    t1->p2 = p3;
+    t1->p3 = p2;
+    t1->n1 = (Vec3) {0, 0, 0};
+    t1->n2 = (Vec3) {0, 0, 0};
+    t1->n3 = (Vec3) {0, 0, 0};
+    t1->t1 = (Vec2) {0, 0};
+    t1->t2 = (Vec2) {0, 0};
+    t1->t3 = (Vec2) {0, 0};
+    t1->mat = 0;
+    m1->color = CYAN;
+    m2->color = RED;
+
+    av_append(materials, m1, false);
+    av_append(materials, m2, false);
+    av_append(tris, t1, true);
+
+    while(frameNum < 100) {
         //g2d_fill_bg (CYAN);
 
         printf("Frame %d\n", frameNum);
@@ -632,19 +723,19 @@ int run_tetra() {
             }
         }
 
-        col_arr = render(tris, 4, materials);
+        col_arr = render(tris, materials);
 
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
-        printf("t1 p1 x: %f\n", t1->p1.x);
-        #ifdef ALLO
+#ifdef ALLO
         printf("mprobe on col_arr before free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
-        #endif
+#endif
         //free(col_arr);
-        #ifdef ALLO
+#ifdef ALLO
         printf("mprobe on col_arr after free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
-        #endif
+#endif
+        nanosleep(&slptime, NULL);
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);

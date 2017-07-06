@@ -1,6 +1,6 @@
 #include "input_assembler.h"
 
-render_context *input_assembler(arrayvec *tris, size_t ntriangles, arrayvec *materials) {
+render_context *input_assembler(arrayvec *tris, arrayvec *materials) {
 	render_context *rc = malloc(sizeof(render_context));
     rc->vlist = av_create (0, sizeof (Vec3));
     rc->nlist = av_create (0, sizeof (Vec3));
@@ -9,7 +9,7 @@ render_context *input_assembler(arrayvec *tris, size_t ntriangles, arrayvec *mat
     rc->materials = av_create (0, sizeof (material));
     int i;
     triangle t;
-    for(i = 0; i < ntriangles; i++) {
+    for(i = 0; i < tris->used_len; i++) {
         t = av_get_value(tris, i, triangle);
         av_append(rc->vlist, &t.p1, false);
         printf("p1: %f, %f, %f\n", t.p1.x, t.p1.y, t.p1.z);

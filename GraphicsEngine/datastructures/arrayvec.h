@@ -93,6 +93,13 @@ void *av_peak (arrayvec *vec);
 void av_clear (arrayvec *vec);
 
 /**
+ * Manually reallocs more space to the arrayvec and updates reservedlen
+ * @param vec arrayvec to alloc to
+ * @param numElem number of elements to increase size by
+ */
+void av_alloc_space(arrayvec *vec, int numElem);
+
+/**
  * Macro to create arrayvec of a certain type
  * synatitic sugar around normal creation function
  */
@@ -107,7 +114,7 @@ void av_clear (arrayvec *vec);
  */
 #define av_append_literal(vec, datum, T) \
     assert (vec->elem_size == sizeof (T)); \
-    av_append (vec, &(T){datum}, T)
+    av_append (vec, &(T){datum}, false)
 
 /**
  * Macro to add literal of some type to some spot in arrayvec

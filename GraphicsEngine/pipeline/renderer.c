@@ -6,8 +6,8 @@
 #include "clipper.h"
 #include "fragment_shader.h"
 
-int *render(arrayvec *tris, size_t ntriangles, arrayvec *materials) {
-    render_context *rc = input_assembler(tris, ntriangles, materials);
+int *render(arrayvec *tris, arrayvec *materials) {
+    render_context *rc = input_assembler(tris, materials);
     vertex_shader(rc);
     tessellation_shader(rc);
     geometry_shader(rc);
