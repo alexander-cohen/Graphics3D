@@ -192,7 +192,9 @@ void raster_tri(raster_context *rac, triangle tri) {
             w2_row += dy31;
             w3_row += dy12;
             z_row += z_row_inc;
-            n_row = vec3iadd(n_row, n_row_inc);
+            n_row.x += n_row_inc.x;
+            n_row.y += n_row_inc.y;
+            n_row.z += n_row_inc.z;
         }
         for (; x <= max_x; x++)
         {
@@ -225,14 +227,18 @@ void raster_tri(raster_context *rac, triangle tri) {
             w2 -= dy31;
             w3 -= dy12;
             z += z_inc;
-            norm = vec3iadd(norm, n_inc);
+            norm.x += n_inc.x;
+            norm.y += n_inc.y;
+            norm.z += n_inc.z;
         }
 
         w1_row += dx23;
         w2_row += dx31;
         w3_row += dx12;
         z_row += z_row_inc;
-        n_row = vec3iadd(n_row, n_row_inc);
+        n_row.x += n_row_inc.x;
+        n_row.y += n_row_inc.y;
+        n_row.z += n_row_inc.z;
     }
 }
 

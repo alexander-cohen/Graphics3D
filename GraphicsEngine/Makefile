@@ -1,4 +1,4 @@
-CC=gcc -w -g
+CC=gcc -w -g -pg
 INC=-I.
 CARGS=
 
