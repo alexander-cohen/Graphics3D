@@ -5,6 +5,7 @@
 #include "geometry_shader.h"
 #include "clipper.h"
 #include "fragment_shader.h"
+#include "rasterizer.h"
 
 int *render(arrayvec *tris, arrayvec *materials) {
     render_context *rc = input_assembler(tris, materials);

@@ -54,6 +54,14 @@ int av_append (arrayvec *vec, void *datum, bool remove);
 int av_set (arrayvec *vec, void *datum, int index, bool remove);
 
 /**
+ * Fills the arrayvec with num copies of datum.
+ * @param vec relevant arrayvec
+ * @param datum pointer to where the relevant data is held
+ * @param num number of copies
+ * @return 0 on success 1 otherwise
+ */
+int av_fill(arrayvec *vec, void *datum, int num);
+/**
  * Removes an element from the arrayvec at the specified index
  * @precondition 0 <= index < length
  * @param vec relevant arrayvec

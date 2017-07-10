@@ -7,7 +7,7 @@
 #include <errno.h>
 raster_context *rasterizer(render_context *rc, int width, int height) {
     raster_context *rac = malloc(sizeof(raster_context));
-    if(rac != NULL) {
+    if(rac == NULL) {
         printf("WARNING!!!! RAC MALLOC FAILED DUE TO: ");
         perror(NULL);
         printf("\nNote: sizeof(raster_context): %d.\n", sizeof(raster_context));
@@ -144,16 +144,16 @@ void raster_tri(raster_context *rac, triangle tri) {
     double zTL = z1*baryTL.x + z2*baryTL.y + z3*baryTL.z;
     double zTR = z1*baryTR.x + z2*baryTR.y + z3*baryTR.z;
     double zBL = z1*baryBL.x + z2*baryBL.y + z3*baryBL.z;
-    Vec3 nTL = vec3iadd(vec3iadd(vec3imul(tri.n1, baryTL.x), vec3imul(tri.n2, baryTL.y)), vec3imul(tri.n3, baryTL.z));
-    Vec3 nTR = vec3iadd(vec3iadd(vec3imul(tri.n1, baryTR.x), vec3imul(tri.n2, baryTR.y)), vec3imul(tri.n3, baryTR.z));
-    Vec3 nBL = vec3iadd(vec3iadd(vec3imul(tri.n1, baryBL.x), vec3imul(tri.n2, baryBL.y)), vec3imul(tri.n3, baryBL.z));
+    Vec3 nTL = vec3add(vec3add(vec3mul(tri.n1, baryTL.x), vec3mul(tri.n2, baryTL.y)), vec3mul(tri.n3, baryTL.z));
+    Vec3 nTR = vec3add(vec3add(vec3mul(tri.n1, baryTR.x), vec3mul(tri.n2, baryTR.y)), vec3mul(tri.n3, baryTR.z));
+    Vec3 nBL = vec3add(vec3add(vec3mul(tri.n1, baryBL.x), vec3mul(tri.n2, baryBL.y)), vec3mul(tri.n3, baryBL.z));
 
     //printf("tl: %f tr: %f bl: %f\n", zTL, zTR, zBL);
     double z_inc = (zTR - zTL) / (max_x - min_x);
     double z_row_inc = (zBL - zTL) / (max_y - min_y);
     double z_row = zTL;
-    Vec3 n_inc = vec3idiv(vec3isub(nTR, nTL), max_x - min_x);
-    Vec3 n_row_inc = vec3idiv(vec3isub(nBL, nTL), max_y - min_y);
+    Vec3 n_inc = vec3div(vec3sub(nTR, nTL), max_x - min_x);
+    Vec3 n_row_inc = vec3div(vec3sub(nBL, nTL), max_y - min_y);
     Vec3 n_row = nTL;
     //printsf ("min: %d, %d\n", min_x, min_y);
     double w1_row = orient2d (x2, y2, x3, y3, min_x, min_y);
@@ -197,9 +197,10 @@ void raster_tri(raster_context *rac, triangle tri) {
             w2_row += dy31;
             w3_row += dy12;
             z_row += z_row_inc;
-            n_row.x += n_row_inc.x;
-            n_row.y += n_row_inc.y;
-            n_row.z += n_row_inc.z;
+            vec3iadd(n_row, n_row_inc);
+            // n_row.x += n_row_inc.x;
+            // n_row.y += n_row_inc.y;
+            // n_row.z += n_row_inc.z;
         }
         for (; x <= max_x; x++)
         {
@@ -232,23 +233,19 @@ void raster_tri(raster_context *rac, triangle tri) {
             w2 -= dy31;
             w3 -= dy12;
             z += z_inc;
-            norm.x += n_inc.x;
-            norm.y += n_inc.y;
-            norm.z += n_inc.z;
+            vec3iadd(norm, n_inc);
+            // norm.x += n_inc.x;
+            // norm.y += n_inc.y;
+            // norm.z += n_inc.z;
         }
 
         w1_row += dx23;
         w2_row += dx31;
         w3_row += dx12;
         z_row += z_row_inc;
-        n_row.x += n_row_inc.x;
-        n_row.y += n_row_inc.y;
-        n_row.z += n_row_inc.z;
+        vec3iadd(n_row, n_row_inc);
+        // n_row.x += n_row_inc.x;
+        // n_row.y += n_row_inc.y;
+        // n_row.z += n_row_inc.z;
     }
 }
-
-//main() {
-//    render_context *rc = input_assembler((triangle[]){{1, 1, (Vec3){0,0,0},(Vec3){200,100,100},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},(Vec3){300,400,200},
-//                                                              (Vec2){0,0},(Vec2){0,0},(Vec2){0,0},1}}, 1, new_matarrayvec());
-//    rasterizer(rc, 512, 512);
-//}

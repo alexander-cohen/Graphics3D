@@ -3,7 +3,7 @@
 int 
 paddle_height = 50, 
 ball_rad = 10,
-ball_vel_inc = 1;
+ball_vel_inc = 1,
 xvelocity_ball = 10,
 xvelocity_randrange = 1,
 yvelocity_ball = 10,

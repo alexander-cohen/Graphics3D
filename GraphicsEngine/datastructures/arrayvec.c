@@ -61,14 +61,19 @@ int av_set (arrayvec *vec, void *datum, int index, bool remove) {
 	return 0;
 }
 
+int av_fill(arrayvec *vec, void *datum, int num) {
+	vec->used_len = 0;
+	int i = 0;
+	for(i = 0; i < num; i++) {
+		if(av_append(vec, datum, false))
+			return 1;
+	}
+	return 0;
+}
+
 int av_remove (arrayvec *vec, int index) {
 	assert (0 <= index && index < vec->used_len);
-
-	//move everything back one onto the spot to remove
-	for (int i = index; i < vec->used_len - 1; i++) {
-		memcpy (av_get (vec, i), av_get (vec, i + 1), vec->elem_size);
-	}
-
+	memcpy(av_get(vec, index), av_get(vec, index + 1), vec->elem_size * (vec->used_len - index - 1));
 	vec->used_len--;
 	return 0;
 }

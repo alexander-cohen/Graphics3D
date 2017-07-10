@@ -17,21 +17,6 @@ void noop(enum mcheck_status mstatus){}
 
 int *col_arr; // [HEIGHT * WIDTH] __attribute__((aligned(32)));
 
-int main() {
-    #ifdef ALLO
-    mcheck_pedantic(&noop);
-    #endif
-    setbuf(stdout, NULL);
-    srand(time(NULL));
-
-    open_window();
-    //run_line();
-    //run_pong();
-    //run_triangle();
-    //run_tri_test ();
-    run_sphere();
-}
-
 /*int run_avx_test() 
 {
     g2d_set_col (BLACK);
@@ -662,8 +647,10 @@ int run_tetra() {
 }
 
 int run_sphere() {
-
-    struct timespec slptime = {0, 20000000}; // 50 fps
+    bool vertex_shade = false; // ENABLE THIS TO EXPAND MIND
+    int steps = 36; // more = higher poly count for sphere
+    
+    struct timespec slptime = {0, 20000000}; // 50 fps (NOT USED RN)
     int frameNum = 0;
     // make a bunch of windows
 
@@ -684,23 +671,25 @@ int run_sphere() {
     Vec3 p2 = {400, 100, 100};
     Vec3 p3 = {100, 400, 100};
     Vec3 p4 = {100, 100, 400};
-
-    arrayvec *tris = ptsTrisToTriangles(spherePoints(250, 250, 0, 200, 50), sphereTris(50), 0),
+    arrayvec *pts = spherePoints(250, 250, 0, 200, steps);
+    arrayvec *tri_idxs = sphereTris(steps);
+    arrayvec *norms = av_create(pts->used_len, sizeof(Vec3));
+    arrayvec *tcs = av_create(pts->used_len, sizeof(Vec2));
+    Vec3 zero3 = {0,0,0};
+    Vec2 zero2 = {0,0};
+    av_fill(norms, &zero3, pts->used_len);
+    av_fill(tcs, &zero2, pts->used_len);
+    // fix_overlap(pts, tri_idxs);
+    if(vertex_shade)
+        gen_vertex_normals(pts, tri_idxs, norms, tcs);
+    arrayvec *tris = VTNT_to_AV(pts, tri_idxs, norms, tcs),
             *materials = av_create(2, sizeof(materials));
     material *m1 = malloc(sizeof(material)),
             *m2 = malloc(sizeof(material));
     triangle *t1 = malloc(sizeof(triangle));
-    t1->hasn = true;
-    t1->hast = true;
     t1->p1 = p1;
     t1->p2 = p3;
     t1->p3 = p2;
-    t1->n1 = (Vec3) {0, 0, 0};
-    t1->n2 = (Vec3) {0, 0, 0};
-    t1->n3 = (Vec3) {0, 0, 0};
-    t1->t1 = (Vec2) {0, 0};
-    t1->t2 = (Vec2) {0, 0};
-    t1->t3 = (Vec2) {0, 0};
     t1->mat = 0;
     m1->color = CYAN;
     m2->color = RED;
@@ -708,9 +697,9 @@ int run_sphere() {
     av_append(materials, m1, false);
     av_append(materials, m2, false);
     av_append(tris, t1, true);
-    gen_surface_normals(tris);
-
-    while(frameNum < 100) {
+    if(!vertex_shade)
+        gen_surface_normals(tris);
+    while(frameNum < 1000) {
         //g2d_fill_bg (CYAN);
 
         printf("Frame %d\n", frameNum);
@@ -750,4 +739,16 @@ int run_sphere() {
     //XCloseDisplay(dis);
 
     return 0;
+}
+
+int main() {
+    setbuf(stdout, NULL);
+    srand(time(NULL));
+
+    open_window();
+    //run_line();
+    //run_pong();
+    //run_triangle();
+    //run_tri_test ();
+    run_sphere();
 }
