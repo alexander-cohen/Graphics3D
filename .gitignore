@@ -1,0 +1,6 @@
+*.o
+*.gch
+*.gcno
+*.gcda
+*.out
+display_xwindow
