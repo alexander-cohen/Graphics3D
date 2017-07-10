@@ -736,7 +736,7 @@ int run_sphere() {
 #ifdef ALLO
         printf("mprobe on col_arr after free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
 #endif
-        nanosleep(&slptime, NULL);
+        //nanosleep(&slptime, NULL);
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
