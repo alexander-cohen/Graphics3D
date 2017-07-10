@@ -4,9 +4,14 @@
 
 #include "rasterizer.h"
 #include "linalg/vector.h"
-
+#include <errno.h>
 raster_context *rasterizer(render_context *rc, int width, int height) {
     raster_context *rac = malloc(sizeof(raster_context));
+    if(rac != NULL) {
+        printf("WARNING!!!! RAC MALLOC FAILED DUE TO: ");
+        perror(NULL);
+        printf("\nNote: sizeof(raster_context): %d.\n", sizeof(raster_context));
+    }
     rac->materials = rc->materials;
     rac->width = width;
     rac->height = height;
