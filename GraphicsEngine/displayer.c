@@ -1,5 +1,4 @@
 #include "displayer.h"
-#include <mcheck.h>
 #define BORDER_COL (BLACK)
 #define BG_COL (WHITE)
 
@@ -12,8 +11,6 @@ int scr;
 XImage *img = NULL;
 
 g2d_context *my_g2d_context;
-
-void noop(enum mcheck_status mstatus){}
 
 int *col_arr; // [HEIGHT * WIDTH] __attribute__((aligned(32)));
 
@@ -506,14 +503,7 @@ int run_render_test() {
         t2->p3.z += 1;
         //t2->p2.y -= 1;
         //t2->p1.x -= 1;
-        printf("t1 p1 x: %f\n", t1->p1.x);
-        #ifdef ALLO
-        printf("mprobe on col_arr before free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
-        #endif
-        //free(col_arr);
-        #ifdef ALLO
-        printf("mprobe on col_arr after free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
-        #endif
+
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
@@ -623,13 +613,7 @@ int run_tetra() {
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
         printf("t1 p1 x: %f\n", t1->p1.x);
-#ifdef ALLO
-        printf("mprobe on col_arr before free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
-#endif
-        //free(col_arr);
-#ifdef ALLO
-        printf("mprobe on col_arr after free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
-#endif
+
         nanosleep(&slptime, NULL);
         frameNum++;
         gettimeofday(&end, NULL);
@@ -718,13 +702,6 @@ int run_sphere() {
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
-#ifdef ALLO
-        printf("mprobe on col_arr before free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
-#endif
-        //free(col_arr);
-#ifdef ALLO
-        printf("mprobe on col_arr after free: %d (OK = %d, FREE = %d)\n", mprobe(col_arr), MCHECK_OK, MCHECK_FREE);
-#endif
         //nanosleep(&slptime, NULL);
         frameNum++;
         gettimeofday(&end, NULL);
