@@ -191,19 +191,19 @@ arrayvec *torusTris(int outerSteps, int innerSteps) {  // returns arrayvec of in
             iT = iTN++;
             if(j == innerSteps-1) { // fuck fuck guy things to fix the fucky shit we did above
                 av_append(tris, &idx, false);
-                av_append(tris, &iT, false);
-                av_append(tris, &iN, false);
                 av_append(tris, &iN, false);
                 av_append(tris, &iT, false);
+                av_append(tris, &iN, false);
                 av_append(tris, &iTN, false);
+                av_append(tris, &iT, false);
             }
             else {
                 av_append(tris, &idx, false);
-                av_append(tris, &iN, false);
                 av_append(tris, &iT, false);
                 av_append(tris, &iN, false);
+                av_append(tris, &iN, false);
+                av_append(tris, &iT, false);
                 av_append(tris, &iTN, false);
-                av_append(tris, &iT, false);
             }
         }
     }
