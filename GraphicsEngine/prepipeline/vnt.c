@@ -14,6 +14,13 @@ void gen_surface_normals(arrayvec *tris){  // tri array vec
         // flat face normal gen
         Vec3 n = vec3cross(vec3sub(tri->p3, tri->p1), vec3sub(tri->p1, tri->p2));
         tri->n1 = tri->n2 = tri->n3 = vec3div(n, vec3norm(n));
+        if(tri->p3.x == 250.0 || tri->p1.x == 250.0 || tri->p2.x == 250.0) {
+            printf("Triangle %d at (%f, %f, %f),(%f, %f, %f),(%f, %f, %f), SN = (%f, %f, %f)\n",
+                tri->p1.x,tri->p1.y,tri->p1.z,
+                tri->p2.x,tri->p2.y,tri->p2.z,
+                tri->p3.x,tri->p3.y,tri->p3.z,
+                tri->n1.x,tri->n1.y,tri->n1.z);
+        }
         //printf("norm: (%f, %f, %f)\n", n1->x, n1->y, n1->z);
     }
 }
@@ -31,8 +38,8 @@ void gen_vertex_normals(arrayvec *vxs, arrayvec *tri_idxs, arrayvec *norms, arra
         i1 = av_get_value(tri_idxs, i, int);
         i2 = av_get_value(tri_idxs, i+1, int);
         i3 = av_get_value(tri_idxs, i+2, int);
-
-        printf("i1: %d, i2: %d, i3: %d\n", i1, i2, i3);
+        if(i1 == 0 || i2 == 0 || i3 == 0)
+            printf("i1: %d, i2: %d, i3: %d\n", i1, i2, i3);
         p1 = av_get_value(vxs, i1, Vec3);
         p2 = av_get_value(vxs, i2, Vec3);
         p3 = av_get_value(vxs, i3, Vec3);
@@ -42,18 +49,18 @@ void gen_vertex_normals(arrayvec *vxs, arrayvec *tri_idxs, arrayvec *norms, arra
         n3 = av_get_type(norms, i3, Vec3);
 
         Vec3 sn = vec3cross(vec3sub(p3, p1), vec3sub(p1, p2));
-
+        if(i1 == 0 || i2 == 0 || i3 == 0)
+            printf("Surface normal for triangle %d: (%f, %f, %f)\n", i/3, sn.x, sn.y, sn.z);
         vec3iadd(*n1, sn);
         vec3iadd(*n2, sn);
         vec3iadd(*n3, sn);
-        printf("mid of gvn tcs->used_len: %d\n", tcs->used_len);
     }
     for(i = 0; i < norms->used_len; i++) {
         n1 = av_get_type(norms, i, Vec3);
+        printf("before norming, after vertex gen Norm %d: (%f, %f, %f)\n", i, n1->x, n1->y, n1->z);
         double normal = vec3norm(*n1);
         vec3idiv(*n1, normal);
     }
-    printf("end of gvn tcs->used_len: %d\n", tcs->used_len);
 }
 
 arrayvec *VTNT_to_AV(arrayvec *vxs, arrayvec *tri_idxs, arrayvec *norms, arrayvec *tcs) { // assumes has VTNT

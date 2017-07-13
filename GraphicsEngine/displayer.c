@@ -631,8 +631,8 @@ int run_tetra() {
 }
 
 int run_sphere() {
-    bool vertex_shade = false; // ENABLE THIS TO EXPAND MIND
-    int steps = 36; // more = higher poly count for sphere
+    bool vertex_shade = true; // ENABLE THIS TO EXPAND MIND
+    int steps = 50; // more = higher poly count for sphere
     
     struct timespec slptime = {0, 20000000}; // 50 fps (NOT USED RN)
     int frameNum = 0;
@@ -663,9 +663,11 @@ int run_sphere() {
     Vec2 zero2 = {0,0};
     av_fill(norms, &zero3, pts->used_len);
     av_fill(tcs, &zero2, pts->used_len);
-    // fix_overlap(pts, tri_idxs);
+    fix_overlap(pts, tri_idxs);
     if(vertex_shade)
         gen_vertex_normals(pts, tri_idxs, norms, tcs);
+    check_orient(pts, norms);
+    //exit(0);
     arrayvec *tris = VTNT_to_AV(pts, tri_idxs, norms, tcs),
             *materials = av_create(2, sizeof(materials));
     material *m1 = malloc(sizeof(material)),
@@ -680,9 +682,11 @@ int run_sphere() {
 
     av_append(materials, m1, false);
     av_append(materials, m2, false);
-    av_append(tris, t1, true);
+    //av_append(tris, t1, true);
     if(!vertex_shade)
         gen_surface_normals(tris);
+    printf("sns gend\n");
+    //exit(1);
     while(frameNum < 1000) {
         //g2d_fill_bg (CYAN);
 

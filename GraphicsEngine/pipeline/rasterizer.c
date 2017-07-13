@@ -183,7 +183,7 @@ void raster_tri(raster_context *rac, triangle tri) {
             //*g2d_buffer_get (y, xnext) = graphics_context -> color;
             //PUT PIXEL AT Y, XNEXT
             idx = y * rac->width + xnext;
-            if(z > rac->z_buffer[idx] && norm.z >= 0) {
+            if(z > rac->z_buffer[idx]  && norm.z >= 0 ) {
                 //printf("passed z-buffer test\n");
                 rac->n_buffer[idx] = norm;
                 rac->z_buffer[idx] = z;
@@ -211,7 +211,7 @@ void raster_tri(raster_context *rac, triangle tri) {
                 //*g2d_buffer_get (y, x) = graphics_context -> color;
                 //PUT PIXEL AT Y, X
                 idx = y * rac->width + x;
-                if(z > rac->z_buffer[idx] && norm.z >= 0) {
+                if(z > rac->z_buffer[idx]  && norm.z >= 0 ) {
                     //printf("passed z-buffer test\n");
                     rac->n_buffer[idx] = norm;
                     rac->z_buffer[idx] = z;

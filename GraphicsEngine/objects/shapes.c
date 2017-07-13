@@ -62,39 +62,101 @@ arrayvec *sphereTris(int steps) {  // returns arrayvec of ints corresponding to 
             iN = idx + 1;
             iTN = idx + steps;
             iT = iTN++;
-            av_append_literal(tris, idx, int);
-            av_append_literal(tris, iN, int);
-            av_append_literal(tris, iT, int);
-            av_append_literal(tris, iN, int);
-            av_append_literal(tris, iTN, int);
-            av_append_literal(tris, iT, int);
+            if(j == steps-1) { // fuck fuck guy things to fix the fucky shit we did above
+                av_append_literal(tris, idx, int);
+                av_append_literal(tris, iT, int);
+                av_append_literal(tris, iN, int);
+                av_append_literal(tris, iN, int);
+                av_append_literal(tris, iT, int);
+                av_append_literal(tris, iTN, int);
+            }
+            else {
+                av_append_literal(tris, idx, int);
+                av_append_literal(tris, iN, int);
+                av_append_literal(tris, iT, int);
+                av_append_literal(tris, iN, int);
+                av_append_literal(tris, iTN, int);
+                av_append_literal(tris, iT, int);
+            }
         }
     }
     return tris;
 }
 
+void check_orient(arrayvec *vxs, arrayvec *norms) {  // checks if all triangles with z > 0 are positively oriented and vice versa
+    int i;
+    Vec3 vx, norm;
+    for(i = 0; i < vxs->used_len; i++) {
+        vx = av_get_value(vxs, i, Vec3);
+        norm = av_get_value(norms, i, Vec3);
+        if((vx.z >= 0) != (norm.z >= 0)) {
+            printf("Mismatch between vertex location and norm orientation detected\n");
+            printf("Point %d: (%f, %f, %f)\nNorm %d: (%f, %f, %f)\n", 
+                i, vx.x, vx.y, vx.z, i, norm.x, norm.y, norm.z);
+        }
+    }
+}
+
+
+unsigned int hashint(unsigned int x) {
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = (x >> 16) ^ x;
+    return x;
+}
+
+
+int hashLong3Tuple(void *l3t) {
+    int *p = l3t;
+    int value = 0x345678;
+    value = (1000003 * value) ^ hashint(p[0]);
+    value = (1000003 * value) ^ hashint(p[1]);
+    value = (1000003 * value) ^ hashint(p[2]);
+    value = (1000003 * value) ^ hashint(p[3]);
+    value = (1000003 * value) ^ hashint(p[4]);
+    value = (1000003 * value) ^ hashint(p[5]);
+    value = value ^ 6;
+    if(value == -1)
+        value = -2;
+    return value;
+}
+
+
+bool equalsLong3(void *a, void *b) {
+    long *pa = a;
+    long *pb = b;
+    return pa[0] == pb[0] && pa[1] == pb[1] && pa[2] == pb[2];
+}
+
+
 void fix_overlap(arrayvec *vxs, arrayvec *tri_idxs) {
-    map_t vmap = hashmap_new();
-    int i, one = 1, zero = 0;
+    Hashmap *vmap = hashmapCreate(tri_idxs->used_len, &hashLong3Tuple, &equalsLong3);
+    int i, j, one = 1, zero = 0;
     Vec3 *real;
-    int **out;
-    char *key = malloc(sizeof(Vec3) + 1);
-    key[sizeof(Vec3)] = NULL;
+    int *out = malloc(sizeof(int *));
+    long *key = malloc(sizeof(long) * 3), *okey = malloc(sizeof(long) * 3);
+    assert(sizeof(long) == sizeof(double));
     for(i = 0; i < tri_idxs->used_len; i++) {
+        //printf("ITERATION %d\n", i);
         int *ind = av_get_type(tri_idxs, i, int);
-        printf("tri idx->data points to %p\n", tri_idxs->data);
-        printf("ind at: %p, val: %d\n", ind, *ind);
+        //if(*ind == 0) continue;
+        //printf("ind at: %p, val: %d\n", ind, *ind);
         Vec3 *orig = av_get_type(vxs, *ind, Vec3);
-        memcpy(key, orig, sizeof(Vec3));
-        printf("tri idx->data points to %p\n", tri_idxs->data);
-        if(hashmap_get(vmap, key, out) == MAP_MISSING) { // unique, we good
-            printf("tri idx->data points to %p\n", tri_idxs->data);
-            hashmap_put(vmap, key, &ind);
-            printf("tri idx->data points to %p\n", tri_idxs->data);
+        key[0] = (long)(orig->x * 65536);
+        key[1] = (long)(orig->y * 65536);
+        key[2] = (long)(orig->z * 65536);
+        //printf("orig: (%f, %f, %f), key: (%ld, %ld, %ld)\n", orig->x, orig->y, orig->z, key[0], key[1], key[2]);
+       // printf("i: %d, ind: %d, key: %s, orig: (%f, %f, %f)\n", i, *ind, key, orig->x, orig->y, orig->z);
+        if((out = hashmapGet(vmap, key)) == NULL) { // unique, we good
+            hashmapPut(vmap, key, ind);
         }
         else { // already in there
-            printf("replaced %i with %i\n", *ind, **out);
-            av_set(tri_idxs, *out, i, false);
+            Vec3 *outv = av_get_type(vxs, *out, Vec3);
+            okey[0] = (long)(outv->x * 65536);
+            okey[1] = (long)(outv->y * 65536);
+            okey[2] = (long)(outv->z * 65536);
+            if(equalsLong3(key, okey))    
+                *ind = *out;
         }
     }
 }
