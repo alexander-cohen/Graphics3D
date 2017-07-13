@@ -651,48 +651,64 @@ int run_sphere() {
     struct timeval begin, end;
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
+    arrayvec *materials = av_create(2, sizeof(materials));
+    material *m1 = malloc(sizeof(material)),
+            *m2 = malloc(sizeof(material));
+    m1->color = CYAN;
+    m2->color = RED;
+    av_append(materials, m1, false);
+    av_append(materials, m2, false);
+
     Vec3 p1 = {400, 400, 400};
     Vec3 p2 = {400, 100, 100};
     Vec3 p3 = {100, 400, 100};
     Vec3 p4 = {100, 100, 400};
+    Vec3 zero3 = {0,0,0};
+    Vec2 zero2 = {0,0};
+
+
     arrayvec *pts = torusPoints(250, 250, 0, 150, 50, steps, steps);
     arrayvec *tri_idxs = torusTris(steps, steps);
     arrayvec *norms = av_create(pts->used_len, sizeof(Vec3));
     arrayvec *tcs = av_create(pts->used_len, sizeof(Vec2));
-    Vec3 zero3 = {0,0,0};
-    Vec2 zero2 = {0,0};
     av_fill(norms, &zero3, pts->used_len);
     av_fill(tcs, &zero2, pts->used_len);
     fix_overlap(pts, tri_idxs);
     if(vertex_shade)
         gen_vertex_normals(pts, tri_idxs, norms, tcs);
     //exit(0);
-    arrayvec *tris = VTNT_to_AV(pts, tri_idxs, norms, tcs),
-            *materials = av_create(2, sizeof(materials));
-    material *m1 = malloc(sizeof(material)),
-            *m2 = malloc(sizeof(material));
-    triangle *t1 = malloc(sizeof(triangle));
-    t1->p1 = p1;
-    t1->p2 = p3;
-    t1->p3 = p2;
-    t1->mat = 0;
-    m1->color = CYAN;
-    m2->color = RED;
-
-    av_append(materials, m1, false);
-    av_append(materials, m2, false);
-    //av_append(tris, t1, true);
+    arrayvec *tris = VTNT_to_AV(pts, tri_idxs, norms, tcs);
     if(!vertex_shade)
         gen_surface_normals(tris);
+
+
+    arrayvec *spts = spherePoints(250, 250, 0, 75, steps);
+    arrayvec *stri_idxs = sphereTris(steps);
+    arrayvec *snorms = av_create(spts->used_len, sizeof(Vec3));
+    arrayvec *stcs = av_create(spts->used_len, sizeof(Vec2));
+    av_fill(norms, &zero3, spts->used_len);
+    av_fill(tcs, &zero2, spts->used_len);
+    fix_overlap(spts, stri_idxs);
+    if(vertex_shade)
+        gen_vertex_normals(spts, stri_idxs, snorms, stcs);
+    //exit(0);
+    arrayvec *tortris = VTNT_to_AV(spts, stri_idxs, snorms, stcs);
+    if(!vertex_shade)
+        gen_surface_normals(tortris);
+
+
     arrayvec *boxpts = boxPoints(10, 10, -10, 100, 60, 80);
     arrayvec *boxtri_idxs = boxTris();
-    arrayvec *boxnorms = av_create(pts->used_len, sizeof(Vec3));
-    arrayvec *boxtcs = av_create(pts->used_len, sizeof(Vec2));
-    av_fill(norms, &zero3, pts->used_len);
-    av_fill(tcs, &zero2, pts->used_len);
+    arrayvec *boxnorms = av_create(boxpts->used_len, sizeof(Vec3));
+    arrayvec *boxtcs = av_create(boxpts->used_len, sizeof(Vec2));
+    av_fill(norms, &zero3, boxpts->used_len);
+    av_fill(tcs, &zero2, boxpts->used_len);
     arrayvec *boxtris = VTNT_to_AV(boxpts, boxtri_idxs, boxnorms, boxtcs);
     gen_surface_normals(boxtris);
+
+
     av_concat(tris, boxtris);
+    av_concat(tris, tortris);
     printf("sns gend\n");
     //exit(1);
     while(frameNum < 1000) {
