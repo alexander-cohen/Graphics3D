@@ -655,8 +655,8 @@ int run_sphere() {
     Vec3 p2 = {400, 100, 100};
     Vec3 p3 = {100, 400, 100};
     Vec3 p4 = {100, 100, 400};
-    arrayvec *pts = spherePoints(250, 250, 0, 200, steps);
-    arrayvec *tri_idxs = sphereTris(steps);
+    arrayvec *pts = torusPoints(250, 250, 0, 150, 50, steps, steps);
+    arrayvec *tri_idxs = torusTris(steps, steps);
     arrayvec *norms = av_create(pts->used_len, sizeof(Vec3));
     arrayvec *tcs = av_create(pts->used_len, sizeof(Vec2));
     Vec3 zero3 = {0,0,0};
@@ -681,7 +681,7 @@ int run_sphere() {
 
     av_append(materials, m1, false);
     av_append(materials, m2, false);
-    av_append(tris, t1, true);
+    //av_append(tris, t1, true);
     if(!vertex_shade)
         gen_surface_normals(tris);
     arrayvec *boxpts = boxPoints(10, 10, -10, 100, 60, 80);

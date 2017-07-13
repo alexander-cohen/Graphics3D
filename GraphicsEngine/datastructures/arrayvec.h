@@ -61,6 +61,15 @@ int av_set (arrayvec *vec, void *datum, int index, bool remove);
  * @return 0 on success 1 otherwise
  */
 int av_fill(arrayvec *vec, void *datum, int num);
+
+/**
+ * Concatenates an arrayvec to another arrayvec
+ * @param vec vec to be concatenated to
+ * @param other vec to be concatenated
+ * @return false on success true otherwise
+ */
+int av_concat(arrayvec *vec, arrayvec *other);
+
 /**
  * Removes an element from the arrayvec at the specified index
  * @precondition 0 <= index < length
