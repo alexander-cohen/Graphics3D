@@ -666,7 +666,6 @@ int run_sphere() {
     fix_overlap(pts, tri_idxs);
     if(vertex_shade)
         gen_vertex_normals(pts, tri_idxs, norms, tcs);
-    check_orient(pts, norms);
     //exit(0);
     arrayvec *tris = VTNT_to_AV(pts, tri_idxs, norms, tcs),
             *materials = av_create(2, sizeof(materials));
@@ -682,9 +681,18 @@ int run_sphere() {
 
     av_append(materials, m1, false);
     av_append(materials, m2, false);
-    //av_append(tris, t1, true);
+    av_append(tris, t1, true);
     if(!vertex_shade)
         gen_surface_normals(tris);
+    arrayvec *boxpts = boxPoints(10, 10, -10, 100, 60, 80);
+    arrayvec *boxtri_idxs = boxTris();
+    arrayvec *boxnorms = av_create(pts->used_len, sizeof(Vec3));
+    arrayvec *boxtcs = av_create(pts->used_len, sizeof(Vec2));
+    av_fill(norms, &zero3, pts->used_len);
+    av_fill(tcs, &zero2, pts->used_len);
+    arrayvec *boxtris = VTNT_to_AV(boxpts, boxtri_idxs, boxnorms, boxtcs);
+    gen_surface_normals(boxtris);
+    av_concat(tris, boxtris);
     printf("sns gend\n");
     //exit(1);
     while(frameNum < 1000) {

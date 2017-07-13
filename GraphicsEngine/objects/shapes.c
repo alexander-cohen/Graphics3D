@@ -63,25 +63,72 @@ arrayvec *sphereTris(int steps) {  // returns arrayvec of ints corresponding to 
             iTN = idx + steps;
             iT = iTN++;
             if(j == steps-1) { // fuck fuck guy things to fix the fucky shit we did above
-                av_append_literal(tris, idx, int);
-                av_append_literal(tris, iT, int);
-                av_append_literal(tris, iN, int);
-                av_append_literal(tris, iN, int);
-                av_append_literal(tris, iT, int);
-                av_append_literal(tris, iTN, int);
+                av_append(tris, &idx, false);
+                av_append(tris, &iT, false);
+                av_append(tris, &iN, false);
+                av_append(tris, &iN, false);
+                av_append(tris, &iT, false);
+                av_append(tris, &iTN, false);
             }
             else {
-                av_append_literal(tris, idx, int);
-                av_append_literal(tris, iN, int);
-                av_append_literal(tris, iT, int);
-                av_append_literal(tris, iN, int);
-                av_append_literal(tris, iTN, int);
-                av_append_literal(tris, iT, int);
+                av_append(tris, &idx, false);
+                av_append(tris, &iN, false);
+                av_append(tris, &iT, false);
+                av_append(tris, &iN, false);
+                av_append(tris, &iTN, false);
+                av_append(tris, &iT, false);
             }
         }
     }
     return tris;
 }
+
+arrayvec *boxPoints(double x, double y, double z, double width, double height, double depth) { // goes from x, y, z, to x+w,y+h,z+d
+    if(width < 0) {
+        x += width;
+        width = -width;
+    }
+    if(height < 0) {
+        y += height;
+        height = -height;
+    }
+    if(depth < 0) {
+        z += depth;
+        depth = -depth;
+    }
+    arrayvec *pts = av_create(8, sizeof(Vec3));
+    int xi, yi, zi;
+    for(zi = 0; zi < 2; zi++) {
+        for(yi = 0; yi < 2; yi++) {
+            for(xi = 0; xi < 2; xi++) {
+                av_append(pts, &(Vec3){x+xi*width, y+yi*height, z+zi*depth}, false);
+            }
+        }
+    }
+    return pts;
+}
+
+#define tri(a, b, c) \
+av_append_literal(tris, a, int); \
+av_append_literal(tris, b, int); \
+av_append_literal(tris, c, int)
+arrayvec *boxTris() {  // returns arrayvec of ints corresponding to point indices
+    arrayvec *tris = av_create(36, sizeof(int));
+    tri(0, 1, 2); // back
+    tri(1, 3, 2);
+    tri(0, 6, 2); // left
+    tri(0, 4, 6);
+    tri(0, 4, 1); // top
+    tri(1, 4, 5);
+    tri(1, 5, 3); // right
+    tri(3, 5, 7);
+    tri(2, 3, 6); // bottom
+    tri(6, 3, 7);
+    tri(4, 6, 5); // front
+    tri(5, 6, 7);
+    return tris;
+}
+#undef tri
 
 void check_orient(arrayvec *vxs, arrayvec *norms) {  // checks if all triangles with z > 0 are positively oriented and vice versa
     int i;

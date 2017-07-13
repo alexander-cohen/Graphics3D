@@ -71,6 +71,14 @@ int av_fill(arrayvec *vec, void *datum, int num) {
 	return 0;
 }
 
+int av_concat(arrayvec *vec, arrayvec *other) {
+	assert(vec->elem_size == other->elem_size);
+	av_alloc_space(vec, other->used_len);
+	memcpy(vec->data + vec->elem_size * vec->used_len, other->data, vec->elem_size * other->used_len);
+	vec->used_len += other->used_len;
+	return 0;
+}
+
 int av_remove (arrayvec *vec, int index) {
 	assert (0 <= index && index < vec->used_len);
 	memcpy(av_get(vec, index), av_get(vec, index + 1), vec->elem_size * (vec->used_len - index - 1));
