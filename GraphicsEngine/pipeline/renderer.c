@@ -7,14 +7,14 @@
 #include "fragment_shader.h"
 #include "rasterizer.h"
 
-int *render(arrayvec *tris, arrayvec *materials, arrayvec *lights) {
-    render_context *rc = input_assembler(tris, materials, lights);
-    vertex_shader(rc);
-    tessellation_shader(rc);
-    geometry_shader(rc);
+int *render(arrayvec *tris, arrayvec *materials, environment env, shaderset shaders) {
+    render_context *rc = input_assembler(tris, materials);
+    process_vertices(rc, shaders.vertex_shader);
+    process_tesselation(rc, shaders.tessellation_shader);
+    process_geometry(rc, shaders.geometry_shader);
     clip(rc, 512, 512); // might not be necessary because our triangle algorithm uses bbox
-    raster_context *rac = rasterizer(rc, 512, 512);
-    fragment_shader(rac);
+    raster_context *rac = rasterizer(rc, env, 512, 512);
+    process_fragments(rac, shaders.fragment_shader);
     av_clear(rc->vlist);
     av_clear(rc->nlist);
     av_clear(rc->tlist);
@@ -25,7 +25,9 @@ int *render(arrayvec *tris, arrayvec *materials, arrayvec *lights) {
     printf("zbuf corners %f %f %f %f", rac->z_buffer[0], rac->z_buffer[511], rac->z_buffer[511*512], rac->z_buffer[512*512 - 1]);
     free(rac->z_buffer);
     free(rac->mat_buffer);
-    int *ret = rac->color_buffer;
+    int *ret = postprocess(rac->color_buffer, shaders.postprocess_shader);
+    if(ret != rac->color_buffer)
+        free(rac->color_buffer);
     printf("%d %d", rac->width, rac->height);
     free(rac);
     printf("first col in the buf: %d", ret[0]);

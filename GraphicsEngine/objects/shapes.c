@@ -29,7 +29,7 @@ arrayvec *spherePoints(double x, double y, double z, double radius, int steps) {
     Vec3 pole0 = (Vec3) {x, y, z+radius};
     for(i = 0; i < steps; i++) {
         for(j = 0; j < steps; j++) {
-            theta = i * 2 * M_PI / (steps - 1);
+            theta = i * 2 * M_PI / steps;
             phi = j * M_PI / (steps - 1);  // only goes around half the circle
             rsp = radius * sin(phi);
             //printf("Generated point %d (%f %f %f)\n", idx, rsp*cos(theta), rsp*sin(theta), radius * cos(phi));

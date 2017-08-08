@@ -5,7 +5,7 @@
 #include "rasterizer.h"
 #include "linalg/vector.h"
 #include <errno.h>
-raster_context *rasterizer(render_context *rc, int width, int height) {
+raster_context *rasterizer(render_context *rc, environment env, int width, int height) {
     raster_context *rac = malloc(sizeof(raster_context));
     if(rac == NULL) {
         printf("WARNING!!!! RAC MALLOC FAILED DUE TO: ");
@@ -13,7 +13,7 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
         printf("\nNote: sizeof(raster_context): %d.\n", sizeof(raster_context));
     }
     rac->materials = rc->materials;
-    rac->lights = rc->lights;
+    rac->env = env;
     //printf("rc->materials[0].color: %d\n", av_get_value(rc->materials, 0, material).color);
     rac->width = width;
     rac->height = height;
@@ -31,33 +31,10 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
         rac->mat_buffer[i] = -1;
     }
 
-    int i1, i3;
+    int i;
     triangle tri;
-    printf("num tris: %d\n", rc->mlist->used_len);
     for(i1 = 0, i3 = 0; i1 < rc->mlist->used_len; i1++, i3+=3) {
-        tri.p1 = av_get_value(rc->vlist, i3, Vec3);
-        tri.p2 = av_get_value(rc->vlist, i3 + 1, Vec3);
-        tri.p3 = av_get_value(rc->vlist, i3 + 2, Vec3);
-        tri.n1 = av_get_value(rc->nlist, i3, Vec3);
-        tri.n2 = av_get_value(rc->nlist, i3 + 1, Vec3);
-        tri.n3 = av_get_value(rc->nlist, i3 + 2, Vec3);
-        //printf("surface norm for tri %d: (%f, %f, %f)\n", i1, tri.n1.x, tri.n1.y, tri.n1.z);
-        tri.t1 = av_get_value(rc->tlist, i3, Vec2);
-        tri.t2 = av_get_value(rc->tlist, i3 + 1, Vec2);
-        tri.t3 = av_get_value(rc->tlist, i3 + 2, Vec2);
-        tri.mat = av_get_value(rc->mlist, i1, int);
-
-        // av_pop_value(rc->vlist, &tri.p1, Vec3);
-        // av_pop_value(rc->vlist, &tri.p2, Vec3);
-        // av_pop_value(rc->vlist, &tri.p3, Vec3);
-        // av_pop_value(rc->nlist, &tri.n1, Vec3);
-        // av_pop_value(rc->nlist, &tri.n2, Vec3);
-        // av_pop_value(rc->nlist, &tri.n3, Vec3);
-        // av_pop_value(rc->tlist, &tri.t1, Vec2);
-        // av_pop_value(rc->tlist, &tri.t2, Vec2);
-        // av_pop_value(rc->tlist, &tri.t3, Vec2);
-        // av_pop_value(rc->mlist, &tri.mat, int);
-
+        tri = av_get_value(rc->trilist, i, triangle);
         raster_tri(rac, tri);
     }
     return rac;

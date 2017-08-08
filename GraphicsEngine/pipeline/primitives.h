@@ -37,4 +37,17 @@ typedef struct {
 	int mat;
 } triangle;
 
+typedef struct {
+	arrayvec *lights;
+	Vec3 view;
+} environment;
+
+typedef struct {
+	void (*vertex_shader)(Vec3 *, Vec3 *, Vec2 *);
+	arrayvec (*tessellation_shader)(triangle *);
+	arrayvec (*geometry_shader)(triangle *);
+	int (*fragment_shader)(Vec3, Vec3, Vec2, environment, material);
+	int (*postprocess_shader)(int, int, int *);
+} shaderset;
+
 #endif

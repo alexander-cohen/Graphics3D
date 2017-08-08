@@ -93,7 +93,12 @@ int av_remove (arrayvec *vec, int index) {
 }
 
 int av_pop (arrayvec *vec) {
-	return av_remove (vec, vec->used_len-1);
+	if(vec->used_len) {
+		vec->used_len--;
+		return 0;
+	}
+	else
+		return 1;
 }
 
 void *av_get (arrayvec *vec, int index) {
@@ -109,6 +114,3 @@ void av_clear (arrayvec *vec) {
 	vec->reserved_len = 0;
 	free (vec->data);
 }
-
-
-

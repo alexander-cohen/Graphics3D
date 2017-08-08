@@ -636,7 +636,7 @@ int run_tetra() {
 
 int run_sphere() {
     bool vertex_shade = true; // ENABLE THIS TO EXPAND MIND
-    int steps = 30; // more = higher poly count for sphere
+    int steps = 10; // more = higher poly count for sphere
     
     struct timespec slptime = {0, 20*1e6}; // in ms * 1e6
     int frameNum = 0;
@@ -804,7 +804,7 @@ int run_sphere() {
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
-        nanosleep(&slptime, NULL);
+        //nanosleep(&slptime, NULL);
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
