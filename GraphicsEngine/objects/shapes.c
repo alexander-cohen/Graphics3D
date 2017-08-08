@@ -23,15 +23,14 @@
 // }
 
 arrayvec *spherePoints(double x, double y, double z, double radius, int steps) {
-    steps = steps / 2 * 2; // even number of steps ensures poles on bottom and top
     arrayvec *pts = av_create(steps * (steps + 1) + 1, sizeof(Vec3));
     int i, j, idx = 0;
     double theta, phi, rsp;
     Vec3 pole0 = (Vec3) {x, y, z+radius};
     for(i = 0; i < steps; i++) {
         for(j = 0; j < steps; j++) {
-            theta = i * 2 * M_PI / steps;
-            phi = j * M_PI / steps;  // only goes around half the circle
+            theta = i * 2 * M_PI / (steps - 1);
+            phi = j * M_PI / (steps - 1);  // only goes around half the circle
             rsp = radius * sin(phi);
             //printf("Generated point %d (%f %f %f)\n", idx, rsp*cos(theta), rsp*sin(theta), radius * cos(phi));
             idx++;
@@ -54,7 +53,6 @@ arrayvec *sphereTris(int steps) {  // returns arrayvec of ints corresponding to 
      * orientation will be fucky, we have to fix
      * special cases should be covered by the fuckiness we did above
      */
-    steps = steps / 2 * 2;
     arrayvec *tris = av_create(steps * steps * 6, sizeof(int));
     int iN, iTN, iT, i, j, idx = 0;
     for(i = 0; i < steps; i++) {
@@ -62,23 +60,19 @@ arrayvec *sphereTris(int steps) {  // returns arrayvec of ints corresponding to 
             iN = idx + 1;
             iTN = idx + steps;
             iT = iTN++;
-            if(j == steps-1) { // fuck fuck guy things to fix the fucky shit we did above
-                av_append(tris, &idx, false);
-                av_append(tris, &iT, false);
-                av_append(tris, &iN, false);
-                av_append(tris, &iN, false);
-                av_append(tris, &iT, false);
-                av_append(tris, &iTN, false);
-            }
-            else {
-                av_append(tris, &idx, false);
-                av_append(tris, &iN, false);
-                av_append(tris, &iT, false);
-                av_append(tris, &iN, false);
-                av_append(tris, &iTN, false);
-                av_append(tris, &iT, false);
-            }
+            //;int ih = idx;
+            // if(j == steps - 1) {
+            //     idx = steps / 2;
+            // }
+            av_append(tris, &idx, false);
+            av_append(tris, &iN, false);
+            av_append(tris, &iT, false);
+            av_append(tris, &iN, false);
+            av_append(tris, &iTN, false);
+            av_append(tris, &iT, false);
+            //idx = ih;
         }
+        //idx++;
     }
     return tris;
 }
@@ -114,18 +108,18 @@ av_append_literal(tris, b, int); \
 av_append_literal(tris, c, int)
 arrayvec *boxTris() {  // returns arrayvec of ints corresponding to point indices
     arrayvec *tris = av_create(36, sizeof(int));
-    tri(0, 1, 2); // back
-    tri(1, 3, 2);
+    tri(0, 2, 1); // back
+    tri(1, 2, 3);
     tri(0, 6, 2); // left
     tri(0, 4, 6);
-    tri(0, 4, 1); // top
-    tri(1, 4, 5);
-    tri(1, 5, 3); // right
-    tri(3, 5, 7);
-    tri(2, 3, 6); // bottom
-    tri(6, 3, 7);
-    tri(4, 6, 5); // front
-    tri(5, 6, 7);
+    tri(0, 1, 4); // top
+    tri(1, 5, 4);
+    tri(1, 3, 5); // right
+    tri(3, 7, 5);
+    tri(2, 6, 3); // bottom
+    tri(6, 7, 3);
+    tri(4, 5, 6); // front
+    tri(5, 7, 6);
     return tris;
 }
 #undef tri
@@ -158,7 +152,7 @@ arrayvec *torusPoints(double x, double y, double z, double outerRadius, double i
         by = y + outerRadius*st;
         bz = z;
         for(j = 0; j < innerSteps; j++) {
-            phi = j * 2 * M_PI / innerSteps;
+            phi = j * 2 * M_PI / (innerSteps - 1);
             cp = cos(phi);
             //printf("Generated point %d (%f %f %f)\n", idx, rsp*cos(theta), rsp*sin(theta), radius * cos(phi));
             idx++;
@@ -189,22 +183,12 @@ arrayvec *torusTris(int outerSteps, int innerSteps) {  // returns arrayvec of in
             iN = idx + 1;
             iTN = idx + outerSteps;
             iT = iTN++;
-            if(j == innerSteps-1) { // fuck fuck guy things to fix the fucky shit we did above
-                av_append(tris, &idx, false);
-                av_append(tris, &iN, false);
-                av_append(tris, &iT, false);
-                av_append(tris, &iN, false);
-                av_append(tris, &iTN, false);
-                av_append(tris, &iT, false);
-            }
-            else {
-                av_append(tris, &idx, false);
-                av_append(tris, &iT, false);
-                av_append(tris, &iN, false);
-                av_append(tris, &iN, false);
-                av_append(tris, &iT, false);
-                av_append(tris, &iTN, false);
-            }
+            av_append(tris, &idx, false);
+            av_append(tris, &iT, false);
+            av_append(tris, &iN, false);
+            av_append(tris, &iN, false);
+            av_append(tris, &iT, false);
+            av_append(tris, &iTN, false);
         }
     }
     return tris;
@@ -220,6 +204,39 @@ void check_orient(arrayvec *vxs, arrayvec *norms) {  // checks if all triangles 
             printf("Mismatch between vertex location and norm orientation detected\n");
             printf("Point %d: (%f, %f, %f)\nNorm %d: (%f, %f, %f)\n", 
                 i, vx.x, vx.y, vx.z, i, norm.x, norm.y, norm.z);
+        }
+    }
+}
+
+void check_orient_sns(arrayvec *vxs, arrayvec *tri_idxs) {
+    int i;
+    for(i = 0; i < tri_idxs->used_len; i+=3) {
+        Vec3 p1 = av_get_value(vxs, av_get_value(tri_idxs, i, int), Vec3);
+        Vec3 p2 = av_get_value(vxs, av_get_value(tri_idxs, i+1, int), Vec3);
+        Vec3 p3 = av_get_value(vxs, av_get_value(tri_idxs, i+2, int), Vec3);
+        Vec3 n = vec3cross(vec3sub(p3, p1), vec3sub(p1, p2));
+        if((p1.z > 0 && p2.z > 0 && p3.z > 0 && n.z <= 0) || (p1.z < 0 && p2.z < 0 && p3.z < 0 && n.z >= 0)) {
+            printf("fuckfuck in sns checker\n");
+            printf("Point %d: (%f, %f, %f)\nNorm %d: (%f, %f, %f)\n", 
+                i, p1.x, p2.y, p3.z, i, n.x, n.y, n.z);
+        }
+    }
+}
+
+void check_orients_tris(arrayvec *tris) {
+    int i;
+    for(i = 0; i < tris->used_len; i++) {
+        triangle tri = av_get_value(tris, i, triangle);
+        if((tri.p1.z >= 0) != (tri.n1.z >= 0)) {
+            printf("tris: Mismatch between vertex location and norm orientation detected\n");
+            printf("Point %d: (%f, %f, %f)\nNorm %d: (%f, %f, %f)\n", 
+                i, tri.p1.x, tri.p1.y, tri.p1.z, i, tri.n1.x, tri.n1.y, tri.n1.z);
+        }
+        Vec3 n = vec3cross(vec3sub(tri.p3, tri.p1), vec3sub(tri.p1, tri.p2));
+        if((tri.p1.z > 0 && tri.p2.z > 0 && tri.p3.z > 0 && n.z <= 0) || (tri.p1.z < 0 && tri.p2.z < 0 && tri.p3.z < 0 && n.z >= 0)) {
+            printf("Mismatched surface norm detected at %d: (%f, %f, %f)\n", i, n.x, n.y, n.z);
+            //printf("Point %d: (%f, %f, %f)\nNorm %d: (%f, %f, %f)\n", 
+            //    i, p1.x, p2.y, p3.z, i, n.x, n.y, n.z);
         }
     }
 }
@@ -269,7 +286,7 @@ void fix_overlap(arrayvec *vxs, arrayvec *tri_idxs) {
         //if(*ind == 0) continue;
         //printf("ind at: %p, val: %d\n", ind, *ind);
         Vec3 *orig = av_get_type(vxs, *ind, Vec3);
-        key[0] = (long)(orig->x * 65536);
+        key[0] = (long)(orig->x * 65536); //65536
         key[1] = (long)(orig->y * 65536);
         key[2] = (long)(orig->z * 65536);
         //printf("orig: (%f, %f, %f), key: (%ld, %ld, %ld)\n", orig->x, orig->y, orig->z, key[0], key[1], key[2]);

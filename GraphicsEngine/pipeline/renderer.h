@@ -3,7 +3,7 @@
 #include "linalg/vector.h"
 
 typedef struct {
-	arrayvec *vlist, *nlist, *tlist, *mlist, *materials;
+	arrayvec *vlist, *nlist, *tlist, *mlist, *materials, *lights;
 } render_context;
 
 typedef struct {
@@ -12,7 +12,7 @@ typedef struct {
 	int *mat_buffer;
 	int *color_buffer;
 	Vec3 *n_buffer;
-	arrayvec *materials;
+	arrayvec *materials, *lights;
 } raster_context;
 
-int *render(arrayvec *tris, arrayvec *materials);
+int *render(arrayvec *tris, arrayvec *materials, arrayvec *lights);

@@ -11,7 +11,7 @@
 //#include <immintrin.h>
 
 #define rgbToHex(r, g, b) (((r) << 16) + ((g) << 8) + (b))
-
+#define vec3ToHex(v) (rgbToHex((int)((v).x*255), (int)((v).y*255), (int)((v).z*255)))
 #define max(a, b) (a > b ? a : b)
 #define min(a, b) (a < b ? a : b)
 #define max3(a, b, c) max(max(a, b), c)

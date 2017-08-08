@@ -3,11 +3,17 @@
 
 #include "helper.h"
 
-double *matrix(int nrows, int ncols);
-double *matMul(double *dest, double *mat1, int nrows1, int ncols1, double *mat2, int nrows2, int ncols2);
-double *transpose(double *dest, double *mat, int nrows, int ncols);
-double *itranspose(double *mat, int nrows, int ncols);
+typedef struct {
+	double *data;
+	int rows, cols;
+} matrix;
 
+matrix *empty_matrix(int nrows, int ncols);
+matrix *matMul(matrix *dest, matrix *m1, matrix *m2);
+matrix *transpose(matrix *dest, matrix *m);
+matrix *itranspose(matrix *m);
+void print_matrix(matrix *m);
+double matrix_normsquared(matrix *m);
 int mattest();
 
 #endif

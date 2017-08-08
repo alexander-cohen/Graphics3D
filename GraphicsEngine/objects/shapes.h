@@ -21,4 +21,6 @@ arrayvec *torusPoints(double x, double y, double z, double outerRadius, double i
 arrayvec *torusTris(int outerSteps, int innerSteps);
 void fix_overlap(arrayvec *vxs, arrayvec *tri_idxs);
 void check_orient(arrayvec *vxs, arrayvec *norms);
+void check_orient_sns(arrayvec *vxs, arrayvec *tri_idxs);
+void check_orients_tris(arrayvec *tris);
 #endif //GRAPHICS3D_SHAPES_H

@@ -19,6 +19,13 @@ typedef struct {
 arrayvec *av_create (int spots_reserve, size_t elem_size);
 
 /**
+ * Copies data and all attributes of vec to a new arrayvec
+ * @param vec arrayvec to copy
+ * @return new arrayvec
+ */
+arrayvec *av_clone(arrayvec *vec);
+
+/**
  * Adds element to arrayvec at arbitrary point
  * copies data from passed location into the arrayvec's memory
  * if necessary, reallocates more space for the arrayvec

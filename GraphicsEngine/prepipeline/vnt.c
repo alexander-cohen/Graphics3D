@@ -15,7 +15,7 @@ void gen_surface_normals(arrayvec *tris){  // tri array vec
         Vec3 n = vec3cross(vec3sub(tri->p3, tri->p1), vec3sub(tri->p1, tri->p2));
         tri->n1 = tri->n2 = tri->n3 = vec3div(n, vec3norm(n));
         if(tri->p3.x == 250.0 || tri->p1.x == 250.0 || tri->p2.x == 250.0) {
-            printf("Triangle %d at (%f, %f, %f),(%f, %f, %f),(%f, %f, %f), SN = (%f, %f, %f)\n",
+            printf("Triangle %d at (%f, %f, %f),(%f, %f, %f),(%f, %f, %f), SN = (%f, %f, %f)\n", i,
                 tri->p1.x,tri->p1.y,tri->p1.z,
                 tri->p2.x,tri->p2.y,tri->p2.z,
                 tri->p3.x,tri->p3.y,tri->p3.z,
@@ -63,8 +63,8 @@ void gen_vertex_normals(arrayvec *vxs, arrayvec *tri_idxs, arrayvec *norms, arra
     }
 }
 
-arrayvec *VTNT_to_AV(arrayvec *vxs, arrayvec *tri_idxs, arrayvec *norms, arrayvec *tcs) { // assumes has VTNT
-    arrayvec *tris = av_create(tri_idxs->used_len/3, sizeof(triangle));
+arrayvec *VTNT_to_AV(arrayvec *vxs, arrayvec *tri_idxs, arrayvec *norms, arrayvec *tcs, arrayvec *mats) { // assumes has VTNT
+    arrayvec *tris = av_create(mats->used_len, sizeof(triangle));
     int i, i1, i2, i3;
     triangle tri;
     for(i = 0; i < tri_idxs->used_len; i+=3) { // if tri_idxs is malformed (i.e. length not div by 3) this will fail, which is good
@@ -84,6 +84,7 @@ arrayvec *VTNT_to_AV(arrayvec *vxs, arrayvec *tri_idxs, arrayvec *norms, arrayve
         tri.n3 = av_get_value(norms, i3, Vec3);
         tri.t3 = av_get_value(tcs, i3, Vec2);
 
+        tri.mat = av_get_value(mats, i/3, int);
         av_append(tris, &tri, false);
     }
     return tris;

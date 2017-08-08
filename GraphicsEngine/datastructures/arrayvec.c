@@ -22,6 +22,12 @@ void av_alloc_space(arrayvec *vec, int numElem) {
 	vec->data = realloc(vec->data, vec->elem_size * (vec->reserved_len));
 }
 
+arrayvec *av_clone(arrayvec *vec) {
+	arrayvec *ret = av_create(0, vec->elem_size);
+	av_concat(ret, vec);
+	return ret;
+}
+
 int av_add (arrayvec *vec, void *datum, int index, bool remove) {
 	assert (0 <= index && index <= vec->used_len);
 

@@ -21,6 +21,8 @@ int *col_arr; // [HEIGHT * WIDTH] __attribute__((aligned(32)));
     put_frame();
 }
 */
+
+
 int run_pong ()
 {
     struct timeval begin, end;
@@ -409,6 +411,8 @@ int run_tri_test() {
     return 0;
 }
 
+/* broke all this trash
+
 int run_render_test() {
     
     struct timespec slptime = {0, 20000000}; // 50 fps
@@ -628,13 +632,13 @@ int run_tetra() {
     //XCloseDisplay(dis);
 
     return 0;
-}
+} */
 
 int run_sphere() {
     bool vertex_shade = true; // ENABLE THIS TO EXPAND MIND
-    int steps = 50; // more = higher poly count for sphere
+    int steps = 30; // more = higher poly count for sphere
     
-    struct timespec slptime = {0, 20000000}; // 50 fps (NOT USED RN)
+    struct timespec slptime = {0, 20*1e6}; // in ms * 1e6
     int frameNum = 0;
     // make a bunch of windows
 
@@ -651,13 +655,37 @@ int run_sphere() {
     struct timeval begin, end;
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
-    arrayvec *materials = av_create(2, sizeof(materials));
+    arrayvec *materials = av_create(2, sizeof(material));
+    arrayvec *lights = av_create(2, sizeof(light));
     material *m1 = malloc(sizeof(material)),
             *m2 = malloc(sizeof(material));
-    m1->color = CYAN;
-    m2->color = RED;
+    // m1 is a dull red material, m2 is a shiny light blue material
+    m1->Ka = (Vec3){0.3, 0.1, 0.1}; // color when no light is shined
+    m1->Kd = (Vec3){0.8, 0.2, 0.1}; // diffuse color, i.e. color imbued on scattered light
+    m1->Ks = (Vec3){0.2, 0.03, 0.02}; // spectral color, i.e. color imbued on light shined directly into the eye
+    m1->shininess = 5; // what it says. 0 shouldn't be used. 1-5 = very dull, 5-10 = some sheen, 10-20 = pretty shiny, 20+ = very shiny
+    m2->Ka = (Vec3){0.05, 0.1, 0.25};
+    m2->Kd = (Vec3){0.1, 0.3, 0.8};
+    m2->Ks = (Vec3){0.1, 0.3, 1.0};
+    m2->shininess = 15;
     av_append(materials, m1, false);
     av_append(materials, m2, false);
+    light *l1 = malloc(sizeof(light)),
+            *l2 = malloc(sizeof(light));
+    // l1 is a bright green light at the top right of the image but out of the screen,
+    // l2 is a bright pink light at middle of the left side of the image, also out of the screen
+    l1->pos = (Vec3){500, 0, 200};
+    l1->Ia = (Vec3){0, 0.15, 0}; // color this light casts onto every surface equally
+    l1->Id = (Vec3){0.1, 0.7, 0.25}; // color this light casts that is spread diffusely
+    l1->Is = (Vec3){0.1, 1.0, 0.25}; // color this light casts that is spectrally reflecteed
+    l2->pos = (Vec3){0, 250, 300};
+    l2->Ia = (Vec3){0.1, 0, 0.05};
+    l2->Id = (Vec3){0.7, 0.1, 0.45};
+    l2->Is = (Vec3){1.0, 0.15, 0.7};
+    av_append(lights, l1, false);
+    av_append(lights, l2, false);
+
+    //printf("materials[0].color: %d", av_get_type(materials, 0, material)->color);
 
     Vec3 p1 = {400, 400, 400};
     Vec3 p2 = {400, 100, 100};
@@ -665,19 +693,24 @@ int run_sphere() {
     Vec3 p4 = {100, 100, 400};
     Vec3 zero3 = {0,0,0};
     Vec2 zero2 = {0,0};
+    int zero1 = 0;
+    int one = 1;
 
+    // arrayvec *tris = av_create(0, sizeof(triangle));
 
     arrayvec *pts = torusPoints(250, 250, 0, 150, 50, steps, steps);
     arrayvec *tri_idxs = torusTris(steps, steps);
     arrayvec *norms = av_create(pts->used_len, sizeof(Vec3));
     arrayvec *tcs = av_create(pts->used_len, sizeof(Vec2));
+    arrayvec *mats = av_create(pts->used_len, sizeof(int));
     av_fill(norms, &zero3, pts->used_len);
     av_fill(tcs, &zero2, pts->used_len);
+    av_fill(mats, &one, tri_idxs->used_len / 3);
     fix_overlap(pts, tri_idxs);
     if(vertex_shade)
         gen_vertex_normals(pts, tri_idxs, norms, tcs);
     //exit(0);
-    arrayvec *tris = VTNT_to_AV(pts, tri_idxs, norms, tcs);
+    arrayvec *tris = VTNT_to_AV(pts, tri_idxs, norms, tcs, mats);
     if(!vertex_shade)
         gen_surface_normals(tris);
 
@@ -686,32 +719,42 @@ int run_sphere() {
     arrayvec *stri_idxs = sphereTris(steps);
     arrayvec *snorms = av_create(spts->used_len, sizeof(Vec3));
     arrayvec *stcs = av_create(spts->used_len, sizeof(Vec2));
-    av_fill(norms, &zero3, spts->used_len);
-    av_fill(tcs, &zero2, spts->used_len);
+    arrayvec *smats = av_create(spts->used_len, sizeof(int));
+    av_fill(snorms, &zero3, spts->used_len);
+    av_fill(stcs, &zero2, spts->used_len);
+    av_fill(smats, &zero1, stri_idxs->used_len / 3);
     fix_overlap(spts, stri_idxs);
-    if(vertex_shade)
+    if(vertex_shade) {
         gen_vertex_normals(spts, stri_idxs, snorms, stcs);
+        check_orient(spts, snorms);
+        check_orient_sns(spts, stri_idxs);
+        //exit(0);
+    }
     //exit(0);
-    arrayvec *tortris = VTNT_to_AV(spts, stri_idxs, snorms, stcs);
+    arrayvec *stris = VTNT_to_AV(spts, stri_idxs, snorms, stcs, smats);
     if(!vertex_shade)
-        gen_surface_normals(tortris);
-
+        gen_surface_normals(stris);
 
     arrayvec *boxpts = boxPoints(10, 10, -10, 100, 60, 80);
     arrayvec *boxtri_idxs = boxTris();
     arrayvec *boxnorms = av_create(boxpts->used_len, sizeof(Vec3));
     arrayvec *boxtcs = av_create(boxpts->used_len, sizeof(Vec2));
-    av_fill(norms, &zero3, boxpts->used_len);
-    av_fill(tcs, &zero2, boxpts->used_len);
-    arrayvec *boxtris = VTNT_to_AV(boxpts, boxtri_idxs, boxnorms, boxtcs);
+    arrayvec *boxmats = av_create(boxpts->used_len, sizeof(int));
+    av_fill(boxnorms, &zero3, boxpts->used_len);
+    av_fill(boxtcs, &zero2, boxpts->used_len);
+    av_fill(boxmats, &zero1, boxtri_idxs->used_len / 3);
+    arrayvec *boxtris = VTNT_to_AV(boxpts, boxtri_idxs, boxnorms, boxtcs, boxmats);
     gen_surface_normals(boxtris);
 
 
     av_concat(tris, boxtris);
-    av_concat(tris, tortris);
+    av_concat(tris, stris);
+    check_orients_tris(tris);
     printf("sns gend\n");
+    double angle = 0;
     //exit(1);
     while(frameNum < 1000) {
+        
         //g2d_fill_bg (CYAN);
 
         printf("Frame %d\n", frameNum);
@@ -724,17 +767,49 @@ int run_sphere() {
                 printf("this event not handled currently\n");
             }
         }
+        matrix *fw_t, *bw_t;
+        fw_t = translate(-250, -250, 0);
+        matmul_ip(rotate(0, angle), fw_t);
+        matmul_ip(rotate(1, -3./8), fw_t);
+        matmul_ip(translate(250, 250, 0), fw_t);        
+        print_matrix(fw_t);
+        printf("\nnorm: %f\n", matrix_normsquared(fw_t));
+        
+        bw_t = ident();
+        gluInvertMatrix(fw_t->data, bw_t->data);
+        itranspose(bw_t);
+        // bw_t = translate_inv_t(250, 250, 0);
+        // //matmul_ip(rotate_inv_t(1, 3./8), bw_t);
+        // matmul_ip(rotate_inv_t(0, angle), bw_t);
+        // matmul_ip(translate_inv_t(-250, -250, 0), bw_t);
+        //check_orients_tris(apply_transform(fw_t, bw_t, tris));
+        arrayvec *trans_tris = apply_transform(fw_t, bw_t, tris);
+        // test matrices
+        //transpose(bw_t, fw_t);
+        //printf("A*AT:\n");
+        //matmul_ip(bw_t, fw_t);
+        //print_matrix(fw_t);
+        //printf("%d\n",trans_tris->used_len);
+        //triangle tri = av_get_value(trans_tris, 78, triangle);
 
-        col_arr = render(tris, materials);
-
+        //printf("Triangle #78 @ (%f, %f, %f)<%f, %f, %f>, (%f, %f, %f)<%f, %f, %f>, (%f, %f, %f)<%f, %f, %f>\n", tri.p1.x, tri.p1.y, tri.p1.z, tri.n1.x, tri.n1.y, tri.n1.z, tri.p2.x, tri.p2.y, tri.p2.z, tri.n2.x, tri.n2.y, tri.n2.z, tri.p3.x, tri.p3.y, tri.p3.z, tri.n3.x, tri.n3.y, tri.n3.z);
+        //tri.mat=1;
+        //av_set(trans_tris, &tri, 78, false);
+        col_arr = render(trans_tris, materials, lights);
+        // apply_transform_inplace(trans_matrix, trans_matrix_inv_t, tris);
+        free(fw_t->data);
+        free(bw_t->data);
+        free(fw_t);
+        free(bw_t);
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
-        //nanosleep(&slptime, NULL);
+        nanosleep(&slptime, NULL);
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
         printf("Average of %d FPS\n", (int)(frameNum / nsecs));
+        angle += 0.04764523423421;
     }
     gettimeofday(&end, NULL);
     float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);

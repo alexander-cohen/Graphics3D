@@ -1,8 +1,8 @@
-CC=gcc -g -fgnu89-inline
+CC=gcc -g -fgnu89-inline 
 INC=-I.
 CARGS=
 
-all: clean graphics2do linalgo thiso pipelineo datastructureso pongo objectso prepipelineo
+all: clean graphics2do linalgo thiso pipelineo datastructureso pongo objectso prepipelineo transformo
 	$(CC) *.o ${INC} ${CARGS} -o display_xwindow -lX11 -lXext -lm
 
 run: all
@@ -31,6 +31,9 @@ objectso:
 
 prepipelineo:
 	$(CC) -c prepipeline/*.c ${INC} ${CARGS}
+
+transformo:
+	$(CC) -c transform/*.c ${INC} ${CARGS}
 
 clean:
 	-rm *.o

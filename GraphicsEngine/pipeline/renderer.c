@@ -7,8 +7,8 @@
 #include "fragment_shader.h"
 #include "rasterizer.h"
 
-int *render(arrayvec *tris, arrayvec *materials) {
-    render_context *rc = input_assembler(tris, materials);
+int *render(arrayvec *tris, arrayvec *materials, arrayvec *lights) {
+    render_context *rc = input_assembler(tris, materials, lights);
     vertex_shader(rc);
     tessellation_shader(rc);
     geometry_shader(rc);

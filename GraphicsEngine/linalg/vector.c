@@ -144,3 +144,31 @@ inline Vec3 vec3lerp(Vec3 v, Vec3 o, double t) {
 inline Vec4 vec4lerp(Vec4 v, Vec4 o, double t) {
     return (Vec4){v.x*(1-t) + o.x*t, v.y*(1-t) + o.y*t, v.z*(1-t) + o.z*t, v.w*(1-t) + o.w*t};
 }
+
+inline Vec2 vec2elmul(Vec2 v, Vec2 o) {
+    return (Vec2){v.x*o.x, v.y*o.y};
+}
+
+inline Vec3 vec3elmul(Vec3 v, Vec3 o) {
+    return (Vec3){v.x*o.x, v.y*o.y, v.z*o.z};
+}
+
+inline Vec4 vec4elmul(Vec4 v, Vec4 o) {
+    return (Vec4){v.x*o.x, v.y*o.y, v.z*o.z, v.w*o.w};
+}
+
+inline double cap(double f, double lo, double hi) {
+    return min(hi, max(f, lo));
+}
+
+inline Vec2 vec2cap(Vec2 v, double lo, double hi) {
+    return (Vec2){cap(v.x, lo, hi), cap(v.y, lo, hi)};
+}
+
+inline Vec3 vec3cap(Vec3 v, double lo, double hi) {
+    return (Vec3){cap(v.x, lo, hi), cap(v.y, lo, hi), cap(v.z, lo, hi)};
+}
+
+inline Vec4 vec4cap(Vec4 v, double lo, double hi) {
+    return (Vec4){cap(v.x, lo, hi), cap(v.y, lo, hi), cap(v.z, lo, hi), cap(v.w, lo, hi)};
+}

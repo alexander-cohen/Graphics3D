@@ -82,6 +82,8 @@ typedef struct {
     (v).w /= o;\
 } while(0)
 
+
+
 extern inline Vec2 vec2add(Vec2 v, Vec2 o);
 extern inline double vec2cross(Vec2 v, Vec2 o);
 extern inline Vec2 vec2div(Vec2 v, double o);
@@ -109,3 +111,10 @@ extern inline Vec4 vec4mul(Vec4 v, double o);
 extern inline double vec4norm(Vec4 v);
 extern inline Vec4 vec4sub(Vec4 v, Vec4 o);
 extern inline Vec4 vec4lerp(Vec4 v, Vec4 o, double t);
+extern inline Vec2 vec2elmul(Vec2 v, Vec2 o);
+extern inline Vec3 vec3elmul(Vec3 v, Vec3 o);
+extern inline Vec4 vec4elmul(Vec4 v, Vec4 o);
+extern inline double cap(double f, double lo, double hi);
+extern inline Vec2 vec2cap(Vec2 v, double lo, double hi);
+extern inline Vec3 vec3cap(Vec3 v, double lo, double hi);
+extern inline Vec4 vec4cap(Vec4 v, double lo, double hi);

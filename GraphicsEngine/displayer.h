@@ -19,6 +19,8 @@
 #include "datastructures/arrayvec.h"
 #include "objects/shapes.h"
 #include "prepipeline/vnt.h"
+#include "linalg/matrix.h"
+#include "transform/transform.h"
 
 int open_window();
 int run_line();

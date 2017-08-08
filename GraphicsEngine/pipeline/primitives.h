@@ -15,8 +15,20 @@ typedef struct {
 } VNTlist;
 
 typedef struct {
-	int color;
+	Vec3 *color_data; // each Vec3 should be an RGB triplet, each channel 0.0-1.0 for 0-255
+	int width, height;
+} texture;
+
+typedef struct {
+	Vec3 Ka, Kd, Ks;
+	texture Ka_map, Kd_map, Ks_map;
+	int shininess;
+	int color; // XXX useless holdover, destroy
 } material;
+
+typedef struct {
+	Vec3 pos, Ia, Id, Is;
+} light;
 
 typedef struct {
 	bool hasn, hast;

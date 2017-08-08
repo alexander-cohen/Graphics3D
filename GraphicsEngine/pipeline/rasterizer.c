@@ -13,6 +13,8 @@ raster_context *rasterizer(render_context *rc, int width, int height) {
         printf("\nNote: sizeof(raster_context): %d.\n", sizeof(raster_context));
     }
     rac->materials = rc->materials;
+    rac->lights = rc->lights;
+    //printf("rc->materials[0].color: %d\n", av_get_value(rc->materials, 0, material).color);
     rac->width = width;
     rac->height = height;
     rac->color_buffer = malloc(sizeof(int) * width * height);
@@ -123,6 +125,7 @@ void raster_tri(raster_context *rac, triangle tri) {
 
     if (cross2d (dx12, dy12, dx23, dy23) < 0) {
         //printf("triangle culled because it is a backface.\n");
+        return;
         //return raster_tri(rac, rot_tri(tri));
     }
    
@@ -183,7 +186,7 @@ void raster_tri(raster_context *rac, triangle tri) {
             //*g2d_buffer_get (y, xnext) = graphics_context -> color;
             //PUT PIXEL AT Y, XNEXT
             idx = y * rac->width + xnext;
-            if(z > rac->z_buffer[idx]  && norm.z >= 0 ) {
+            if(z > rac->z_buffer[idx]/*  && norm.z >= 0 */) {
                 //printf("passed z-buffer test\n");
                 rac->n_buffer[idx] = norm;
                 rac->z_buffer[idx] = z;
@@ -211,7 +214,7 @@ void raster_tri(raster_context *rac, triangle tri) {
                 //*g2d_buffer_get (y, x) = graphics_context -> color;
                 //PUT PIXEL AT Y, X
                 idx = y * rac->width + x;
-                if(z > rac->z_buffer[idx]  && norm.z >= 0 ) {
+                if(z > rac->z_buffer[idx]/*  && norm.z >= 0 */) {
                     //printf("passed z-buffer test\n");
                     rac->n_buffer[idx] = norm;
                     rac->z_buffer[idx] = z;
