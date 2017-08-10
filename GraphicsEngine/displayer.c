@@ -978,8 +978,8 @@ int run_sphere() {
     av_append(pp_multiblur_edges, &blur, false);
     av_append(pp_multiblur_edges, &blur, false);
     av_append(pp_multiblur_edges, &blur, false);
-    // av_append(pp_multiblur_edges, &sobelenergy, false);
-    // av_append(pp_multiblur_edges, &scalegray, false);
+    av_append(pp_multiblur_edges, &sobelenergy, false);
+    av_append(pp_multiblur_edges, &scalegray, false);
     
     //av_append_literal(shaders.postprocess_shaders, pp_sobelfilter_shader, void *);
     //av_append_literal(shaders.postprocess_shaders, pp_grayscale_energy, void *);
