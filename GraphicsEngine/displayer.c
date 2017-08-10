@@ -813,10 +813,35 @@ int *pp_blur3x3_all(int *inarr, int width, int height) {
 }
 #undef iabs
 
+arrayvec *geom_extrudefaces(triangle tri) {
+    arrayvec *ret = av_create(2, sizeof(triangle));
+    //av_append(ret, &tri, false);
+    Vec3 sn = vec3cross(vec3sub(tri.p1, tri.p2), vec3sub(tri.p2, tri.p3));
+    Vec3 extrude = vec3div(sn, vec3norm(sn) / 20);
+    vec3iadd(tri.p1, extrude);
+    vec3iadd(tri.p2, extrude);
+    vec3iadd(tri.p3, extrude);
+    av_append(ret, &tri, false);
+    Vec3 tmp = tri.p1;
+    tri.p1 = tri.p2;
+    tri.p2 = tmp;
+    tmp = tri.n1;
+    tri.n1 = tri.n2;
+    tri.n2 = tmp;
+    Vec2 tmp2 = tri.t1;
+    tri.t1 = tri.t2;
+    tri.t2 = tmp2;
+    Vec3 z = {0,0,0};
+    tri.n1 = vec3sub(z, tri.n1);
+    tri.n2 = vec3sub(z, tri.n2);
+    tri.n3 = vec3sub(z, tri.n3);
+    av_append(ret, &tri, false);
+    return ret;
+}
 
 int run_sphere() {
     bool vertex_shade = true; // ENABLE THIS TO EXPAND MIND
-    int steps = 50; // more = higher poly count for sphere
+    int steps = 10; // more = higher poly count for sphere
     
     struct timespec slptime = {0, 0}; // x ms * (ns/ms)
     int frameNum = 0;
@@ -934,8 +959,11 @@ int run_sphere() {
     printf("sns gend\n");
     double angle = 0;
     shaderlist shaders;
-    shaders.render_shaders = av_create(0, sizeof(render_shader));
-    
+    shaders.render_shaders = av_create(20, sizeof(render_shader));
+    render_shader extrude;
+    extrude.type = GEOMETRY;
+    extrude.func = geom_extrudefaces;
+    av_append(shaders.render_shaders, &extrude, false);
     shaders.fragment_shader = phong_shader_x;
     arrayvec *pp_multiblur_edges = av_create(20, sizeof(postprocess_shader));
     postprocess_shader blur;
@@ -950,8 +978,8 @@ int run_sphere() {
     av_append(pp_multiblur_edges, &blur, false);
     av_append(pp_multiblur_edges, &blur, false);
     av_append(pp_multiblur_edges, &blur, false);
-    av_append(pp_multiblur_edges, &sobelenergy, false);
-    av_append(pp_multiblur_edges, &scalegray, false);
+    // av_append(pp_multiblur_edges, &sobelenergy, false);
+    // av_append(pp_multiblur_edges, &scalegray, false);
     
     //av_append_literal(shaders.postprocess_shaders, pp_sobelfilter_shader, void *);
     //av_append_literal(shaders.postprocess_shaders, pp_grayscale_energy, void *);
