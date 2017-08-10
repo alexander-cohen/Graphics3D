@@ -30,10 +30,8 @@ raster_context *rasterizer(render_context *rc, environment env, int width, int h
         rac->color_buffer[i] = (1 << 24) - 1;
         rac->mat_buffer[i] = -1;
     }
-
-    int i;
     triangle tri;
-    for(i1 = 0, i3 = 0; i1 < rc->mlist->used_len; i1++, i3+=3) {
+    for(i = 0; i < rc->trilist->used_len; i++) {
         tri = av_get_value(rc->trilist, i, triangle);
         raster_tri(rac, tri);
     }

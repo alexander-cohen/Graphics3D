@@ -13,6 +13,7 @@ typedef struct {
 	int *color_buffer;
 	Vec3 *n_buffer;
 	arrayvec *materials;
+	environment env;
 } raster_context;
 
-int *render(arrayvec *tris, arrayvec *materials, arrayvec *lights);
+int *render(arrayvec *tris, arrayvec *materials, environment env, shaderlist shaders);

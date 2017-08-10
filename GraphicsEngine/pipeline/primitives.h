@@ -1,5 +1,4 @@
-#ifndef PRIMITIVES_H
-#define PRIMITIVES_H
+#pragma once
 
 #include "linalg/vector.h"
 #include "datastructures/arrayvec.h"
@@ -42,7 +41,29 @@ typedef struct {
 	Vec3 view;
 } environment;
 
+static const char VERTEX = 0;
+static const char TESSELLATION = 1;
+static const char GEOMETRY = 2;
+
+static const char SINGLE = 0;
+static const char ALL = 1;
+
 typedef struct {
+	unsigned char type;
+	void *func;
+} render_shader;
+
+typedef struct {
+	unsigned char type;
+	void *func;
+} postprocess_shader;
+
+typedef struct {
+	unsigned char do_vertex : 1;
+	unsigned char do_tessellation : 1;
+	unsigned char do_geometry : 1;
+	unsigned char do_fragment : 1;
+	unsigned char do_postprocess : 1;
 	void (*vertex_shader)(Vec3 *, Vec3 *, Vec2 *);
 	arrayvec (*tessellation_shader)(triangle *);
 	arrayvec (*geometry_shader)(triangle *);
@@ -50,4 +71,8 @@ typedef struct {
 	int (*postprocess_shader)(int, int, int *);
 } shaderset;
 
-#endif
+typedef struct {
+	arrayvec *render_shaders;
+	int (*fragment_shader)(Vec3, Vec3, Vec2, environment, material);
+	arrayvec *postprocess_shaders;
+} shaderlist;

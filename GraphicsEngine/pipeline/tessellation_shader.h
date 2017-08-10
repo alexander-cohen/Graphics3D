@@ -1,4 +1,4 @@
 #pragma once
 #include "renderer.h"
 
-void tessellation_shader(render_context *rc, arrayvec *(*shader)(triangle *));
+void process_tessellation(render_context *rc, arrayvec *(*shader)(triangle *));

@@ -29,6 +29,7 @@ int run_pong();
 int put_frame();
 int run_triangle();
 int run_avx_test();
+int pp_sobelfilter_shader(int *, int, int, int, int);
 
 #define WIDTH (512) 
 #define HEIGHT (512)

@@ -1,4 +1,4 @@
 #pragma once
 #include "renderer.h"
 
-void geometry_shader(render_context *rc, arrayvec *(*shader)(triangle *));
+void process_geometry(render_context *rc, arrayvec *(*shader)(triangle *));

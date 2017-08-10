@@ -1,6 +1,6 @@
 #include "vertex_shader.h"
 
-void process_vertices(render_context *rc, void (*shader)(Vec3, Vec3, Vec2)){
+void process_vertices(render_context *rc, void (*shader)(Vec3 *, Vec3 *, Vec2 *)){
 	int i;
 	triangle *tri;
 	for(i = 0; i < rc->trilist->used_len; i++) {
@@ -10,3 +10,5 @@ void process_vertices(render_context *rc, void (*shader)(Vec3, Vec3, Vec2)){
 		shader(&(tri->p3), &(tri->n3), &(tri->t3));
 	}
 }
+
+void default_vertex_shader(Vec3 *v, Vec3 *n, Vec2 *t) {}

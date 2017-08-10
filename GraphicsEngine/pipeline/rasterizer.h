@@ -10,7 +10,7 @@
 #include "graphics2d/graphics2d.h"
 #include "linalg/vector.h"
 
-raster_context *rasterizer(render_context *rc, int width, int height);
+raster_context *rasterizer(render_context *rc, environment env, int width, int height);
 void raster_tri(raster_context *rac, triangle tri);
 
 #endif //GRAPHICS3D_RASTERIZER_H

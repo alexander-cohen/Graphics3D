@@ -77,7 +77,7 @@ arrayvec *sphereTris(int steps) {  // returns arrayvec of ints corresponding to 
     return tris;
 }
 
-arrayvec *boxPoints(double x, double y, double z, double width, double height, double depth) { // goes from x, y, z, to x+w,y+h,z+d
+arrayvec *boxPoints(double x, double y, double z, double width, double height, double depth) { // goes from x, y, z, to x+w,y+h,z+d. goes in binary order where z is high-bit.
     if(width < 0) {
         x += width;
         width = -width;
@@ -123,6 +123,47 @@ arrayvec *boxTris() {  // returns arrayvec of ints corresponding to point indice
     return tris;
 }
 #undef tri
+
+/* by convention: imagine you are folding a box T thingy, and you 
+are looking from +inf towards the texture on the v axis. i.e.,
+back is from 0.25,0 to 0.5,0.33
+left is from 0,0.33 to 0.25, 0.67
+top is from 0.75,0.33 to 1,0.67
+right is from 0.5,0.33 to 0.75,0.67
+bottom is from 0.25,0.33 to 0.5,0.66
+front is from 0.25,0.66 to 0.5,1 */
+#define tc(a,b,c,d,e,f) \
+av_append(tcs, &(Vec2)a, b, false); \
+av_append(tcs, &(Vec2)c, d, false); \
+av_append(tcs, &(Vec2)e, f, false)
+arrayvec *boxFlatTCs() {
+    arrayvec *tcs = av_create(8, sizeof(Vec2));
+    tc({0.25, 0}, {0.25, 1./3}, {0.5, 0}); // back
+    tc({0.5, 0}, {0.25, 1./3}, {0.5, 1./3});
+    tc({0, 1./3}, {0.25, 2./3}, {0.25, 1./3}); // left
+    tc({0, 1./3}, {0, 2./3}, {0.25, 2./3});
+    tc({0.75, 1./3}, {1, 1./3}, {0.75, 2./3}); // top
+    tc({1, 1./3}, {1, 2./3}, {0.75, 2./3});
+    tc({0.5, 1./3}, {0.75, 1./3}, {0.5, 2./3}); // right
+    tc({0.75, 1./3}, {0.75, 2./3}, {0.5, 2./3});
+    tc({0.25, 1./3}, {0.25, 2./3}, {0.5, 1./3}); // bottom
+    tc({0.25, 2./3}, {0.5, 2./3}, {0.5, 1./3});
+    tc({0.25, 2./3}, {0.5, 2./3}, {0.25, 1}); // front
+    tc({0.5, 2./3}, {0.5, 1}, {0.25, 1});
+    return tcs;
+}
+#undef tc
+
+void apply_flat_tcs(arrayvec *tris, arrayvec *tcs) {
+    assert(tcs->used_len == tris->used_len*3);
+    int i, i3;
+    for(i = 0, i3 = 0; i < tris->used_len; i++, i3+=3) {
+        triangle *tri = av_get_type(tris, i, triangle);
+        tri->t1 = av_get_value(tcs, i3, Vec2);
+        tri->t2 = av_get_value(tcs, i3+1, Vec2);
+        tri->t3 = av_get_value(tcs, i3+2, Vec2);
+    }
+}
 
 arrayvec *torusPoints(double x, double y, double z, double outerRadius, double innerRadius, int outerSteps, int innerSteps) { // makes a torus with outer circle in the XY plane
     // equation: (before translation by (x,y,z))

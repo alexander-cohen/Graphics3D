@@ -17,6 +17,8 @@ arrayvec *spherePoints(double x, double y, double z, double radius, int steps);
 arrayvec *sphereTris(int steps);
 arrayvec *boxPoints(double x, double y, double z, double width, double height, double depth);
 arrayvec *boxTris();
+arrayvec *boxFlatTCs();
+void apply_flat_tcs(arrayvec *tris, arrayvec *tcs);
 arrayvec *torusPoints(double x, double y, double z, double outerRadius, double innerRadius, int outerSteps, int innerSteps);
 arrayvec *torusTris(int outerSteps, int innerSteps);
 void fix_overlap(arrayvec *vxs, arrayvec *tri_idxs);

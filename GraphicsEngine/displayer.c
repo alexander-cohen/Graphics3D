@@ -8,6 +8,7 @@ XEvent evt;
 GC gc;
 
 int scr;
+int *max_iarr = NULL;
 XImage *img = NULL;
 
 g2d_context *my_g2d_context;
@@ -634,11 +635,190 @@ int run_tetra() {
     return 0;
 } */
 
+double dipow(double base, unsigned int exp) {
+    double res = 1;
+    while(exp) {
+        if(exp & 1)
+            res *= base;
+        exp>>=1;
+        base *= base;
+    }
+    return res;
+} 
+
+int phong_shader_x(Vec3 pos, Vec3 n, Vec2 t, environment env, material mat) { // example shader, copied from my old python implementation
+    Vec3 v = env.view;
+    arrayvec *lights = env.lights;
+    Vec3 PV = vec3sub(v, pos);
+    double _pvn = vec3norm(PV);
+    vec3idiv(PV, _pvn);
+    Vec3 col = {0,0,0};
+    int i;
+    for(i = 0; i < lights->used_len; i++) {
+        light l = av_get_value(lights, i, light);
+        Vec3 PL = vec3sub(l.pos, pos);
+        double _pln = vec3norm(PL);
+        vec3idiv(PL, _pln);
+        double Lmn = vec3dot(PL, n);
+        Vec3 Rm = vec3sub(vec3mul(n, 2*Lmn), PL);
+        double diffuse = Lmn < 0 ? 0 : Lmn;
+        double RmV = vec3dot(Rm, PV);
+        double spectral = RmV < 0 ? 0 : dipow(RmV, mat.shininess);
+        Vec3 light_add = vec3add(vec3add(vec3elmul(mat.Ka, l.Ia), vec3elmul(mat.Kd, vec3mul(l.Id, diffuse))), vec3elmul(mat.Ks, vec3mul(l.Is, spectral)));
+        vec3iadd(col, light_add);
+    }
+    col = vec3cap(col, 0, 1);
+    return vec3ToHex(col);
+}
+
+int pp_sobelfilter_shader(int *inarr, int width, int height, int i, int j) {
+    int iT = i == 0 ? 1 : i-1;
+    int iB = i == height-1 ? height-2 : i+1;
+    int jL = j = 0 ? 1 : j-1;
+    int jR = j == width-1 ? width-2 : j+1;
+    int idx;
+    int energy = 0;
+    //printf("postprocessing i=%d, j=%d\n", i, j);
+    for(idx = 0; idx < 17; idx += 8) {
+        int x_energy, y_energy;
+        // X convolve
+        x_energy = (inarr[iT*width+jR] >> idx) % 256;
+        x_energy += (2*inarr[i*width+jR] >> idx) % 256;
+        x_energy += (inarr[iB*width+jR] >> idx) % 256;
+        x_energy -= (inarr[iT*width+jL] >> idx) % 256;
+        x_energy -= (2*inarr[i*width+jL] >> idx) % 256;
+        x_energy -= (inarr[iB*width+jL] >> idx) % 256;
+        // Y convolve
+        y_energy = (inarr[iB*width+jL] >> idx) % 256;
+        y_energy += (2*inarr[iB*width+j] >> idx) % 256;
+        y_energy += (inarr[iB*width+jR] >> idx) % 256;
+        y_energy -= (inarr[iT*width+jL] >> idx) % 256;
+        y_energy -= (2*inarr[iT*width+j] >> idx) % 256;
+        y_energy -= (inarr[iT*width+jR] >> idx) % 256;
+
+        energy += y_energy*y_energy+x_energy*x_energy;
+    }   
+    return energy;
+}
+
+const int thresh = 300; // under threshhold -> black, over threshhold -> scale from 55-255
+//thresh of 0 means all pixels brightened, thresh of 51000 means no pixels brightened
+// every 200 thresh = 1 rgb increment
+int *pp_grayscale_energy(int *inarr, int width, int height) {
+    int *outarr = malloc(sizeof(int)*width*height);
+    int max_inarr = 0;
+    int *inarr_end = inarr+width*height;
+    int *iptr = inarr;
+    unsigned int col;
+    int idx;
+    for(; iptr < inarr_end; iptr++) {
+        max_inarr = max(max_inarr, *iptr);
+    }
+    for(idx = 0; idx < width*height; idx++) {
+        col = (inarr[idx]*255*200/(max_inarr));
+        col = col > thresh ? (col / 255 + 55) : 0; // scale to range 55-255 unless close to 0 for visibility
+        outarr[idx] = rgbToHex(col, col, col);
+    }
+    return outarr;
+}
+
+int pp_blur9x9(int *inarr, int width, int height, int i, int j) { // 81 ops per pixel
+    int iC, jC, c = 0, r = 0, g = 0, b = 0;
+    for(iC = i - 4; iC < i + 5; iC++) {
+        if(iC < 0)
+            continue;
+        if(iC >= height)
+            break;
+        for(jC = j - 4; jC < j + 5; jC++) {
+            if(jC < 0)
+                continue;
+            if(jC >= width)
+                break;
+            r += (inarr[iC * width + jC] >> 16) % 256;
+            g += (inarr[iC * width + jC] >> 8) % 256;
+            b += (inarr[iC * width + jC]) % 256;
+            c++;
+        }
+    }
+    if(c == 0) return 0;
+    return rgbToHex(r/c, g/c, b/c);
+}
+
+int pp_blur3x3(int *inarr, int width, int height, int i, int j) { // 9 ops per pixel
+    int iC, jC, c = 0, r = 0, g = 0, b = 0;
+    for(iC = i - 1; iC < i + 2; iC++) {
+        if(iC < 0)
+            continue;
+        if(iC >= height)
+            break;
+        for(jC = j - 1; jC < j + 2; jC++) {
+            if(jC < 0)
+                continue;
+            if(jC >= width)
+                break;
+            r += (inarr[iC * width + jC] >> 16) % 256;
+            g += (inarr[iC * width + jC] >> 8) % 256;
+            b += (inarr[iC * width + jC]) % 256;
+            c++;
+        }
+    }
+    if(c == 0) return 0;
+    return rgbToHex(r/c, g/c, b/c);
+}
+
+#define iabs(x) ((x) < 0 ? -(x) : (x))
+int *pp_blur9x9_all(int *inarr, int width, int height) {
+    short *outarr = calloc(6, width*height);
+    int *retarr = malloc(sizeof(int)*width*height);
+    int i, i3, j, iC, jC, idx;
+    for(iC = -4; iC < 5; iC++) {
+        for(jC = -4; jC < 5; jC++) {
+            //printf("iter %d, %d\n", iC, jC);
+            idx = 0;
+            for(i = 0; i < height; i++) {
+                for(j = 0; j < width; j++, idx+=3) {
+                    outarr[idx] += inarr[iabs(i + iC)*width + iabs(j + jC)] % 256; // B
+                    outarr[idx+1] += (inarr[iabs(i + iC)*width + iabs(j + jC)] >> 8) % 256; // G
+                    outarr[idx+2] += (inarr[iabs(i + iC)*width + iabs(j + jC)] >> 16) % 256; // R
+                }
+            }
+        }
+    }
+    for(i3 = 0, i = 0; i < width*height; i++, i3+=3) {
+        retarr[i] = (outarr[i3]/81) + ((outarr[i3 + 1]/81) << 8) + ((outarr[i3 + 2]/81) << 16);
+    }
+    return retarr;
+}
+int *pp_blur3x3_all(int *inarr, int width, int height) {
+    short *outarr = calloc(6, width*height);
+    int *retarr = malloc(sizeof(int)*width*height);
+    int i, i3, j, iC, jC, idx;
+    for(iC = -1; iC < 2; iC++) {
+        for(jC = -1; jC < 2; jC++) {
+            //printf("iter %d, %d\n", iC, jC);
+            idx = 0;
+            for(i = 0; i < height; i++) {
+                for(j = 0; j < width; j++, idx+=3) {
+                    outarr[idx] += inarr[iabs(i + iC)*width + iabs(j + jC)] % 256; // B
+                    outarr[idx+1] += (inarr[iabs(i + iC)*width + iabs(j + jC)] >> 8) % 256; // G
+                    outarr[idx+2] += (inarr[iabs(i + iC)*width + iabs(j + jC)] >> 16) % 256; // R
+                }
+            }
+        }
+    }
+    for(i3 = 0, i = 0; i < width*height; i++, i3+=3) {
+        retarr[i] = (outarr[i3]/9) + ((outarr[i3 + 1]/9) << 8) + ((outarr[i3 + 2]/9) << 16);
+    }
+    return retarr;
+}
+#undef iabs
+
+
 int run_sphere() {
     bool vertex_shade = true; // ENABLE THIS TO EXPAND MIND
-    int steps = 10; // more = higher poly count for sphere
+    int steps = 50; // more = higher poly count for sphere
     
-    struct timespec slptime = {0, 20*1e6}; // in ms * 1e6
+    struct timespec slptime = {0, 0}; // x ms * (ns/ms)
     int frameNum = 0;
     // make a bunch of windows
 
@@ -745,6 +925,7 @@ int run_sphere() {
     av_fill(boxmats, &zero1, boxtri_idxs->used_len / 3);
     arrayvec *boxtris = VTNT_to_AV(boxpts, boxtri_idxs, boxnorms, boxtcs, boxmats);
     gen_surface_normals(boxtris);
+    apply_flat_tcs(boxtris, boxFlatTCs());
 
 
     av_concat(tris, boxtris);
@@ -752,6 +933,31 @@ int run_sphere() {
     check_orients_tris(tris);
     printf("sns gend\n");
     double angle = 0;
+    shaderlist shaders;
+    shaders.render_shaders = av_create(0, sizeof(render_shader));
+    
+    shaders.fragment_shader = phong_shader_x;
+    arrayvec *pp_multiblur_edges = av_create(20, sizeof(postprocess_shader));
+    postprocess_shader blur;
+    blur.type = SINGLE;
+    blur.func = pp_blur3x3;
+    postprocess_shader sobelenergy;
+    sobelenergy.type = SINGLE;
+    sobelenergy.func = pp_sobelfilter_shader;
+    postprocess_shader scalegray;
+    scalegray.type = ALL;
+    scalegray.func = pp_grayscale_energy;
+    av_append(pp_multiblur_edges, &blur, false);
+    av_append(pp_multiblur_edges, &blur, false);
+    av_append(pp_multiblur_edges, &blur, false);
+    av_append(pp_multiblur_edges, &sobelenergy, false);
+    av_append(pp_multiblur_edges, &scalegray, false);
+    
+    //av_append_literal(shaders.postprocess_shaders, pp_sobelfilter_shader, void *);
+    //av_append_literal(shaders.postprocess_shaders, pp_grayscale_energy, void *);
+    environment env;
+    env.lights = lights;
+    env.view = (Vec3){250, 250, 1e30};
     //exit(1);
     while(frameNum < 1000) {
         
@@ -784,6 +990,10 @@ int run_sphere() {
         // matmul_ip(translate_inv_t(-250, -250, 0), bw_t);
         //check_orients_tris(apply_transform(fw_t, bw_t, tris));
         arrayvec *trans_tris = apply_transform(fw_t, bw_t, tris);
+        free(fw_t->data);
+        free(bw_t->data);
+        free(fw_t);
+        free(bw_t);
         // test matrices
         //transpose(bw_t, fw_t);
         //printf("A*AT:\n");
@@ -795,16 +1005,14 @@ int run_sphere() {
         //printf("Triangle #78 @ (%f, %f, %f)<%f, %f, %f>, (%f, %f, %f)<%f, %f, %f>, (%f, %f, %f)<%f, %f, %f>\n", tri.p1.x, tri.p1.y, tri.p1.z, tri.n1.x, tri.n1.y, tri.n1.z, tri.p2.x, tri.p2.y, tri.p2.z, tri.n2.x, tri.n2.y, tri.n2.z, tri.p3.x, tri.p3.y, tri.p3.z, tri.n3.x, tri.n3.y, tri.n3.z);
         //tri.mat=1;
         //av_set(trans_tris, &tri, 78, false);
-        col_arr = render(trans_tris, materials, lights);
+        shaders.postprocess_shaders = pp_multiblur_edges;
+        col_arr = render(trans_tris, materials, env, shaders);
         // apply_transform_inplace(trans_matrix, trans_matrix_inv_t, tris);
-        free(fw_t->data);
-        free(bw_t->data);
-        free(fw_t);
-        free(bw_t);
+        
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
 
-        //nanosleep(&slptime, NULL);
+        nanosleep(&slptime, NULL);
         frameNum++;
         gettimeofday(&end, NULL);
         float nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
