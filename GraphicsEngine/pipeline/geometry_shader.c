@@ -5,8 +5,8 @@ void process_geometry(render_context *rc, arrayvec *(*shader)(triangle)){
 	arrayvec *newtris;
 	arrayvec *vec = rc->trilist;
 	int orig_len = vec->used_len;
-	for(i = 0; i < orig_len-1; i++) {
-		printf("geom %d/%d\n", i, orig_len);
+	for(i = 0; i < orig_len; i++) {
+		//printf("geom %d/%d\n", i, orig_len);
 		tri = av_get_value(vec, i, triangle);
 		newtris = shader(tri);
 		if(newtris->used_len == 0) {
