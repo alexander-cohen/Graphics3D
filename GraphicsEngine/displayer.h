@@ -21,6 +21,7 @@
 #include "prepipeline/vnt.h"
 #include "linalg/matrix.h"
 #include "transform/transform.h"
+#include "pipeline/fragment_shader.h"
 
 int open_window();
 int run_line();
