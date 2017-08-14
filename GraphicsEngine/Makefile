@@ -1,4 +1,4 @@
-CC=gcc -fgnu89-inline
+CC=gcc -fgnu89-inline -O3
 INC=-I.
 CARGS=-g
 

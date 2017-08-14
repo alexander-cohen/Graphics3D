@@ -29,10 +29,13 @@ int *render(arrayvec *tris, arrayvec *materials, environment env, shaderlist sha
     process_fragments(rac, shaders.fragment_shader);
     av_clear(rc->trilist);
     av_clear(rc->materials);
+    free(rc->trilist);
+    free(rc->materials);
     free(rc);
     printf("zbuf corners %f %f %f %f", rac->z_buffer[0], rac->z_buffer[511], rac->z_buffer[511*512], rac->z_buffer[512*512 - 1]);
     free(rac->z_buffer);
     free(rac->mat_buffer);
+    free(rac->n_buffer);
     int *ret = rac->color_buffer;
     for(i = 0; i < shaders.postprocess_shaders->used_len; i++) {
         postprocess_shader *pps = av_get_type(shaders.postprocess_shaders, i, postprocess_shader);

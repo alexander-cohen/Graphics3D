@@ -23,7 +23,7 @@ void av_alloc_space(arrayvec *vec, int numElem) {
 }
 
 arrayvec *av_clone(arrayvec *vec) {
-	arrayvec *ret = av_create(0, vec->elem_size);
+	arrayvec *ret = av_create(vec->used_len, vec->elem_size);
 	av_concat(ret, vec);
 	return ret;
 }

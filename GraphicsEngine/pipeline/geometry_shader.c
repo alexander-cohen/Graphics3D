@@ -31,8 +31,8 @@ void process_geometry(render_context *rc, arrayvec *(*shader)(triangle)){
 				vec->data = realloc (vec->data, vec->elem_size * (vec->reserved_len));
 				printf("reallocating vec to %d", vec->elem_size * vec->reserved_len);
 			}
-			memcpy(vec->data + vec->elem_size * vec->used_len, newtris->data + newtris->elem_size, vec->elem_size * newtris->used_len);
-			vec->used_len += newtris->used_len;
+			memcpy(vec->data + vec->elem_size * vec->used_len, newtris->data + newtris->elem_size, vec->elem_size * (newtris->used_len - 1));
+			vec->used_len += newtris->used_len - 1;
 		}
 		free(newtris->data);
 		free(newtris);

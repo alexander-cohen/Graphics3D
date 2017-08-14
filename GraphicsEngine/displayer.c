@@ -1035,11 +1035,14 @@ int run_sphere() {
         //av_set(trans_tris, &tri, 78, false);
         shaders.postprocess_shaders = pp_multiblur_edges;
         col_arr = render(trans_tris, materials, env, shaders);
+        av_clear(trans_tris);
+        free(trans_tris);
         // apply_transform_inplace(trans_matrix, trans_matrix_inv_t, tris);
         
         img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
         XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
-
+        free(img);
+        free(col_arr);
         nanosleep(&slptime, NULL);
         frameNum++;
         gettimeofday(&end, NULL);

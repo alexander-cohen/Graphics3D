@@ -117,7 +117,9 @@ arrayvec *apply_transform_inplace(matrix *m, matrix *m_inv_t, arrayvec *tris) {
 }
 
 arrayvec *apply_transform(matrix *m, matrix *m_inv_t, arrayvec *tris) {
-	return apply_transform_inplace(m, m_inv_t, av_clone(tris));
+	arrayvec *tricopy = av_clone(tris);
+	apply_transform_inplace(m, m_inv_t, tricopy);
+	return tricopy;
 }
 
 Vec3 *transform_vec3_inplace(matrix *m, Vec3 *v) {  // XXX currently ignores w component i.e perspective shit
