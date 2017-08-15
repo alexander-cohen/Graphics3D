@@ -1,6 +1,7 @@
 import re
 from sys import argv
 import os
+from os import rename as mv
 
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
@@ -69,8 +70,9 @@ def starAndCap(st):
 
 if __name__ == '__main__':
     for arg in argv[1:]:
-        with open(arg+'.autodoc', 'w') as f:
+        mv(arg, arg+'.bak')
+        with open(arg, 'w') as f:
             cls()
             print 'FILE', arg, '\n\n\n\n'
-            f.write(autodoc(arg))
+            f.write(autodoc(arg+'.bak'))
                 
