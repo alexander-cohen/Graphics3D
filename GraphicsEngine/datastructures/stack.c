@@ -23,4 +23,5 @@ stack new_stack() {
 	res->data = malloc(4*sizeof(void *));
 	res->push = __stack_push;
 	res->pop = __stack_pop;
+	return res;
 }

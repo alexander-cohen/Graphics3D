@@ -10,7 +10,7 @@ raster_context *rasterizer(render_context *rc, environment env, int width, int h
     if(rac == NULL) {
         printf("WARNING!!!! RAC MALLOC FAILED DUE TO: ");
         perror(NULL);
-        printf("\nNote: sizeof(raster_context): %d.\n", sizeof(raster_context));
+        printf("\nNote: sizeof(raster_context): %lu.\n", sizeof(raster_context));
     }
     rac->materials = rc->materials;
     rac->env = env;

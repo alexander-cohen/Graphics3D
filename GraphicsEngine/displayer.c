@@ -57,6 +57,7 @@ int put_frame ()
 {
     img = XCreateImage(dis, CopyFromParent, 24, ZPixmap, 0, (char *)col_arr, WIDTH, HEIGHT, 32, 0);
     XPutImage(dis, win, gc, img, 0, 0, 0, 0, WIDTH, HEIGHT);
+    return 0;
 }
 
 int open_window() {

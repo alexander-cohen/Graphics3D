@@ -51,6 +51,8 @@ int pong_init(Display *_dis)
 	ball_y = HEIGHT / 2;
 
 	sleep (1);
+
+	return 0;
 }
 
 int keyPressed (int keyCode)
@@ -94,12 +96,14 @@ int draw_paddles ()
 	g2d_set_col (paddle_color);
 	g2d_fill_rect (paddle_x_pad, left_y, paddle_width, paddle_height); //left paddle
 	g2d_fill_rect (WIDTH - paddle_x_pad - paddle_width, right_y, paddle_width, paddle_height); //left paddle
+	return 0;
 }
 
 int draw_ball ()
 {
 	g2d_set_col (ball_color);
 	g2d_fill_ellipse (ball_x, ball_y, ball_rad, ball_rad);
+	return 0;
 }
 
 int move_paddles ()
@@ -127,6 +131,8 @@ int move_paddles ()
 
 	if (right_y < 0) right_y = 0;
 	if (right_y > HEIGHT - paddle_height) right_y = HEIGHT - paddle_height;
+
+	return 0;
 }
 
 int move_ball()
@@ -186,6 +192,8 @@ int move_ball()
 
 	ball_x += ballvel_x;
 	ball_y += ballvel_y;
+
+	return 0;
 }
 
 int pong_run_frame()
@@ -210,4 +218,6 @@ int pong_run_frame()
     draw_ball();
 
     put_frame();
+
+    return 0;
 }

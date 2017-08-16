@@ -67,8 +67,8 @@ int mattest() {
 	// 1x2 * 2x3
 	matrix *m1 = empty_matrix(1, 2);
 	matrix *m2 = empty_matrix(2, 3);
-	memcpy(m1->data, (double[]){1, 2}, 2*sizeof(double));
-	memcpy(m2->data, (double[]){1, 2, 3, 4, 5, 6}, 6*sizeof(double));
+	memcpy(m1->data, ((double[]){1, 2}), 2*sizeof(double));
+	memcpy(m2->data, ((double[]){1, 2, 3, 4, 5, 6}), 6*sizeof(double));
 	//expected result: {9, 12, 15}
 	matrix *dest = empty_matrix(1, 3);
 	matMul(dest, m1, m2);

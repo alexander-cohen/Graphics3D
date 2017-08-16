@@ -340,6 +340,8 @@ int draw_horizontal_line (int left, int right, int y)
 	{
 		g2d_set_pixel (x, y, (graphics_context -> color));
 	}
+
+	return 0;
 }
 
 static int cross2d (int dx1, int dy1, int dx2, int dy2)
@@ -433,6 +435,8 @@ int g2d_fill_triangle_boundingbox (
 		w2_row += dx31;
 		w3_row += dx12;
 	}
+
+	return 0;
 }
 
 
@@ -503,6 +507,8 @@ int g2d_fill_triangle_boundingbox_baseline (
 		w2_row += dx31;
 		w3_row += dx12;
 	}
+
+	return 0;
 }
 
 /*
