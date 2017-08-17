@@ -3,4 +3,5 @@
 *.gcno
 *.gcda
 *.out
+*.d
 display_xwindow
