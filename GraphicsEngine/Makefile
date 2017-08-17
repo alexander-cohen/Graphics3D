@@ -1,40 +1,68 @@
-CC=gcc -fgnu89-inline -O3
-INC=-I.
-CARGS=-g
+# Project Name (executable)
+PROJECT = display_xwindow
+# Compiler
+CC = gcc
 
-all: clean graphics2do linalgo thiso pipelineo datastructureso pongo objectso prepipelineo transformo
-	$(CC) *.o ${INC} -o display_xwindow -lX11 -lXext -lm ${CARGS}
+# Run Options       
+COMMANDLINE_OPTIONS = /dev/ttyS0
 
-run: all
-	./display_xwindow
+# Compiler options during compilation
+COMPILE_OPTIONS = -fgnu89-inline -O3
 
-thiso:
-	$(CC) -c *.c ${INC} ${CARGS}
+#Header include directories
+HEADERS = -I. -Ilinalg/
+#Libraries for linking
+LIBS = -lX11 -lXext -lm 
 
-pipelineo:
-	$(CC) -c pipeline/*.c ${INC} ${CARGS}
+# Dependency options
+DEPENDENCY_OPTIONS = -MM
 
-datastructureso:
-	$(CC) -c datastructures/*.c ${INC} ${CARGS}
+#-- Do not edit below this line --
 
-graphics2do:
-	$(CC) -c graphics2d/*.c ${INC} ${CARGS}
+# Subdirs to search for additional source files
+SUBDIRS := $(shell ls -F | grep "\/" )
+DIRS := ./ $(SUBDIRS)
+SOURCE_FILES := $(foreach d, $(DIRS), $(wildcard $(d)*.c) )
 
-linalgo:
-	$(CC) -c linalg/*.c ${INC} ${CARGS}
+# Create an object file of every c file
+OBJECTS = $(patsubst %.c, %.o, $(SOURCE_FILES))
 
-pongo:
-	$(CC) -c pong/*.c ${INC} ${CARGS}
+# Dependencies
+DEPENDENCIES = $(patsubst %.c, %.d, $(SOURCE_FILES))
 
-objectso:
-	$(CC) -c objects/*.c ${INC} ${CARGS}
+# Create .d files
+%.d: %.c
+	$(CC) $(DEPENDENCY_OPTIONS) $< -MT "$*.o $*.d" -MF $*.d
 
-prepipelineo:
-	$(CC) -c prepipeline/*.c ${INC} ${CARGS}
+# Make $(PROJECT) the default target
+all: $(DEPENDENCIES) $(PROJECT)
 
-transformo:
-	$(CC) -c transform/*.c ${INC} ${CARGS}
+$(PROJECT): $(OBJECTS)
+	$(CC) -o $(PROJECT) $(OBJECTS) $(LIBS)
 
+# Include dependencies (if there are any)
+ifneq "$(strip $(DEPENDENCIES))" ""
+  include $(DEPENDENCIES)
+endif
+
+# Compile every c file to an object
+obj/%.o: %.c
+	$(CC) -c $(COMPILE_OPTIONS) -o $@ $< $(HEADERS)
+
+# Build & Run Project
+run: $(PROJECT)
+	./$(PROJECT) $(COMMANDLINE_OPTIONS)
+
+# Clean & Debug
+.PHONY: makefile-debug
+makefile-debug:
+
+.PHONY: clean
 clean:
-	-rm *.o
-	-rm display_xwindow
+	rm -f $(PROJECT) $(OBJECTS)
+
+.PHONY: depclean
+depclean:
+	rm -f $(DEPENDENCIES)
+
+clean-all: clean depclean
