@@ -22,7 +22,7 @@ typedef struct {
 	Vec3 Ka, Kd, Ks;
 	texture Ka_map, Kd_map, Ks_map;
 	int shininess;
-	int color; // XXX useless holdover, destroy
+	//int color; // XXX useless holdover, destroy
 } material;
 
 typedef struct {
@@ -39,6 +39,7 @@ typedef struct {
 typedef struct {
 	arrayvec *lights;
 	Vec3 view;
+	double time;
 } environment;
 
 static const char VERTEX = 0;

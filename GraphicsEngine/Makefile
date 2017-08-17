@@ -1,68 +1,63 @@
-# Project Name (executable)
-PROJECT = display_xwindow
-# Compiler
-CC = gcc
+#Compiler and Linker
+CC          := gcc
 
-# Run Options       
-COMMANDLINE_OPTIONS = /dev/ttyS0
+#The Target Binary Program
+TARGET      := display_xwindow
 
-# Compiler options during compilation
-COMPILE_OPTIONS = -fgnu89-inline -O3
+#The Directories, Source, Includes, Objects, Binary and Resources
+SRCDIR      := src
+BUILDDIR    := obj
+RESDIR      := res
+SRCEXT      := c
+DEPEXT      := d
+OBJEXT      := o
 
-#Header include directories
-HEADERS = -I. -Ilinalg/
-#Libraries for linking
-LIBS = -lX11 -lXext -lm 
+#Flags, Libraries and Includes
+CFLAGS      := -fgnu89-inline -O3 -g -Wall
+LIB         := -lX11 -lXext -lm 
+INC         := -Isrc/ -I. -Isrc/linalg/ -I/usr/local/include
+INCDEP      := -Isrc/
 
-# Dependency options
-DEPENDENCY_OPTIONS = -MM
+#---------------------------------------------------------------------------------
+#DO NOT EDIT BELOW THIS LINE
+#---------------------------------------------------------------------------------
+SOURCES     := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+OBJECTS     := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
 
-#-- Do not edit below this line --
+#Defauilt Make
+all: resources $(TARGET)
 
-# Subdirs to search for additional source files
-SUBDIRS := $(shell ls -F | grep "\/" )
-DIRS := ./ $(SUBDIRS)
-SOURCE_FILES := $(foreach d, $(DIRS), $(wildcard $(d)*.c) )
+run: ${TARGET}
+	./${TARGET}
 
-# Create an object file of every c file
-OBJECTS = $(patsubst %.c, %.o, $(SOURCE_FILES))
+#Remake
+remake: cleaner all
 
-# Dependencies
-DEPENDENCIES = $(patsubst %.c, %.d, $(SOURCE_FILES))
+#Make the Directories
+directories:
+	@mkdir -p $(BUILDDIR)
 
-# Create .d files
-%.d: %.c
-	$(CC) $(DEPENDENCY_OPTIONS) $< -MT "$*.o $*.d" -MF $*.d
-
-# Make $(PROJECT) the default target
-all: $(DEPENDENCIES) $(PROJECT)
-
-$(PROJECT): $(OBJECTS)
-	$(CC) -o $(PROJECT) $(OBJECTS) $(LIBS)
-
-# Include dependencies (if there are any)
-ifneq "$(strip $(DEPENDENCIES))" ""
-  include $(DEPENDENCIES)
-endif
-
-# Compile every c file to an object
-obj/%.o: %.c
-	$(CC) -c $(COMPILE_OPTIONS) -o $@ $< $(HEADERS)
-
-# Build & Run Project
-run: $(PROJECT)
-	./$(PROJECT) $(COMMANDLINE_OPTIONS)
-
-# Clean & Debug
-.PHONY: makefile-debug
-makefile-debug:
-
-.PHONY: clean
+#Clean only Objecst
 clean:
-	rm -f $(PROJECT) $(OBJECTS)
+	-rm ${TARGET}
+	-rm -rf $(BUILDDIR)
 
-.PHONY: depclean
-depclean:
-	rm -f $(DEPENDENCIES)
+#Pull in dependency info for *existing* .o files
+-include $(OBJECTS:.$(OBJEXT)=.$(DEPEXT))
 
-clean-all: clean depclean
+#Link
+$(TARGET): $(OBJECTS)
+	$(CC) -o $(TARGET) $^ $(LIB)
+
+#Compile
+$(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	@$(CC) ${INC} -MM $(SRCDIR)/$*.$(SRCEXT) > $(BUILDDIR)/$*.$(DEPEXT)
+	@cp -f $(BUILDDIR)/$*.$(DEPEXT) $(BUILDDIR)/$*.$(DEPEXT).tmp
+	@sed -e 's|.*:|$(BUILDDIR)/$*.$(OBJEXT):|' < $(BUILDDIR)/$*.$(DEPEXT).tmp > $(BUILDDIR)/$*.$(DEPEXT)
+	@sed -e 's/.*://' -e 's/\\$$//' < $(BUILDDIR)/$*.$(DEPEXT).tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(BUILDDIR)/$*.$(DEPEXT)
+	@rm -f $(BUILDDIR)/$*.$(DEPEXT).tmp
+
+#Non-File Targets
+.PHONY: all remake clean resources run

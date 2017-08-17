@@ -49,15 +49,15 @@ void barycentric(Vec3 *bary, Vec2 c, Vec3 p1, Vec3 p2, Vec3 p3, double idt) {
 }
 
 
-static inline int inwidth (raster_context *rac, int x)
-{
-    return (int) min (max (x, 0), (rac -> width) - 1);
-}
+// static inline int inwidth (raster_context *rac, int x)
+// {
+//     return (int) min (max (x, 0), (rac -> width) - 1);
+// }
 
-static inline int inheight (raster_context *rac, int y)
-{
-    return (int) min (max (y, 0), (rac -> height) - 1);
-}
+// static inline int inheight (raster_context *rac, int y)
+// {
+//     return (int) min (max (y, 0), (rac -> height) - 1);
+// }
 
 static double orient2d (double x1, double y1, double x2, double y2, double x3, double y3)
 {
@@ -69,20 +69,20 @@ static double cross2d (double dx1, double dy1, double dx2, double dy2)
     return dx1 * dy2 - dx2 * dy1;
 }
 
-static triangle rot_tri(triangle tri) {
-    Vec3 p1, n1;
-    Vec2 t1;
-    p1 = tri.p1;
-    n1 = tri.n1;
-    t1 = tri.t1;
-    tri.p1 = tri.p2;
-    tri.n1 = tri.n2;
-    tri.t1 = tri.t2;
-    tri.p2 = p1;
-    tri.n2 = n1;
-    tri.t2 = t1;
-    return tri;
-}
+// static triangle rot_tri(triangle tri) {
+//     Vec3 p1, n1;
+//     Vec2 t1;
+//     p1 = tri.p1;
+//     n1 = tri.n1;
+//     t1 = tri.t1;
+//     tri.p1 = tri.p2;
+//     tri.n1 = tri.n2;
+//     tri.t1 = tri.t2;
+//     tri.p2 = p1;
+//     tri.n2 = n1;
+//     tri.t2 = t1;
+//     return tri;
+// }
 
 void raster_tri(raster_context *rac, triangle tri) {
     double idt = idet(tri.p1, tri.p2, tri.p3);

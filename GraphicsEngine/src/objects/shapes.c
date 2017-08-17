@@ -182,7 +182,7 @@ arrayvec *torusPoints(double x, double y, double z, double outerRadius, double i
     // so calculate eq for center point of inner circle in outer loop, then calculate above each iteration of inner loop
     arrayvec *pts = av_create(innerSteps * (outerSteps + 1) + 1, sizeof(Vec3));
     int i, j, idx = 0;
-    double theta, phi, rsp, ct, st, ist, ict, bx, by, bz, cp;
+    double theta, phi, ct, st, ist, ict, bx, by, bz, cp; //rsp
     for(i = 0; i < outerSteps; i++) {
         theta = i * 2 * M_PI / outerSteps;
         ct = cos(theta);
@@ -316,8 +316,7 @@ bool equalsLong3(void *a, void *b) {
 
 void fix_overlap(arrayvec *vxs, arrayvec *tri_idxs) {
     Hashmap *vmap = hashmapCreate(tri_idxs->used_len, &hashLong3Tuple, &equalsLong3);
-    int i, j, one = 1, zero = 0;
-    Vec3 *real;
+    int i;
     int *out = malloc(sizeof(int *));
     long *key = malloc(sizeof(long) * 3), *okey = malloc(sizeof(long) * 3);
     assert(sizeof(long) == sizeof(double));

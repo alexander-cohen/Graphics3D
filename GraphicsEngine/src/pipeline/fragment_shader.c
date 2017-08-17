@@ -1,7 +1,7 @@
 #include "fragment_shader.h"
 void process_fragments(raster_context *rac, int (*shader)(Vec3, Vec3, Vec2, environment, material)){
     int x, y, i = 0;
-    Vec3 v = {250, 250, 1e30}; // essentially infinitely far is the point
+    //Vec3 v = {250, 250, 1e30}; // essentially infinitely far is the point
     for(y = 0; y < rac->height; y++) {
         for(x = 0; x < rac->width; x++, i++) {
             if(rac->mat_buffer[i] > -1) {

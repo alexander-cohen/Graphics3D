@@ -22,6 +22,7 @@
 #include "linalg/matrix.h"
 #include "transform/transform.h"
 #include "pipeline/fragment_shader.h"
+#include "colors.h"
 
 int open_window();
 int run_line();

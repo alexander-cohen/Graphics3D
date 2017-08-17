@@ -1,5 +1,4 @@
 #include "pong.h"
-
 int 
 paddle_height = 50, 
 ball_rad = 10,

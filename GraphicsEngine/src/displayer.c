@@ -136,49 +136,6 @@ int run_triangle ()
         gettimeofday(&begin, NULL);
         g2d_set_col (YELLOW);
 
-        for (int i = 0; i < ntrials; i++)
-        {   
-            int midx = rand() % 512;
-            int midy = rand() % 512;
-
-            int color = rand() % (0xFFFFFF);
-
-
-            int x1 = midx + (rand() % tri_box_size) - tri_box_size / 2;
-            int y1 = midy + (rand() % tri_box_size) - tri_box_size / 2;
-
-            int x2 = midx + (rand() % tri_box_size) - tri_box_size / 2;
-            int y2 = midy + (rand() % tri_box_size) - tri_box_size / 2;
-
-            int x3 = midx + (rand() % tri_box_size) - tri_box_size / 2;
-            int y3 = midy + (rand() % tri_box_size) - tri_box_size / 2;
-
-            
-            // x1 = 266;
-            // y1 = 292; 
-            // x2 = 328;
-            // y2 = 219; 
-            // x3 = 286; 
-            // y3 = 232;
-
-
-            g2d_set_col (color);
-            //g2d_fill_triangle_boundingbox_baseline (x1, y1, x2, y2, x3, y3);
-
-            // g2d_set_col (0xFF0000);
-            // g2d_fill_ellipse (x1, y1, 5, 5);
-
-            // g2d_set_col (0x00FF00);
-            // g2d_fill_ellipse (x2, y2, 5, 5);
-
-            // g2d_set_col (0x0000FF);
-            // g2d_fill_ellipse (x3, y3, 5, 5);
-
-
-            // printf ("created triangle #%d: (%d, %d); (%d, %d); (%d, %d)\n", 
-            //     i, x1, y1, x2, y2, x3, y3);
-        }
-
         //printf ("\ntime to create %d triangles within box of %d:\n", ntrials, tri_box_size);
         gettimeofday(&end, NULL);
         double nsecs = (end.tv_sec - begin.tv_sec) + ((end.tv_usec - begin.tv_usec)/1000000.0);
@@ -246,7 +203,7 @@ int run_triangle ()
 }
 
 int run_test() {
-    struct timespec slptime = {0, 20000000}; // 50 fps
+    //struct timespec slptime = {0, 20000000}; // 50 fps
     int frameNum = 0;
     // make a bunch of windows
     int *screens = malloc(sizeof(int) * 100 * WIDTH * HEIGHT);
@@ -268,7 +225,7 @@ int run_test() {
         }
     }
     printf("Got Expose event, moving on\n");
-    char pixBuf[WIDTH * HEIGHT * 3 + 1];
+    //char pixBuf[WIDTH * HEIGHT * 3 + 1];
     struct timeval begin, end;
     XImage *img = NULL;
     gettimeofday(&begin, NULL);
@@ -307,7 +264,7 @@ int run_test() {
 
 int run_tri_test() {
 
-    struct timespec slptime = {0, 20000000}; // 50 fps
+    //struct timespec slptime = {0, 20000000}; // 50 fps
     int frameNum = 0;
     // make a bunch of windows
 
@@ -371,10 +328,10 @@ int run_tri_test() {
         //all near horizontal, same side, flipped
         //g2d_fill_triangle_boundingbox(300,150,400,160,340,165);
         g2d_fill_triangle_boundingbox(0,0,511,100,200,511);
-        int 
-        x1 = 30, y1 = 30,
-        x2 = 200, y2 = 40,
-        x3 = 100, y3 = 200;
+        // int 
+        // x1 = 30, y1 = 30,
+        // x2 = 200, y2 = 40,
+        // x3 = 100, y3 = 200;
 
         //g2d_fill_triangle (x1, y1, x2, y2, x3, y3);
 
@@ -672,6 +629,22 @@ int phong_shader_x(Vec3 pos, Vec3 n, Vec2 t, environment env, material mat) { //
     return vec3ToHex(col);
 }
 
+// alex shader, better than all your shader's by a lot
+int alex_shader (Vec3 pos, Vec3 n, Vec2 t, environment env, material mat) { 
+    //Vec3 col = vec3add (vec3mul (n, 0.5), ((Vec3){0.5, 0.5, 0.5}));
+    // Vec3 point = (Vec3){env.time * 1, env.time * 1, env.time * 1};
+    // Vec3 dist = vec3sub (pos, point);
+    // double abs_dist = vec3norm (dist) * 0.001;
+    // Vec3 col = vec3div (dist, vec3norm (dist));
+    // Vec3 adder = (Vec3) {abs_dist, abs_dist, abs_dist};
+    Vec3 col = vec3mul (vec3mul (vec3add (mat.Ka, n), 0.25), env.time * 0.01);
+
+    //col = vec3mul (vec3add (col, vec3mul (n, 0.5)), 0.5);
+
+    col = vec3cap (col, 0, 1);
+    return vec3ToHex(col);
+}
+
 int pp_sobelfilter_shader(int *inarr, int width, int height, int i, int j) {
     int iT = i == 0 ? 1 : i-1;
     int iB = i == height-1 ? height-2 : i+1;
@@ -893,10 +866,10 @@ int run_sphere() {
 
     //printf("materials[0].color: %d", av_get_type(materials, 0, material)->color);
 
-    Vec3 p1 = {400, 400, 400};
-    Vec3 p2 = {400, 100, 100};
-    Vec3 p3 = {100, 400, 100};
-    Vec3 p4 = {100, 100, 400};
+    // Vec3 p1 = {400, 400, 400};
+    // Vec3 p2 = {400, 100, 100};
+    // Vec3 p3 = {100, 400, 100};
+    // Vec3 p4 = {100, 100, 400};
     Vec3 zero3 = {0,0,0};
     Vec2 zero2 = {0,0};
     int zero1 = 0;
@@ -964,8 +937,8 @@ int run_sphere() {
     render_shader extrude;
     extrude.type = GEOMETRY;
     extrude.func = geom_extrudefaces;
-    av_append(shaders.render_shaders, &extrude, false);
-    shaders.fragment_shader = phong_shader_x;
+    //av_append(shaders.render_shaders, &extrude, false);
+    shaders.fragment_shader = alex_shader;
     arrayvec *pp_multiblur_edges = av_create(20, sizeof(postprocess_shader));
     postprocess_shader blur;
     blur.type = SINGLE;
@@ -989,7 +962,7 @@ int run_sphere() {
     env.view = (Vec3){250, 250, 1e30};
     //exit(1);
     while(frameNum < 1000) {
-        
+        env.time = frameNum;
         //g2d_fill_bg (CYAN);
 
         printf("Frame %d\n", frameNum);

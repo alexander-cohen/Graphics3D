@@ -172,15 +172,15 @@ int g2d_draw_line (int x1, int y1, int x2, int y2)
 		return g2d_draw_point (x1, y2);
 	}
 
-	int overall_dx_abs = abs(x2 - x1);
-	int overall_dy_abs = abs(y2 - y1);
+	// int overall_dx_abs = abs(x2 - x1);
+	// int overall_dy_abs = abs(y2 - y1);
 
 	int cur_x = x1;
 	int cur_y = y1;
 	int cur_dist = 0;
 
-	int xmov = x2 > x1 ? 1 : -1;
-	int ymov = y2 > y1 ? 1 : -1;
+	// int xmov = x2 > x1 ? 1 : -1;
+	// int ymov = y2 > y1 ? 1 : -1;
 
 	do
 	{
@@ -473,7 +473,7 @@ int g2d_fill_triangle_boundingbox_baseline (
 	int w3_row = orient2d (x1, y1, x2, y2, min_x, min_y);
 
 	int w1, w2, w3;
-	bool change1, change2, change3;
+	// bool change1, change2, change3;
 
 
 	for (short y = min_y; y <= max_y; y++)

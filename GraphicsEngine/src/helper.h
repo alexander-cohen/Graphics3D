@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include "colors.h"
 #include <unistd.h>
 #include <x86intrin.h>
 #include <stdbool.h>
