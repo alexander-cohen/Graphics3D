@@ -23,6 +23,7 @@
 #include "transform/transform.h"
 #include "pipeline/fragment_shader.h"
 #include "colors.h"
+#include "objects/wavefront.h"
 
 int open_window();
 int run_line();

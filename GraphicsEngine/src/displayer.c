@@ -791,7 +791,7 @@ arrayvec *geom_extrudefaces(triangle tri) {
     arrayvec *ret = av_create(2, sizeof(triangle));
     //av_append(ret, &tri, false);
     Vec3 sn = vec3cross(vec3sub(tri.p1, tri.p2), vec3sub(tri.p2, tri.p3));
-    Vec3 extrude = vec3div(sn, vec3norm(sn) / 20);
+    Vec3 extrude = vec3div(sn, vec3norm(sn) / 40);
     vec3iadd(tri.p1, extrude);
     vec3iadd(tri.p2, extrude);
     vec3iadd(tri.p3, extrude);
@@ -905,8 +905,8 @@ int run_sphere() {
     fix_overlap(spts, stri_idxs);
     if(vertex_shade) {
         gen_vertex_normals(spts, stri_idxs, snorms, stcs);
-        check_orient(spts, snorms);
-        check_orient_sns(spts, stri_idxs);
+        //check_orient(spts, snorms);
+        //check_orient_sns(spts, stri_idxs);
         //exit(0);
     }
     //exit(0);
@@ -926,10 +926,64 @@ int run_sphere() {
     gen_surface_normals(boxtris);
     apply_flat_tcs(boxtris, boxFlatTCs());
 
+    arrayvec **vtnt = obj_get_lists_vtnt("mario/mario.obj");
+    //exit(1);
+    arrayvec *teavxs = vtnt[0],
+        *teatri_idxs = vtnt[1],
+        *teanorms = vtnt[2],
+        *teatcs = vtnt[3],
+        *teamats = av_create(teatri_idxs->used_len / 3, sizeof(int));
+    printf("vxs 1 . x: %f\n", av_get_type(teavxs, 1, Vec3)->x);
+    //exit(1);
+    av_fill(teamats, &one, teatri_idxs->used_len / 3);
+    printf("%d %d %d %d %d\n", teavxs->used_len, teatri_idxs->used_len, teanorms->used_len, teatcs->used_len, teamats->used_len);
+    int *iter = malloc(sizeof(int));
+    *iter = 0;
+    Vec3 *dat;
+    int *triidx;
+    while((triidx = av_next(teatri_idxs, iter)) != NULL) {
+        printf("tri %d: %d\n", *iter, *triidx);
+    }
+    //exit(1);
+    *iter = 0;
+    while((dat = av_next(teanorms, iter)) != NULL) {
+        printf("teanorms %d: (%f, %f, %f)\n", *iter, dat->x, dat->y, dat->z);
+    }
+    //exit(1);
 
-    av_concat(tris, boxtris);
-    av_concat(tris, stris);
-    check_orients_tris(tris);
+    //fix_overlap(teavxs, teatri_idxs);
+    if(vertex_shade) {
+        //av_fill(teanorms, &zero3, teavxs->used_len);
+        //av_fill(teatcs, &zero2, teavxs->used_len);
+        //gen_vertex_normals(teavxs, teatri_idxs, teanorms, teatcs);
+    }
+    arrayvec *teatris = VTNT_to_AV(teavxs, teatri_idxs, teanorms, teatcs, teamats);
+    triangle *tri;
+    *iter = 0;
+    while((tri = av_next(teatris, iter)) != NULL) {
+        printf("teatris %d: (%f, %f, %f)\n", *iter, tri->p1.x, tri->p1.y, tri->p1.z);
+    }
+    //exit(1);
+    matrix *fw_tea, *bw_tea;
+    fw_tea = scale(1, 1, 1);
+    matmul_ip(rotate(2, M_PI), fw_tea);
+    matmul_ip(translate(250, 300, 0), fw_tea);
+    bw_tea = ident();
+    gluInvertMatrix(fw_tea->data, bw_tea->data);
+    itranspose(bw_tea);
+    teatris = apply_transform(fw_tea, bw_tea, teatris);
+    printf("len teatris = %d\n", teatris->used_len);
+    printf("x is %f\n", (av_get_type(teatris, 50, triangle)->p1.x));
+    //exit(1);
+    free(fw_tea->data);
+    free(bw_tea->data);
+    free(fw_tea);
+    free(bw_tea);
+
+    //av_concat(tris, boxtris);
+    //av_concat(tris, stris);
+    av_concat(tris, teatris);
+    //check_orients_tris(tris);
     printf("sns gend\n");
     double angle = 0;
     shaderlist shaders;
@@ -938,7 +992,7 @@ int run_sphere() {
     extrude.type = GEOMETRY;
     extrude.func = geom_extrudefaces;
     //av_append(shaders.render_shaders, &extrude, false);
-    shaders.fragment_shader = alex_shader;
+    shaders.fragment_shader = phong_shader_x;
     arrayvec *pp_multiblur_edges = av_create(20, sizeof(postprocess_shader));
     postprocess_shader blur;
     blur.type = SINGLE;

@@ -114,3 +114,8 @@ void av_clear (arrayvec *vec) {
 	vec->reserved_len = 0;
 	free (vec->data);
 }
+
+void *av_next(arrayvec *vec, int *ptr) {
+	if(*ptr >= vec->used_len) return NULL;
+	return av_get(vec, (*ptr)++);
+}

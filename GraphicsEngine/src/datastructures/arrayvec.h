@@ -117,6 +117,13 @@ void *av_peak (arrayvec *vec);
 void av_clear (arrayvec *vec);
 
 /**
+ * Iterates through the whole arrayvec
+ * @param vec arrayvec to iterate through
+ * @param iter index of iterator currently
+ */
+void *av_next(arrayvec *vec, int *ptr);
+
+/**
  * Manually reallocs more space to the arrayvec and updates reservedlen
  * @param vec arrayvec to alloc to
  * @param numElem number of elements to increase size by

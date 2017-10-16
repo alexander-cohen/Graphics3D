@@ -1,63 +1,16 @@
-#Compiler and Linker
-CC          := gcc
+CC=gcc -g -std=gnu99 -fgnu89-inline	
+INCLUDE_FLAGS=-Isrc
+LIBRARY_FLAGS=-lX11 -lXext -lm
 
-#The Target Binary Program
-TARGET      := display_xwindow
+all: clean display_xwindow
 
-#The Directories, Source, Includes, Objects, Binary and Resources
-SRCDIR      := src
-BUILDDIR    := obj
-RESDIR      := res
-SRCEXT      := c
-DEPEXT      := d
-OBJEXT      := o
+display_xwindow: 
+	$(CC) $(INCLUDE_FLAGS) -c src/*.c src/*/*.c
+	$(CC) -o display_xwindow *.o $(LIBRARY_FLAGS)
 
-#Flags, Libraries and Includes
-CFLAGS      := -fgnu89-inline -O3 -g -Wall
-LIB         := -lX11 -lXext -lm 
-INC         := -Isrc/ -I. -Isrc/linalg/ -I/usr/local/include
-INCDEP      := -Isrc/
+run: clean display_xwindow
+	./display_xwindow
 
-#---------------------------------------------------------------------------------
-#DO NOT EDIT BELOW THIS LINE
-#---------------------------------------------------------------------------------
-SOURCES     := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-OBJECTS     := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
-
-#Defauilt Make
-all: resources $(TARGET)
-
-run: ${TARGET}
-	./${TARGET}
-
-#Remake
-remake: cleaner all
-
-#Make the Directories
-directories:
-	@mkdir -p $(BUILDDIR)
-
-#Clean only Objecst
 clean:
-	-rm ${TARGET}
-	-rm -rf $(BUILDDIR)
-
-#Pull in dependency info for *existing* .o files
--include $(OBJECTS:.$(OBJEXT)=.$(DEPEXT))
-
-#Link
-$(TARGET): $(OBJECTS)
-	$(CC) -o $(TARGET) $^ $(LIB)
-
-#Compile
-$(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
-	@$(CC) ${INC} -MM $(SRCDIR)/$*.$(SRCEXT) > $(BUILDDIR)/$*.$(DEPEXT)
-	@cp -f $(BUILDDIR)/$*.$(DEPEXT) $(BUILDDIR)/$*.$(DEPEXT).tmp
-	@sed -e 's|.*:|$(BUILDDIR)/$*.$(OBJEXT):|' < $(BUILDDIR)/$*.$(DEPEXT).tmp > $(BUILDDIR)/$*.$(DEPEXT)
-	@sed -e 's/.*://' -e 's/\\$$//' < $(BUILDDIR)/$*.$(DEPEXT).tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(BUILDDIR)/$*.$(DEPEXT)
-	@rm -f $(BUILDDIR)/$*.$(DEPEXT).tmp
-
-#Non-File Targets
-.PHONY: all remake clean resources run
+	-rm -f *.o
+	-rm -f display_xwindow

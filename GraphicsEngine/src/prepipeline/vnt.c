@@ -67,22 +67,42 @@ arrayvec *VTNT_to_AV(arrayvec *vxs, arrayvec *tri_idxs, arrayvec *norms, arrayve
     arrayvec *tris = av_create(mats->used_len, sizeof(triangle));
     int i, i1, i2, i3;
     triangle tri;
+    Vec3 nzero = {1,0,0};
+    Vec2 tzero = {0,0};
     for(i = 0; i < tri_idxs->used_len; i+=3) { // if tri_idxs is malformed (i.e. length not div by 3) this will fail, which is good
         i1 = av_get_value(tri_idxs, i, int);
         i2 = av_get_value(tri_idxs, i+1, int);
         i3 = av_get_value(tri_idxs, i+2, int);
 
         tri.p1 = av_get_value(vxs, i1, Vec3);
-        tri.n1 = av_get_value(norms, i1, Vec3);
-        tri.t1 = av_get_value(tcs, i1, Vec2);
-
         tri.p2 = av_get_value(vxs, i2, Vec3);
-        tri.n2 = av_get_value(norms, i2, Vec3);
-        tri.t2 = av_get_value(tcs, i2, Vec2);
-
         tri.p3 = av_get_value(vxs, i3, Vec3);
-        tri.n3 = av_get_value(norms, i3, Vec3);
-        tri.t3 = av_get_value(tcs, i3, Vec2);
+        //printf("%d %d %d %d\n", i1, i2, i3, vxs->used_len);
+        if(i1 < norms->used_len) 
+            tri.n1 = av_get_value(norms, i1, Vec3);
+        else
+            tri.n1 = nzero;
+        if(i2 < norms->used_len) 
+            tri.n2 = av_get_value(norms, i2, Vec3);
+        else
+            tri.n2 = nzero;
+        if(i3 < norms->used_len) 
+            tri.n3 = av_get_value(norms, i3, Vec3);
+        else
+            tri.n3 = nzero;
+
+        if(i1 < tcs->used_len) 
+            tri.t1 = av_get_value(tcs, i1, Vec2);
+        else
+            tri.t1 = tzero;
+        if(i2 < tcs->used_len) 
+            tri.t2 = av_get_value(tcs, i2, Vec2);
+        else
+            tri.t2 = tzero;
+        if(i3 < tcs->used_len) 
+            tri.t3 = av_get_value(tcs, i3, Vec2);
+        else
+            tri.t3 = tzero;
 
         tri.mat = av_get_value(mats, i/3, int);
         av_append(tris, &tri, false);
