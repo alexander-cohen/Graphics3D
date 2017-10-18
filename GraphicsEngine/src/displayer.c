@@ -605,6 +605,8 @@ double dipow(double base, unsigned int exp) {
 } 
 
 int phong_shader_x(Vec3 pos, Vec3 n, Vec2 t, environment env, material mat) { // example shader, copied from my old python implementation
+    if(n.z < 0)
+        return 0;
     Vec3 v = env.view;
     arrayvec *lights = env.lights;
     Vec3 PV = vec3sub(v, pos);
@@ -815,7 +817,7 @@ arrayvec *geom_extrudefaces(triangle tri) {
 
 int run_sphere() {
     bool vertex_shade = true; // ENABLE THIS TO EXPAND MIND
-    int steps = 10; // more = higher poly count for sphere
+    int steps = 50; // more = higher poly count for sphere
     
     struct timespec slptime = {0, 0}; // x ms * (ns/ms)
     int frameNum = 0;
@@ -875,7 +877,7 @@ int run_sphere() {
     int zero1 = 0;
     int one = 1;
 
-    // arrayvec *tris = av_create(0, sizeof(triangle));
+    arrayvec *tris = av_create(0, sizeof(triangle));
 
     arrayvec *pts = torusPoints(250, 250, 0, 150, 50, steps, steps);
     arrayvec *tri_idxs = torusTris(steps, steps);
@@ -889,9 +891,9 @@ int run_sphere() {
     if(vertex_shade)
         gen_vertex_normals(pts, tri_idxs, norms, tcs);
     //exit(0);
-    arrayvec *tris = VTNT_to_AV(pts, tri_idxs, norms, tcs, mats);
+    arrayvec *tortris = VTNT_to_AV(pts, tri_idxs, norms, tcs, mats);
     if(!vertex_shade)
-        gen_surface_normals(tris);
+        gen_surface_normals(tortris);
 
 
     arrayvec *spts = spherePoints(250, 250, 0, 75, steps);
@@ -926,7 +928,7 @@ int run_sphere() {
     gen_surface_normals(boxtris);
     apply_flat_tcs(boxtris, boxFlatTCs());
 
-    arrayvec **vtnt = obj_get_lists_vtnt("mario/mario.obj");
+    arrayvec **vtnt = obj_get_lists_vtnt("teapot.obj");
     //exit(1);
     arrayvec *teavxs = vtnt[0],
         *teatri_idxs = vtnt[1],
@@ -935,7 +937,7 @@ int run_sphere() {
         *teamats = av_create(teatri_idxs->used_len / 3, sizeof(int));
     printf("vxs 1 . x: %f\n", av_get_type(teavxs, 1, Vec3)->x);
     //exit(1);
-    av_fill(teamats, &one, teatri_idxs->used_len / 3);
+    av_fill(teamats, &zero1, teatri_idxs->used_len / 3);
     printf("%d %d %d %d %d\n", teavxs->used_len, teatri_idxs->used_len, teanorms->used_len, teatcs->used_len, teamats->used_len);
     int *iter = malloc(sizeof(int));
     *iter = 0;
@@ -965,9 +967,9 @@ int run_sphere() {
     }
     //exit(1);
     matrix *fw_tea, *bw_tea;
-    fw_tea = scale(1, 1, 1);
+    fw_tea = scale(100, 100, 100);
     matmul_ip(rotate(2, M_PI), fw_tea);
-    matmul_ip(translate(250, 300, 0), fw_tea);
+    matmul_ip(translate(250, 375, 0), fw_tea);
     bw_tea = ident();
     gluInvertMatrix(fw_tea->data, bw_tea->data);
     itranspose(bw_tea);
@@ -979,7 +981,7 @@ int run_sphere() {
     free(bw_tea->data);
     free(fw_tea);
     free(bw_tea);
-
+    //av_concat(tris, tortris);
     //av_concat(tris, boxtris);
     //av_concat(tris, stris);
     av_concat(tris, teatris);
