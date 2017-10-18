@@ -953,11 +953,11 @@ int run_sphere() {
     }
     //exit(1);
 
-    //fix_overlap(teavxs, teatri_idxs);
+    fix_overlap(teavxs, teatri_idxs);
     if(vertex_shade) {
-        //av_fill(teanorms, &zero3, teavxs->used_len);
-        //av_fill(teatcs, &zero2, teavxs->used_len);
-        //gen_vertex_normals(teavxs, teatri_idxs, teanorms, teatcs);
+        av_fill(teanorms, &zero3, teavxs->used_len);
+        av_fill(teatcs, &zero2, teavxs->used_len);
+        gen_vertex_normals(teavxs, teatri_idxs, teanorms, teatcs);
     }
     arrayvec *teatris = VTNT_to_AV(teavxs, teatri_idxs, teanorms, teatcs, teamats);
     triangle *tri;
