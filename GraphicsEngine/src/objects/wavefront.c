@@ -2,9 +2,9 @@
 #include "wavefront.h"
 
 typedef struct {
-	Vec3 *v;
-	Vec3 *n;
-	Vec2 *t;
+	Vec3 v;
+	Vec3 n;
+	Vec2 t;
 } wf_vnt;
 
 char *read_line(FILE *file) {
@@ -92,6 +92,7 @@ void parse_face(char *line, arrayvec *tri_cors, arrayvec *vxs, arrayvec *norms, 
 		line++;
 	line++;
 	int i = 0;
+	printf("%s\n", line);
 	for(; i < 3; i++) {
 		while(*line == ' ' || *line == '\t')
 			line++;
@@ -100,20 +101,29 @@ void parse_face(char *line, arrayvec *tri_cors, arrayvec *vxs, arrayvec *norms, 
 			line++;
 		if(*line == '/') {
 			int v_idx = idx;
+			// av_append(tri_cors, &idx, 0);
+			// while(*line != ' ' && *line != '\t' && *line != '\n')
+			// 	line++;
+			// continue;
 			int t_idx = -1;
 			int n_idx = -1;
 			line++;
 			if(*line == '/') {
 				line++;
 				n_idx = atoi(line) - 1;
+				printf("v_idx is %d, n_idx is %d\n", v_idx, n_idx);
 			}
 			else {
+				printf("line is currently %s\n", line);
+				printf("what, theres a tc\n");
 				t_idx = atoi(line) - 1;
 				while(*line != ' ' && *line != '\t' && *line != '/')
 					line++;
 				if(*line == '/') {
 					line++;
+					printf("line is %s\n", line);
 					n_idx = atoi(line) - 1;
+					printf("v, n is %d, %d\n", v_idx, n_idx);
 				}
 			}
 			while(*line != ' ' && *line != '\t')
@@ -121,18 +131,22 @@ void parse_face(char *line, arrayvec *tri_cors, arrayvec *vxs, arrayvec *norms, 
 			if(v_idx == n_idx && n_idx == t_idx)
 				av_append(tri_cors, &idx, 0);
 			else {
+				assert(v_idx < vxs->used_len);
+				assert(t_idx < tex_cors->used_len);
+				assert(n_idx < norms->used_len);
 				Vec3 *n, *v = av_get(vxs, v_idx);
 				Vec2 *t;
 				if(t_idx == -1)
 					t = &(Vec2){0, 0};
 				else
 					t = av_get(tex_cors, t_idx);
-				if(n_idx == -1)
+				if(n_idx == -1) 
 					n = &(Vec3){1, 0, 0};
 				else
 					n = av_get(norms, n_idx);
 				int vnt_idx = -extra_vnt->used_len - 1;
-				av_append(extra_vnt, &(wf_vnt){v, n, t}, 0);
+				av_append(extra_vnt, &(wf_vnt){*v, *n, *t}, 0);
+				assert(av_get_type(extra_vnt, extra_vnt->used_len - 1, wf_vnt)->v.x == av_get_type(vxs, idx, Vec3)->x);
 				av_append(tri_cors, &vnt_idx, 0);
 			}
 		}
@@ -173,8 +187,8 @@ arrayvec **obj_get_lists_vtnt(char *obj_file) {
 			parse_norm(line, norms);
 		else if(!regexec(&reg_face, line, 0, NULL, 0))
 			parse_face(line, tri_cors, vxs, norms, tex_cors, extra_vnt);
-		else if(regexec(&reg_comment, line, 0, NULL, 0))
-			printf("Warning: line `%s` not understood.\n", line);
+		else if(regexec(&reg_comment, line, 0, NULL, 0));
+			//printf("Warning: line `%s` not understood.\n", line);
 	}
 
 	if(extra_vnt->used_len) {
@@ -198,10 +212,11 @@ arrayvec **obj_get_lists_vtnt(char *obj_file) {
 				cor = -(cor + 1);
 				wf_vnt *vnt = av_get(extra_vnt, cor);
 				cor = vxs->used_len;
-				av_append(vxs, vnt->v, 0);
-				av_append(norms, vnt->n, 0);
-				av_append(tex_cors, vnt->t, 0);
+				av_append(vxs, &vnt->v, 0);
+				av_append(norms, &vnt->n, 0);
+				av_append(tex_cors, &vnt->t, 0);
 				av_set(tri_cors, &cor, i, 0);
+				//assert(av_get_type(vxs, av_get_value(tri_cors, i, int), Vec3)->x == vnt->v->x);
 			}
 		}
 	}

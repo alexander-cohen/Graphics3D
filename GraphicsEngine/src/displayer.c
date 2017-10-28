@@ -928,7 +928,7 @@ int run_sphere() {
     gen_surface_normals(boxtris);
     apply_flat_tcs(boxtris, boxFlatTCs());
 
-    arrayvec **vtnt = obj_get_lists_vtnt("teapot.obj");
+    arrayvec **vtnt = obj_get_lists_vtnt("mario/mario.obj");
     //exit(1);
     arrayvec *teavxs = vtnt[0],
         *teatri_idxs = vtnt[1],
@@ -944,12 +944,12 @@ int run_sphere() {
     Vec3 *dat;
     int *triidx;
     while((triidx = av_next(teatri_idxs, iter)) != NULL) {
-        printf("tri %d: %d\n", *iter, *triidx);
+        //printf("tri %d: %d\n", *iter, *triidx);
     }
     //exit(1);
     *iter = 0;
     while((dat = av_next(teanorms, iter)) != NULL) {
-        printf("teanorms %d: (%f, %f, %f)\n", *iter, dat->x, dat->y, dat->z);
+        //printf("teanorms %d: (%f, %f, %f)\n", *iter, dat->x, dat->y, dat->z);
     }
     //exit(1);
 
@@ -962,12 +962,16 @@ int run_sphere() {
     arrayvec *teatris = VTNT_to_AV(teavxs, teatri_idxs, teanorms, teatcs, teamats);
     triangle *tri;
     *iter = 0;
+    Vec3 def_norm = {1,0,0};
     while((tri = av_next(teatris, iter)) != NULL) {
-        printf("teatris %d: (%f, %f, %f)\n", *iter, tri->p1.x, tri->p1.y, tri->p1.z);
+        //tri->n1 = def_norm;
+        //tri->n2 = def_norm;
+        //tri->n3 = def_norm;
+        //printf("teatris %d: (%f, %f, %f)\n", *iter, tri->p1.x, tri->p1.y, tri->p1.z);
     }
     //exit(1);
     matrix *fw_tea, *bw_tea;
-    fw_tea = scale(100, 100, 100);
+    fw_tea = scale(2, 2, 2);
     matmul_ip(rotate(2, M_PI), fw_tea);
     matmul_ip(translate(250, 375, 0), fw_tea);
     bw_tea = ident();
